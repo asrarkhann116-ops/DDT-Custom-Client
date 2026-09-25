@@ -18,18 +18,16 @@
 
 import "./styles.css";
 
+import { HeaderBarButton } from "@api/HeaderBar";
 import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findComponentByCodeLazy } from "@webpack";
 import { Popout, useRef, useState } from "@webpack/common";
 import type { PropsWithChildren } from "react";
 
 import { renderPopout } from "./menu";
 import { DDT_LOGO_DATA_URL } from "../../assets/ddtLogoSmall";
-
-const HeaderBarIcon = findComponentByCodeLazy(".HEADER_BAR_BADGE_BOTTOM,", 'position:"bottom"');
 
 function DDTTitleBadge() {
     return (
@@ -81,7 +79,7 @@ function DDTPopoutButton() {
             renderPopout={() => renderPopout(() => setShow(false))}
         >
             {(_, { isShown }) => (
-                <HeaderBarIcon
+                <HeaderBarButton
                     ref={buttonRef}
                     className="vc-toolbox-btn"
                     onClick={() => setShow(v => !v)}
@@ -96,11 +94,18 @@ function DDTPopoutButton() {
 
 export default definePlugin({
     name: "DDTToolbox",
-    description: "Adds a button to the titlebar that houses DDT quick actions",
+    description: "Adds a button next to the inbox button in the channel header that houses DDT quick actions",
     tags: ["Utility", "Developers"],
     authors: [Devs.Ven, Devs.AutumnVN],
+    dependencies: ["HeaderBarAPI"],
 
     settings,
+
+    headerBarButton: {
+        icon: () => <Icon isShown={false} />,
+        render: DDTPopoutButton,
+        priority: 1337
+    },
 
     patches: [
         {

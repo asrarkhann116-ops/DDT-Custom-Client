@@ -23,7 +23,7 @@ import "../checkNodeVersion.js";
 
 import { exec, execSync } from "child_process";
 import esbuild, { build, context } from "esbuild";
-import { constants as FsConstants, readFileSync } from "fs";
+import { constants as FsConstants, existsSync, readFileSync, statSync } from "fs";
 import { access, readdir, readFile } from "fs/promises";
 import { minify as minifyHtml } from "html-minifier-terser";
 import { optimize as optimizeSvg } from 'svgo';
@@ -361,10 +361,19 @@ const pathAliasPlugin = {
                 "@webpack/types": "./src/webpack/types",
             };
 
-            for (const [alias, replacement] of Object.entries(aliasMap)) {
+            const sortedAliases = Object.entries(aliasMap).sort((a, b) => b[0].length - a[0].length);
+
+            for (const [alias, replacement] of sortedAliases) {
                 if (args.path === alias || args.path.startsWith(alias + "/")) {
                     const newPath = args.path.replace(alias, replacement);
-                    return { path: resolve(newPath), external: false };
+                    const absPath = resolve(newPath);
+                    for (const ext of ["", ".ts", ".tsx", "/index.ts", "/index.tsx", ".js", ".jsx", ".mjs"]) {
+                        const target = absPath + ext;
+                        if (existsSync(target) && statSync(target).isFile()) {
+                            return { path: target, external: false };
+                        }
+                    }
+                    return { path: absPath, external: false };
                 }
             }
             return null;

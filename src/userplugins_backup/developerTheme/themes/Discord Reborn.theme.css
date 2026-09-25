@@ -1,0 +1,35 @@
+/**
+ * @name          Discord Reborn
+ * @description  Transparent, fully customizable theme.
+ * @author       Izy
+ * @version      2.0
+ * @source       https://rawcdn.githack.com/squee666/Discord-Themes/refs/heads/master/css/Discord%20Reborn.css
+ * @invite       r59DjpaDHD
+ * @authorId     107511169366888448
+ */
+
+/* IMPORT CSS FROM GITHUB */
+@import url("https://cdn.jsdelivr.net/gh/squee666/Discord-Themes@refs/heads/master/css/Discord%20Reborn.css");
+/*
+===== IMPORTANT =====
+CHANGE DISCORDS THEME TO DARK THEME IN APPEARANCE SETTINGS FOR THIS THEME TO WORK!
+IMPORTANT: EVERY URL MUST BE HTTPS:// IN ORDER TO WORK IN DISCORD
+===== CUSTOMIZABLE COLORS / IMAGES =====
+*/
+:root { 
+--mc: #007dbd !important;                                   /*Main Colour*/     
+--hc: #03679b !important;                                   /*Hover Colour*/          
+--BG: url("https://rawcdn.githack.com/squee666/Discord-Themes/2035b9f127e6c79c95459b24e299ef3156ed552c/d3lnerI.jpeg?raw=true") !important;    /*Wallpaper*/   
+--RB: rgba(0,0,0,0.65) !important;                          /*Reborn Transparency Higher is Darker*/  
+--RBT: rgba(0,0,0,0.75) !important;                         /*Reborn Transparency For Popouts*/ 
+--br: 50% !important;                                       /*RoundNess of Icons*/    
+ }
+ /*
+===== CREDITS =====
+POUT
+DINGUS
+Gibbu
+BEARDDESIGN
+Monster
+THESE PEOPLE HAVE HELPED CREATE THIS THEME IN ONE WAY OR THE OTHER.
+*/

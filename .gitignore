@@ -1,0 +1,31 @@
+dist
+node_modules
+
+*.exe
+# Allow bundled yt-dlp for DDT Music Relay Server
+!src/userplugins/musicVisualizer/music-relay-server/yt-dlp.exe
+vencord_installer
+
+.idea
+.DS_Store
+
+yarn.lock
+bun.lock
+package-lock.json
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+
+# Commented out to include custom DDT plugins
+# src/userplugins
+
+ExtensionCache/
+/settings
+
+# Python cache
+__pycache__/

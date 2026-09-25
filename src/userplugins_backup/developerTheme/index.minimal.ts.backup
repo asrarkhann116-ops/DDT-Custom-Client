@@ -1,0 +1,50 @@
+/*
+ * MINIMAL SAFE VERSION - USE IF MAIN VERSION CRASHES
+ * Rename this to index.ts if needed
+ */
+
+import definePlugin from "@utils/types";
+
+const THEME_CSS = `
+:root {
+    --ddt-accent: #a855f7;
+    --brand-experiment: #a855f7 !important;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #a855f7;
+    border-radius: 8px;
+}
+
+button[class*="colorBrand"]:hover {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+`;
+
+let styleEl: HTMLStyleElement | null = null;
+
+export default definePlugin({
+    name: "DeveloperTheme",
+    description: "Minimal safe developer theme",
+    authors: [{ name: "DDT", id: 0n }],
+    
+    start() {
+        try {
+            styleEl = document.createElement("style");
+            styleEl.textContent = THEME_CSS;
+            document.head.appendChild(styleEl);
+            console.log("[Developer Theme] Minimal version started");
+        } catch (e) {
+            console.error("[Developer Theme] Even minimal version failed:", e);
+        }
+    },
+    
+    stop() {
+        styleEl?.remove();
+        styleEl = null;
+    }
+});

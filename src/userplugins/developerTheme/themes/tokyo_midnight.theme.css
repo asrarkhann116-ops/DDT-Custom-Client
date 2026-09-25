@@ -1,0 +1,94 @@
+/**
+ * @name TokyoMidnight
+ * @author SnajperEXE
+ * @version v1.0
+ * @description Atmospheric mint-accented Discord theme inspired by midnight city lights, holographic interfaces, and futuristic terminal aesthetics.
+ * @source https://snajperexe.github.io/TokyoMidnight/
+* @invite szZbb5Embf
+*/
+
+/* === IMPORTS === */
+@import url("https://snajperexe.github.io/TokyoMidnight/imports.css");
+
+:root {
+
+  /* === CORE ATMOSPHERE === */
+
+  --tokyo-midnight-bg-main: #0a0a11;
+  --tokyo-midnight-bg-sidebars: #0f0f12f7;
+  --tokyo-midnight-bg-panels: #0f0f12;
+  --tokyo-midnight-app-bg: url("https://snajperexe.github.io/TokyoMidnight/bgtm.png");
+  --tokyo-midnight-home-logo: url("https://snajperexe.github.io/TokyoMidnight/discord_tokyo_midnight.png");
+
+  /* === COLORS === */
+  --tokyo-midnight-black: #0c0c11;
+  --tokyo-midnight-gray: #49494f;
+  --tokyo-midnight-yellow: #cac72e;
+  --tokyo-midnight-orange: #d88124;
+  --tokyo-midnight-green: #4fe46a;
+  --tokyo-midnight-green2: #179d2f;
+  --tokyo-midnight-blue: #242ec8;
+  --tokyo-midnight-purple: #6c2dc4;
+  --tokyo-midnight-pink: #d9367d;
+  --tokyo-midnight-red: #df0f1de5;
+  --tokyo-midnight-critical-gradient: linear-gradient(135deg, #30070c, #6f0916);
+  --tokyo-midnight-special-buttons: linear-gradient(90deg, #2a0007, #ff0055, #a30022) !important;
+  --tokyo-midnight-opal: linear-gradient( 135deg, #b8f5ff 0%, #c8ffd8 15%, #8be0ff 30%, #8d7dff 50%, #ff8ad8 70%, #ffe29a 85%, #d8f8ff 100%);
+  --tokyo-midnight-custom1: linear-gradient(135deg, #6c1212 0%, #991b1b 40%, #81fca6 100%);
+  --tokyo-midnight-custom2: linear-gradient(90deg, #81fca6, #7928ca, #ff007f);
+  --tokyo-midnight-custom3: linear-gradient(90deg, #81fca6, #81fcba, rgb(5, 230, 178));
+  --tokyo-midnight-custom4: linear-gradient(90deg, #71fe78, #71fea7, #71fec8);
+  --tokyo-midnight-custom5: linear-gradient(90deg, #00ec1857, #36fb85dc);
+  --tokyo-midnight-rainbow: linear-gradient(90deg, #b84a4a, #b8794c, #b8b24d, #58b86d, #4a78b8, #6f52b8, #9b4fa8, #b84a4a);
+
+  /* === TEXT === */
+
+  --tokyo-midnight-text-normal: #7dff9f;
+  --tokyo-midnight-text-header: #32fe6f;
+  --tokyo-midnight-link-cards: #a9ffc4;
+
+  /* === CHANNELS === */
+
+--tokyo-midnight-channel-text: #9dffb1;
+--tokyo-midnight-channel-text-hover: #6fff91;
+--tokyo-midnight-channel-active: #36ea69e0;
+--tokyo-midnight-category-text: #60ff78;
+
+  /* === ICONS === */
+
+  --tokyo-midnight-icons: #afffb1;
+  --tokyo-midnight-icons-2: #8fffb4;
+
+  /* === ACCENTS === */
+
+  --tokyo-midnight-main: hsl(136, 72%, 51%);
+  --tokyo-midnight-main2: #1fed0c;
+  --tokyo-midnight-guild_dot_online: #47fb41;
+  --tokyo-midnight-guild_dot_total: #768978;
+
+  /* === BORDERS === */
+
+  --tokyo-midnight-border:rgb(129, 252, 166);
+  --tokyo-midnight-border-strong: #26ae7597;
+
+  /* === SHADOWS === */
+
+  --tokyo-midnight-text-shadow: 0 0 8px rgba(127, 252, 144, 0.704);
+  --tokyo-midnight-border-shadow: 0 0 8px rgba(44, 225, 62, 0.704);
+  --tokyo-midnight-shadow-glow: 0 0 18px rgba(26, 212, 94, 0.73);
+  --tokyo-midnight-link-shadow: 0 0 15px rgba(244, 11, 22, 0.703);
+  --tokyo-member-fade: linear-gradient(90deg, rgba(0,0,0,0), rgba(90,250,162,.08));
+
+  /* === WARNING === */
+
+  --tokyo-midnight-warning: #ff4d53;
+  --tokyo-midnight-warning-soft: hsla(0, 86%, 67%, 0.12);
+  --tokyo-midnight-warning-bg: #1c0000;
+  --tokyo-mifnight-warning-text: #ffacbf;
+  
+    /* === MEMBER LIST  === */
+
+    --tokyo-member-width: 240px;
+    --tokyo-member-collapsed: 42px;
+    --tokyo-member-transition: .38s cubic-bezier(.25,1,.5,1);
+}

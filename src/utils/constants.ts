@@ -673,6 +673,10 @@ export const Devs: Record<string, any> = /* #__PURE__*/ Object.freeze({
     Kaede: {
         name: "Kaede",
         id: 1492642701320126504n
+    },
+    irritably: {
+        name: "irritably",
+        id: 0n
     }
 } as Record<string, Dev>);
 

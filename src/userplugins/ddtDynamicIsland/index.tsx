@@ -6,6 +6,7 @@
 
 import "./style.css";
 
+import { addHeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
 import { definePluginSettings } from "@api/Settings";
 import { Button } from "@components/Button";
 import ErrorBoundary from "@components/ErrorBoundary";
@@ -534,16 +535,11 @@ export default definePlugin({
     settings,
 
     start() {
-        // musicControlsSettings.store.showSpotifyControls = settings.store.showSpotifyPanel;
+        addHeaderBarButton("DDTDynamicIsland", () => <SafeDynamicIsland />, 10_000);
     },
 
     stop() {
         setIslandNotification(null);
-    },
-
-    headerBarButton: {
-        icon: IslandIcon,
-        render: () => <SafeDynamicIsland />,
-        priority: 10_000
+        removeHeaderBarButton("DDTDynamicIsland");
     }
 });

@@ -53,6 +53,7 @@
         "music-metadata-browser": "^2.5.11",
         "nanoid": "^5.1.16",
         "native-file-system-adapter": "^3.0.1",
+        "onnxruntime-web": "^1.30.0",
         "virtual-merge": "^1.0.1"
     },
     "devDependencies": {

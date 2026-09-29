@@ -20,7 +20,7 @@ import { openNotificationLogModal } from "@api/Notifications/notificationLog";
 import { useSettings } from "@api/Settings";
 import { Divider } from "@components/Divider";
 import { FormSwitch } from "@components/FormSwitch";
-import { FolderIcon, GithubIcon, LogIcon, PaintbrushIcon, RestartIcon } from "@components/Icons";
+import { FolderIcon, GithubIcon, LinkIcon, LogIcon, PaintbrushIcon, RestartIcon } from "@components/Icons";
 import { QuickAction, QuickActionCard } from "@components/settings/QuickAction";
 import { SpecialCard } from "@components/settings/SpecialCard";
 import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
@@ -38,6 +38,14 @@ import { DonateButtonComponent, isDonor } from "./DonateButton";
 import { MacOSVibrancySettings } from "./MacVibrancySettings";
 import { NotificationSection } from "./NotificationSettings";
 import { WindowsMaterialSettings } from "./WindowsMaterialSettings";
+// @ts-ignore
+import ddtWaifu from "file://./ddt_waifu.webp?base64";
+// @ts-ignore
+import ddtWaifu2 from "file://./ddt_waifu2.webp?base64";
+// @ts-ignore
+import ddtWaifu3 from "file://./ddt_waifu3.webp?base64";
+// @ts-ignore
+import ddtWaifu4 from "file://./ddt_waifu4.webp?base64";
 
 const DEFAULT_DONATE_IMAGE = "https://cdn.discordapp.com/emojis/1026533090627174460.png";
 const SHIGGY_DONATE_IMAGE = "https://media.discordapp.net/stickers/1039992459209490513.png";
@@ -144,6 +152,86 @@ function VencordSettings() {
 
     return (
         <SettingsTab>
+            {/* DDT Waifu Banner */}
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                gap: "0px",
+                marginBottom: "8px",
+                padding: "8px 0 0 0",
+            }}>
+                {/* Waifu 1 — front view */}
+                <img
+                    src={`data:image/webp;base64,${ddtWaifu}`}
+                    style={{
+                        height: "280px",
+                        objectFit: "contain",
+                        imageRendering: "auto",
+                        filter: "drop-shadow(0 8px 24px rgba(88, 101, 242, 0.35))"
+                    }}
+                    alt="DDT Waifu"
+                />
+                {/* Waifu 3 — pink doggy pose */}
+                <img
+                    src={`data:image/webp;base64,${ddtWaifu3}`}
+                    style={{
+                        height: "280px",
+                        objectFit: "contain",
+                        imageRendering: "auto",
+                        filter: "drop-shadow(0 8px 24px rgba(255, 100, 180, 0.4))"
+                    }}
+                    alt="DDT Waifu 3"
+                />
+                {/* Middle: support text */}
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 12px",
+                    marginBottom: "40px",
+                    gap: "6px",
+                }}>
+                    <div style={{
+                        letterSpacing: "0.15em",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        textAlign: "center",
+                        background: "linear-gradient(90deg, #5865F2, #a0aeff, #5865F2)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        lineHeight: 1.4,
+                    }}>
+                        ✦ Feel free to<br />support us ✦
+                    </div>
+                    <div style={{ fontSize: "22px", opacity: 0.6, lineHeight: 1 }}>↔</div>
+                </div>
+                {/* Waifu 2 — back view standing */}
+                <img
+                    src={`data:image/webp;base64,${ddtWaifu2}`}
+                    style={{
+                        height: "280px",
+                        objectFit: "contain",
+                        imageRendering: "auto",
+                        filter: "drop-shadow(0 8px 24px rgba(88, 101, 242, 0.35))"
+                    }}
+                    alt="DDT Waifu 2"
+                />
+                {/* Waifu 4 — purple bikini doggy */}
+                <img
+                    src={`data:image/webp;base64,${ddtWaifu4}`}
+                    style={{
+                        height: "280px",
+                        objectFit: "contain",
+                        imageRendering: "auto",
+                        filter: "drop-shadow(0 8px 24px rgba(200, 80, 255, 0.4))"
+                    }}
+                    alt="DDT Waifu 4"
+                />
+            </div>
             <section>
                 <Forms.FormTitle tag="h5">Quick Actions</Forms.FormTitle>
 
@@ -176,6 +264,11 @@ function VencordSettings() {
                         Icon={GithubIcon}
                         text="View Source Code"
                         action={() => VencordNative.native.openExternal("https://github.com/asrarkhann116-ops/DDT-Custom-Client")}
+                    />
+                    <QuickAction
+                        Icon={LinkIcon}
+                        text="Join our DC Server"
+                        action={() => VencordNative.native.openExternal("https://discord.gg/3fb9Q7ucSN")}
                     />
                 </QuickActionCard>
             </section>

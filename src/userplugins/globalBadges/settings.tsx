@@ -73,7 +73,7 @@ export const settings = definePluginSettings({
     apiUrl: {
         type: OptionType.STRING,
         description: "API to use",
-        default: "https://badges.DDT.org/",
+        default: "https://badges.equicord.org/",
         restartNeeded: false,
         isValid: (value => {
             if (!value) return false;

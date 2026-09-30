@@ -291,15 +291,14 @@ pnpm inject
 </details>
 
 <details>
-<summary><b>Section N (13 Plugins)</b></summary>
+<summary><b>Section N (12 Plugins)</b></summary>
 
 | Plugin Name | Plugin Name | Plugin Name |
 | :--- | :--- | :--- |
 | NightcordPort | NightyNitroSniper | NitroSniper |
-| NsfwGateBypass | networkInspector | neverPausePreviews |
-| newPluginsManager | noNitroUpsell | noPushToTalk |
-| noRPC.discordDesktop | noRoleHeaders | normalizeMessageLinks |
-| notificationTitle.discordDesktop |
+| networkInspector | neverPausePreviews | newPluginsManager |
+| noNitroUpsell | noPushToTalk | noRPC.discordDesktop |
+| noRoleHeaders | normalizeMessageLinks | notificationTitle.discordDesktop |
 </details>
 
 <details>

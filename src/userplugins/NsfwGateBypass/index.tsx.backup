@@ -1,0 +1,71 @@
+﻿/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import './styles.css';
+
+import { Devs } from '@utils/constants';
+import { Logger } from '@utils/Logger';
+import definePlugin from '@utils/types';
+import { React } from '@webpack/common';
+import { Dashboard } from './components/Dashboard';
+
+const logger = new Logger('NSFWGateBypass');
+
+export default definePlugin({
+    name: 'NSFWGateBypass',
+    description: 'Access NSFW content directly in Discord with integrated gallery browser. Bypass age restrictions with local content viewing.',
+    tags: ['Privacy', 'Servers', 'NSFW', 'Gallery'],
+    authors: [
+        Devs.dxrx99,
+        Devs.omawAlt
+    ],
+
+    start() {
+        logger.info('NSFW Hub loaded! Press Ctrl+Shift+N to open.');
+        
+        // Add keyboard shortcut
+        document.addEventListener('keydown', this.handleKeyPress);
+    },
+
+    stop() {
+        document.removeEventListener('keydown', this.handleKeyPress);
+        document.querySelector('.nsfw-dashboard-container')?.remove();
+    },
+
+    handleKeyPress(e: KeyboardEvent) {
+        if (e.ctrlKey && e.shiftKey && e.key === 'N') {
+            e.preventDefault();
+            (this as any).toggleDashboard();
+        }
+    },
+
+    toggleDashboard() {
+        const existing = document.querySelector('.nsfw-dashboard-container');
+        
+        if (existing) {
+            existing.remove();
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'nsfw-dashboard-container';
+        document.body.appendChild(container);
+
+        // Create React root and render
+        const root = React.createElement(Dashboard, {
+            onClose: () => container.remove()
+        });
+        
+        const reactDom = window.ReactDOM || (window as any).VencordReactDOM;
+        if (reactDom?.createRoot) {
+            const reactRoot = reactDom.createRoot(container);
+            reactRoot.render(root);
+        } else {
+            // Fallback
+            reactDom.render(root, container);
+        }
+    }
+});

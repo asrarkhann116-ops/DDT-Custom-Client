@@ -11,13 +11,13 @@ export const settings = definePluginSettings({
     apiUrl: {
         type: OptionType.STRING,
         description: "Profile Pro worker URL (e.g. https://ddt-profile-pro.you.workers.dev)",
-        default: "",
+        default: "https://ddt-profile-pro.asrarkhann116.workers.dev",
         restartNeeded: true
     },
     clientId: {
         type: OptionType.STRING,
         description: "Discord application Client ID used for login",
-        default: ""
+        default: "1554884815893831741"
     },
     nitroFirst: {
         type: OptionType.BOOLEAN,

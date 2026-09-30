@@ -3,9 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
 [vars]
-DISCORD_CLIENT_ID = "PUT_YOUR_DISCORD_APP_CLIENT_ID_HERE"
+DISCORD_CLIENT_ID = "1554884815893831741"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ddt-profile-pro"
-database_id = "PUT_YOUR_D1_DATABASE_ID_HERE"
+database_id = "d16fc4c8-3ce1-498e-8919-09b7f135a871"

@@ -8,13 +8,13 @@ import { plugins } from "@api/PluginManager";
 import { BaseText } from "@components/BaseText";
 import { CogWheel, ScreenshareIcon } from "@components/Icons";
 import { openPluginModal } from "@components/settings/tabs/plugins/PluginModal";
+import { ICONS, TEXT } from "@userplugins/yMusicSync.desktop/constants";
+import { cl } from "@userplugins/yMusicSync.desktop/css";
+import { settings } from "@userplugins/yMusicSync.desktop/settings";
+import { YMusicSyncStore } from "@userplugins/yMusicSync.desktop/store";
+import type { PlayerDevice } from "@userplugins/yMusicSync.desktop/types";
 import { ContextMenuApi, Menu, useStateFromStores } from "@webpack/common";
 
-import { ICONS, TEXT } from "../constants";
-import { cl } from "../css";
-import { settings } from "../settings";
-import { YMusicSyncStore } from "../store";
-import type { PlayerDevice } from "../types";
 import { IconButton, PanelButton, ProgressSlider, VolumeSlider } from "./Controls";
 import { TrackCover } from "./TrackCover";
 

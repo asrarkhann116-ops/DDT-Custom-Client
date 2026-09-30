@@ -6,12 +6,12 @@
 
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
 import { updateMessage } from "@api/MessageUpdater";
+import { openLogModal } from "@userplugins/messageLoggerEnhanced/components/LogsModal";
+import { deleteMessageIDB } from "@userplugins/messageLoggerEnhanced/db";
+import { settings } from "@userplugins/messageLoggerEnhanced/index";
 import { findStoreLazy } from "@webpack";
 import { FluxDispatcher, Menu, MessageActions, React, Toasts, UserStore } from "@webpack/common";
 
-import { openLogModal } from "../components/LogsModal";
-import { deleteMessageIDB } from "../db";
-import { settings } from "../index";
 import { addToXAndRemoveFromOpposite, ListType, removeFromX } from ".";
 
 const SortedGuildStore = findStoreLazy("SortedGuildStore");

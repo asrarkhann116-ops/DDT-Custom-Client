@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "@userplugins/richPresence/settings";
+import { JfMediaData, JfSession } from "@userplugins/richPresence/types/jellyfin";
 import { Logger } from "@utils/Logger";
 import { formatDurationMs } from "@utils/text";
 import { Activity } from "@vencord/discord-types";
 import { ApplicationAssetUtils, FluxDispatcher, showToast } from "@webpack/common";
-
-import { settings } from "../settings";
-import { JfMediaData, JfSession } from "../types/jellyfin";
 
 const APPLICATION_ID = "1381368130164625469";
 const SOCKET_ID = "RichPresence_JF";

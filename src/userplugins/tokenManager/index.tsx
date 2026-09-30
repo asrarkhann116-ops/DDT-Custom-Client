@@ -8,10 +8,9 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
-import { relaunch } from "@utils/native";
 import definePlugin, { OptionType } from "@utils/types";
 import { findByProps } from "@webpack";
-import { FluxDispatcher, UserStore } from "@webpack/common";
+import { UserStore } from "@webpack/common";
 
 interface StoredAccount {
     id: string;
@@ -140,13 +139,13 @@ function getCurrentToken(): string | null {
                 const token = authStore.getToken();
                 if (token) return token;
             }
-            
+
             return null;
         }
 
         // Method 1: Check common token keys
         const tokenPatterns = ["token", "tokens"];
-        
+
         for (const key of tokenPatterns) {
             try {
                 const value = localStorage.getItem(key);
@@ -174,14 +173,14 @@ function getCurrentToken(): string | null {
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (!key) continue;
-                
+
                 const value = localStorage.getItem(key);
                 if (!value) continue;
 
                 // Check if value looks like a Discord token
                 // Discord tokens are base64-encoded and quite long (70+ chars)
                 const cleaned = value.replace(/"/g, "").replace(/\\/g, "");
-                if (cleaned.length > 50 && /^[A-Za-z0-9_\-\.]+$/.test(cleaned)) {
+                if (cleaned.length > 50 && /^[A-Za-z0-9_\-.]+$/.test(cleaned)) {
                     // Additional validation: Discord tokens usually have dots
                     if (cleaned.includes(".")) {
                         console.log(`[Token Manager] Found potential token in key: ${key}`);
@@ -239,14 +238,14 @@ function setToken(token: string) {
     try {
         // Clear existing token
         localStorage.removeItem("token");
-        
+
         // Set new token
         localStorage.setItem("token", `"${token}"`);
-        
+
         state.currentToken = token;
-        
+
         console.log("[Token Manager] Token updated. Reloading Discord...");
-        
+
         // Reload Discord
         setTimeout(() => {
             location.reload();
@@ -283,7 +282,7 @@ function setToken(token: string) {
     addAccount: async (token: string, notes?: string) => {
         try {
             const userInfo = await fetchUserInfo(token);
-            
+
             const account: StoredAccount = {
                 id: userInfo.id!,
                 token,
@@ -520,28 +519,28 @@ own risk.
             console.error("[Token Manager] localStorage not available");
             return;
         }
-        
+
         console.log("[Token Manager] LocalStorage Debug:");
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        
+
         const entries: any[] = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (!key) continue;
-            
+
             const value = localStorage.getItem(key);
             if (!value) continue;
-            
+
             // Truncate long values
             const preview = value.length > 100 ? value.substring(0, 100) + "..." : value;
-            
+
             entries.push({
                 key,
                 length: value.length,
                 preview
             });
         }
-        
+
         console.table(entries);
         console.log("Total keys:", entries.length);
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -553,24 +552,24 @@ own risk.
             console.log("Try using TokenManager.getCurrentToken() instead - it uses fallback methods");
             return;
         }
-        
+
         console.log("[Token Manager] Searching for Discord token...");
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        
+
         const potentialTokens: any[] = [];
-        
+
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (!key) continue;
-            
+
             const value = localStorage.getItem(key);
             if (!value) continue;
-            
+
             // Check if value looks like a Discord token
             const cleaned = value.replace(/"/g, "").replace(/\\/g, "");
-            
+
             // Discord tokens are typically 70+ characters and alphanumeric
-            if (cleaned.length > 50 && /^[A-Za-z0-9_\-\.]+$/.test(cleaned)) {
+            if (cleaned.length > 50 && /^[A-Za-z0-9_\-.]+$/.test(cleaned)) {
                 potentialTokens.push({
                     key,
                     tokenPreview: cleaned.substring(0, 20) + "..." + cleaned.substring(cleaned.length - 10),
@@ -580,7 +579,7 @@ own risk.
                 });
             }
         }
-        
+
         if (potentialTokens.length === 0) {
             console.log("❌ No potential tokens found in localStorage");
             console.log("\nTrying fallback methods...");
@@ -600,7 +599,7 @@ own risk.
             console.log(`\n✓ Found ${potentialTokens.length} potential token(s)`);
             console.log("Use TokenManager.getCurrentToken() to retrieve the best match");
         }
-        
+
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 };

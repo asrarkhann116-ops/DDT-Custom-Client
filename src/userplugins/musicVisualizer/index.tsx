@@ -1,26 +1,32 @@
 /*
+ * DDT Discord Client, a Discord client mod
+ * Copyright (c) 2024 DDT Development Team and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
  * DDT Custom Client - Music Player (REWRITE v2)
  * Real audio via cobalt.tools + Synced Lyrics + Premium UI
  * Copyright (c) 2024 DDT Team
  */
 
+import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { React } from "@webpack/common";
-import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 
 const Native = (VencordNative?.pluginHelpers?.MusicVisualizer || {}) as PluginNative<typeof import("./native")>;
 
 // ─── Design Tokens (Ultra-Premium OLED Obsidian & Cyber Glass) ─────────────
 const T = {
-    bg:       "rgba(10, 11, 14, 0.94)",     // Deep obsidian background
-    surface:  "rgba(18, 19, 24, 0.85)",     // Frosted glass card
-    elevated: "rgba(28, 30, 38, 0.70)",     // Floating pill/element
-    border:   "rgba(255, 255, 255, 0.08)",  // Subtle diamond edge
+    bg:       "rgba(10, 11, 14, 0.94)", // Deep obsidian background
+    surface:  "rgba(18, 19, 24, 0.85)", // Frosted glass card
+    elevated: "rgba(28, 30, 38, 0.70)", // Floating pill/element
+    border:   "rgba(255, 255, 255, 0.08)", // Subtle diamond edge
     borderGlow: "rgba(88, 101, 242, 0.35)", // Cyber glow border
-    accent:   "#5865f2",                   // Discord blurple
-    accentCyan: "#00f2fe",                 // Electric cyber cyan
+    accent:   "#5865f2", // Discord blurple
+    accentCyan: "#00f2fe", // Electric cyber cyan
     accentHov:"#4752c4",
     green:    "#23a559",
     text:     "#ffffff",
@@ -33,35 +39,35 @@ const T = {
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const Icons = {
-    play: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
-    pause: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
-    stop: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>`,
-    close: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
-    music: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>`,
-    search: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
-    volume: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`,
-    mute: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`,
-    lyrics: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>`,
-    loader: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>`,
-    pip: `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>`,
+    play: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M8 5v14l11-7z\"/></svg>",
+    pause: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M6 19h4V5H6v14zm8-14v14h4V5h-4z\"/></svg>",
+    stop: "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M6 6h12v12H6z\"/></svg>",
+    close: "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg>",
+    music: "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z\"/></svg>",
+    search: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z\"/></svg>",
+    volume: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z\"/></svg>",
+    mute: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z\"/></svg>",
+    lyrics: "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z\"/></svg>",
+    loader: "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\" stroke-opacity=\"0.25\"/><path d=\"M12 2a10 10 0 0 1 10 10\" stroke-linecap=\"round\"/></svg>",
+    pip: "<svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z\"/></svg>",
 };
 
 // ─── Global State ─────────────────────────────────────────────────────────────
 let overlayEl: HTMLDivElement | null = null;
 let floatingLyricsEl: HTMLDivElement | null = null;
 let isFloatingLyricsOpen = false;
-let floatDragData = { active: false, ox: 0, oy: 0 };
+const floatDragData = { active: false, ox: 0, oy: 0 };
 let floatPos = { x: window.innerWidth / 2 - 275, y: window.innerHeight - 150 };
 let audioEl: HTMLAudioElement | null = null;
 let lyricTimer: number | null = null;
-let dragData: { active: boolean; ox: number; oy: number } = { active: false, ox: 0, oy: 0 };
+const dragData: { active: boolean; ox: number; oy: number } = { active: false, ox: 0, oy: 0 };
 let position = { x: 80, y: 80 };
 let vol = 0.8;
 let isMuted = false;
 let isPlaying = false;
 let currentVideoId = "";
 let lyrics: Array<{ time: number; text: string }> = [];
-let queue: Array<{ title: string; videoId: string; thumb: string }> = [];
+const queue: Array<{ title: string; videoId: string; thumb: string }> = [];
 let queueIdx = 0;
 let activeTab: "search" | "lyrics" | "queue" = "search";
 let searchCache: Array<{ title: string; videoId: string; thumb: string }> = [];
@@ -162,8 +168,8 @@ async function handleStartServer() {
 
 const YT_KEY = "AIzaSyB_Tw5LU_twNFDYqN9F5yjQAAxEBt5Q4Sk";
 const MUSIC_SERVER_URL = "http://localhost:3124";
-const AUDIO_PROXY  = `${MUSIC_SERVER_URL}/audio`;
-const STREAM_BASE  = `${MUSIC_SERVER_URL}/stream`;
+const AUDIO_PROXY = `${MUSIC_SERVER_URL}/audio`;
+const STREAM_BASE = `${MUSIC_SERVER_URL}/stream`;
 const LYRICS_PROXY = `${MUSIC_SERVER_URL}/lyrics`;
 
 
@@ -246,25 +252,25 @@ async function fetchLyrics(title: string, videoId?: string): Promise<boolean> {
             // YouTube: "Song Name | Artist | Movie" — FIRST segment = song title
             // (not shortest — shortest gives wrong results)
             const parts = cleaned.split(" | ").map((p: string) => p.trim()).filter(Boolean);
-            track  = parts[0];                                   // first = song
-            artist = parts.slice(1).join(" ").trim();            // rest = context
+            track = parts[0]; // first = song
+            artist = parts.slice(1).join(" ").trim(); // rest = context
         } else if (cleaned.includes(" - ")) {
             const parts = cleaned.split(" - ");
             const first = parts[0].trim();
-            const rest  = parts.slice(1).join(" - ").trim();
+            const rest = parts.slice(1).join(" - ").trim();
             // Heuristic: second segment tends to be shorter when it's the song title
             // e.g. "Alan Walker, Sabrina Carpenter & Farruko - On My Way"
             //       first=long artist list, rest=short song → artist=first, track=rest
             // e.g. "Faded - Alan Walker" → first=short song, rest=short artist → artist=rest, track=first
             const firstWords = first.split(/\s+/).length;
-            const restWords  = rest.split(/\s+/).length;
+            const restWords = rest.split(/\s+/).length;
             if (firstWords > restWords) {
                 // First part is longer → likely the artist list
                 artist = first;
-                track  = rest;
+                track = rest;
             } else {
                 // First part is shorter → likely the song title
-                track  = first;
+                track = first;
                 artist = rest;
             }
         }
@@ -273,9 +279,9 @@ async function fetchLyrics(title: string, videoId?: string): Promise<boolean> {
 
         // ── Try multiple queries, stop at first synced hit ─────────────────────
         const queries = [
-            { track, artist },                        // 1. best parsed
-            { track, artist: "" },                    // 2. track only
-            { track: cleaned.split(" | ")[0], artist: "" },  // 3. raw first segment
+            { track, artist }, // 1. best parsed
+            { track, artist: "" }, // 2. track only
+            { track: cleaned.split(" | ")[0], artist: "" }, // 3. raw first segment
             { track: title.split("|")[0].trim(), artist: "" }, // 4. raw title first
         ];
 
@@ -861,8 +867,8 @@ function drawSineStream(
 
     for (let x = 0; x <= width; x += 3) {
         // Compound wave synthesis (sine + harmonic cosine + sub-ripple)
-        const y = baseY + 
-            Math.sin(x * freq + offset) * amp + 
+        const y = baseY +
+            Math.sin(x * freq + offset) * amp +
             Math.cos(x * freq * 0.45 - offset) * (amp * 0.5) +
             Math.sin(x * freq * 2.2 + offset * 1.5) * (amp * 0.15);
 
@@ -1037,7 +1043,7 @@ function renderQueueTab() {
         const e = item as HTMLElement;
         e.onmouseenter = () => { if (parseInt(e.dataset.i || "0") !== queueIdx) e.style.background = T.surface; };
         e.onmouseleave = () => { if (parseInt(e.dataset.i || "0") !== queueIdx) e.style.background = "transparent"; };
-        e.onclick = (ev) => {
+        e.onclick = ev => {
             if ((ev.target as HTMLElement).closest(".ddt-remove-queue")) return;
             const i = parseInt(e.dataset.i || "0");
             queueIdx = i;
@@ -1076,7 +1082,7 @@ async function doSearch(query: string) {
         return;
     }
 
-    pane.innerHTML = `<div id="ddt-results" style="width:100%;padding:8px"></div>`;
+    pane.innerHTML = "<div id=\"ddt-results\" style=\"width:100%;padding:8px\"></div>";
     const container = document.getElementById("ddt-results")!;
 
     results.forEach((song, i) => {
@@ -1120,7 +1126,7 @@ async function doSearch(query: string) {
 
         addBtn.onmouseenter = () => { addBtn.style.background = T.accent; addBtn.style.color = "#fff"; };
         addBtn.onmouseleave = () => { addBtn.style.background = T.elevated; addBtn.style.color = T.muted; };
-        addBtn.onclick = (e) => {
+        addBtn.onclick = e => {
             e.stopPropagation();
             if (!queue.find(q => q.videoId === song.videoId)) {
                 queue.push(song);
@@ -1131,7 +1137,7 @@ async function doSearch(query: string) {
 
         playBtn.onmouseenter = () => playBtn.style.opacity = "0.85";
         playBtn.onmouseleave = () => playBtn.style.opacity = "1";
-        playBtn.onclick = (e) => {
+        playBtn.onclick = e => {
             e.stopPropagation();
             if (!queue.find(q => q.videoId === song.videoId)) queue.push(song);
             queueIdx = queue.findIndex(q => q.videoId === song.videoId);
@@ -1241,7 +1247,7 @@ function createOverlay() {
         border-bottom: 1px solid ${T.border};
         flex-shrink: 0;
     `);
-    const headerIcon  = el("span", `color:${T.accent};display:flex;align-items:center`, Icons.music);
+    const headerIcon = el("span", `color:${T.accent};display:flex;align-items:center`, Icons.music);
     const headerTitle = el("span", `color:${T.text};font-size:13px;font-weight:600;flex:1`, "Music Player");
 
     // Server status indicator (dot + label)
@@ -1318,13 +1324,13 @@ function createOverlay() {
         }
         minBtn.title = isMinimized ? "Maximize" : "Minimize";
         minBtn.innerHTML = isMinimized
-            ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5H7z"/></svg>`
-            : `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 11h14v2H5z"/></svg>`;
+            ? "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 14l5-5 5 5H7z\"/></svg>"
+            : "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5 11h14v2H5z\"/></svg>";
     });
     // Set initial minimize icon (dash)
-    minBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 11h14v2H5z"/></svg>`;
+    minBtn.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5 11h14v2H5z\"/></svg>";
 
-    const closeBtn  = btn(Icons.close, "Close", `color:${T.muted}`, () => hideOverlay());
+    const closeBtn = btn(Icons.close, "Close", `color:${T.muted}`, () => hideOverlay());
 
     // ⚡ On-Screen Live Lyrics Toggle Button (Auto-minimizes player & shows floating lyrics)
     const pipBtn = btn(Icons.pip, "Show On-Screen Floating Lyrics Overlay (Auto-minimize)", `color:${T.accent}`, () => {
@@ -1371,7 +1377,7 @@ function createOverlay() {
     (searchInput as HTMLInputElement).id = "ddt-search-input";
     searchInput.onfocus = () => (searchInput as HTMLElement).style.borderColor = T.accent;
     searchInput.onblur = () => (searchInput as HTMLElement).style.borderColor = T.border;
-    (searchInput as HTMLInputElement).onkeydown = (e) => {
+    (searchInput as HTMLInputElement).onkeydown = e => {
         if (e.key === "Enter") {
             const q = (searchInput as HTMLInputElement).value.trim();
             if (q) doSearch(q);
@@ -1498,7 +1504,7 @@ function createOverlay() {
     const thumbWrap = el("div", `width:44px;height:44px;border-radius:6px;flex-shrink:0;position:relative;overflow:hidden;background:${T.elevated};`);
     thumbWrap.id = "ddt-np-thumb-wrap";
 
-    const thumb = el("img", `width:44px;height:44px;border-radius:6px;object-fit:cover;position:absolute;inset:0;display:none;`);
+    const thumb = el("img", "width:44px;height:44px;border-radius:6px;object-fit:cover;position:absolute;inset:0;display:none;");
     thumb.id = "ddt-np-thumb";
     (thumb as HTMLImageElement).src = "";
     (thumb as HTMLImageElement).alt = "";
@@ -1514,17 +1520,17 @@ function createOverlay() {
     if (!document.getElementById("ddt-idle-anim")) {
         const s = document.createElement("style");
         s.id = "ddt-idle-anim";
-        s.textContent = `@keyframes ddt-note-pulse{0%,100%{opacity:.5;transform:scale(0.85) rotate(-8deg)}50%{opacity:1;transform:scale(1.05) rotate(8deg)}}`;
+        s.textContent = "@keyframes ddt-note-pulse{0%,100%{opacity:.5;transform:scale(0.85) rotate(-8deg)}50%{opacity:1;transform:scale(1.05) rotate(8deg)}}";
         document.head.appendChild(s);
     }
     const noMusicIcon = el("div", `width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:${T.muted};animation:ddt-note-pulse 2s ease-in-out infinite;`);
     noMusicIcon.id = "ddt-no-music-icon";
-    noMusicIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`;
+    noMusicIcon.innerHTML = "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z\"/></svg>";
 
     thumbWrap.appendChild(noMusicIcon);
     thumbWrap.appendChild(thumb);
 
-    const trackInfo = el("div", `flex:1;min-width:0`);
+    const trackInfo = el("div", "flex:1;min-width:0");
     trackInfo.innerHTML = `
         <div id="ddt-np-title" style="color:${T.text};font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Not playing</div>
         <div style="color:${T.muted};font-size:11px;margin-top:2px">DDT Music</div>
@@ -1578,7 +1584,7 @@ function createOverlay() {
         progressFill.style.background = T.muted;
         progressThumb.style.opacity = "0";
     };
-    progressTrack.onclick = (e) => {
+    progressTrack.onclick = e => {
         if (!audioEl || !audioEl.duration) return;
         const rect = progressTrack.getBoundingClientRect();
         const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -1625,7 +1631,7 @@ function createOverlay() {
     playBtn.onclick = togglePlay;
 
     // Next btn
-    const nextBtn = btn(`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>`, "Next", "", playNext);
+    const nextBtn = btn("<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z\"/></svg>", "Next", "", playNext);
 
     // Volume area
     const volArea = el("div", `

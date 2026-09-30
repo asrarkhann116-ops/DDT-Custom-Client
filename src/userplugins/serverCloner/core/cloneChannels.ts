@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { state } from "@userplugins/serverCloner/store";
+import { checkGuildExistence, fetchGuildChannels } from "@userplugins/serverCloner/utils/api";
+import { handleCloneError } from "@userplugins/serverCloner/utils/errorHandler";
+import { isRecord, replaceEmojis, sleep } from "@userplugins/serverCloner/utils/helpers";
+import { updateWithTime } from "@userplugins/serverCloner/utils/notifications";
 import { Constants, GuildStore, RestAPI } from "@webpack/common";
 
-import { state } from "../store";
-import { checkGuildExistence, fetchGuildChannels } from "../utils/api";
-import { handleCloneError } from "../utils/errorHandler";
-import { isRecord, replaceEmojis, sleep } from "../utils/helpers";
-import { updateWithTime } from "../utils/notifications";
 import { CloneChannel, CloneContext } from "./types";
 
 interface ChannelResponse {

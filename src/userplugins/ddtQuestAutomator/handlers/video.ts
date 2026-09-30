@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { setQuestRuntime } from "../questState";
-import { callWithRetry } from "../utils/retry";
+import { setQuestRuntime } from "@userplugins/ddtQuestAutomator/questState";
+import { callWithRetry } from "@userplugins/ddtQuestAutomator/utils/retry";
+
 import { QuestHandler } from "./types";
 
 const videoTasks = ["WATCH_VIDEO", "WATCH_VIDEO_ON_MOBILE"] as const;

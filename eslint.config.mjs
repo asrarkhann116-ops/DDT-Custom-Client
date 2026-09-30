@@ -13,7 +13,7 @@ import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-    { ignores: ["dist", "browser", "packages/vencord-types"] },
+    { ignores: ["dist", "browser", "packages/vencord-types", "src/userplugins_backup", "**/*.min.mjs", "**/*.min.js"] },
     {
         files: ["src/**/*.{tsx,ts,mts,mjs,js,jsx}", "eslint.config.mjs"],
         settings: {
@@ -67,7 +67,7 @@ export default tseslint.config(
             "simple-header/header": [
                 "error",
                 {
-                    "files": ["scripts/header-new.txt", "scripts/header-old.txt"],
+                    "files": ["scripts/header-new.txt", "scripts/header-old.txt", "scripts/header-ddt.txt"],
                     "templates": { "author": [".*", "Vendicated and contributors"] }
                 }
             ],
@@ -144,6 +144,20 @@ export default tseslint.config(
             "simple-import-sort/exports": "error",
             "unused-imports/no-unused-imports": "error",
             "path-alias/no-relative": "error"
+        }
+    },
+    {
+        // MIT-licensed files keep their own license header
+        files: [
+            "src/plugins/userplugins/index.ts",
+            "src/userplugins/apiInspector/index.ts",
+            "src/userplugins/devToolsPanel/index.tsx",
+            "src/userplugins/eventLogger/index.ts",
+            "src/userplugins/networkInspector/index.ts",
+            "src/userplugins/tokenManager/index.tsx"
+        ],
+        rules: {
+            "simple-header/header": "off"
         }
     }
 );

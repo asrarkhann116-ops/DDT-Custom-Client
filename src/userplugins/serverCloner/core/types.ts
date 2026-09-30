@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { CloneOptions } from "@userplugins/serverCloner/types";
+import { TaskQueue } from "@userplugins/serverCloner/utils/TaskQueue";
 import { Guild } from "@vencord/discord-types";
-
-import { CloneOptions } from "../types";
-import { TaskQueue } from "../utils/TaskQueue";
 
 export interface CloneRole {
     color: number;

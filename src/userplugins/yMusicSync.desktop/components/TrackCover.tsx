@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { lruSet, TEXT } from "@userplugins/yMusicSync.desktop/constants";
+import { cl } from "@userplugins/yMusicSync.desktop/css";
+import { Native } from "@userplugins/yMusicSync.desktop/nativeBridge";
 import { useEffect, useState } from "@webpack/common";
-
-import { lruSet, TEXT } from "../constants";
-import { cl } from "../css";
-import { Native } from "../nativeBridge";
 
 const RETRY_DELAYS_MS = [2_000, 5_000, 15_000];
 const MAX_CACHE_ENTRIES = 8;

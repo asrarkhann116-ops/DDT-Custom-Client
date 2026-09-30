@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { COVER_SIZE, COVER_SIZE_PLACEHOLDER } from "@userplugins/yMusicSync.desktop/constants";
 import { net } from "electron";
 
-import { COVER_SIZE, COVER_SIZE_PLACEHOLDER } from "../constants";
 import {
     CLIENT_NAME,
     CLIENT_VERSION,

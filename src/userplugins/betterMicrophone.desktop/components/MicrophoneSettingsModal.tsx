@@ -19,10 +19,7 @@
 import { Card } from "@components/Card";
 import { Flex } from "@components/Flex";
 import { Switch } from "@components/Switch";
-import { SelectOption } from "@vencord/discord-types";
-import { Forms, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
-
-import { MicrophoneProfile, MicrophoneStore } from "../../betterMicrophone.desktop/stores";
+import { MicrophoneProfile, MicrophoneStore } from "@userplugins/betterMicrophone.desktop/stores";
 import {
     ProfilableStore,
     SettingsModal,
@@ -32,8 +29,10 @@ import {
     SettingsModalProfilesCard,
     validateNumberInput,
     validateTextInputNumber
-} from "../../philsPluginLibrary";
-import { Styles } from "../../philsPluginLibrary/styles";
+} from "@userplugins/philsPluginLibrary";
+import { Styles } from "@userplugins/philsPluginLibrary/styles";
+import { SelectOption } from "@vencord/discord-types";
+import { Forms, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
 
 const simpleVoiceBitrates: readonly SelectOption[] = [
     {

@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as types from "@userplugins/philsPluginLibrary/types";
 import { filters, waitFor } from "@webpack";
-
-import * as types from "../../philsPluginLibrary/types";
 
 export let utils: types.Utils;
 

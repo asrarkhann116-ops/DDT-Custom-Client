@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { CaptionDefinition } from "../types";
+import type { CaptionDefinition } from "@userplugins/gifMaker/types";
 
 export const noneCaption: CaptionDefinition = {
     type: "none",

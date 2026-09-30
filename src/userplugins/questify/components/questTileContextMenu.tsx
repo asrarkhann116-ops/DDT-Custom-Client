@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { addIgnoredQuest, questIsIgnored, removeIgnoredQuest } from "@userplugins/questify/settings/ignoredQuests";
+import { rerenderQuests } from "@userplugins/questify/settings/rerender";
+import { canAutoCompleteQuest, getQuestAutoCompleteEntry, processQuestForAutoComplete, stopQuestAutoComplete } from "@userplugins/questify/utils/completion";
+import { q } from "@userplugins/questify/utils/ui";
 import { copyToClipboard } from "@utils/clipboard";
 import type { Quest } from "@vencord/discord-types";
 import { Menu } from "@webpack/common";
 import type { ReactNode } from "react";
-
-import { addIgnoredQuest, questIsIgnored, removeIgnoredQuest } from "../settings/ignoredQuests";
-import { rerenderQuests } from "../settings/rerender";
-import { canAutoCompleteQuest, getQuestAutoCompleteEntry, processQuestForAutoComplete, stopQuestAutoComplete } from "../utils/completion";
-import { q } from "../utils/ui";
 
 export function QuestTileContextMenu(
     children: ReactNode[],

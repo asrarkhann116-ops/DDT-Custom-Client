@@ -9,7 +9,7 @@
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { Button, Forms, Modal, openModal, React, Select, Switch, TextArea, TextInput, Toasts } from "@webpack/common";
+import { Button, Forms, Modal, openModal, React, Toasts } from "@webpack/common";
 
 const settings = definePluginSettings({
     showInToolbar: {
@@ -68,7 +68,7 @@ function DevToolsPanel() {
         <div style={{ padding: "20px" }}>
             <Forms.FormTitle tag="h3">API Inspector</Forms.FormTitle>
             <Forms.FormText>Monitor Discord API requests in real-time</Forms.FormText>
-            
+
             <div style={{ marginTop: "15px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 <Button
                     size={Button.Sizes.SMALL}
@@ -118,10 +118,10 @@ function DevToolsPanel() {
                     </Forms.FormText>
                 ) : (
                     apiRequests.slice(0, 50).map(req => (
-                        <div key={req.id} style={{ 
-                            padding: "10px", 
-                            marginBottom: "8px", 
-                            background: "var(--background-secondary)", 
+                        <div key={req.id} style={{
+                            padding: "10px",
+                            marginBottom: "8px",
+                            background: "var(--background-secondary)",
                             borderRadius: "4px",
                             borderLeft: `3px solid ${req.status >= 200 && req.status < 300 ? "var(--green-360)" : "var(--red-400)"}`
                         }}>
@@ -151,7 +151,7 @@ function DevToolsPanel() {
         <div style={{ padding: "20px" }}>
             <Forms.FormTitle tag="h3">Event Logger</Forms.FormTitle>
             <Forms.FormText>Monitor Discord client events</Forms.FormText>
-            
+
             <div style={{ marginTop: "15px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 <Button
                     size={Button.Sizes.SMALL}
@@ -201,10 +201,10 @@ function DevToolsPanel() {
                     </Forms.FormText>
                 ) : (
                     events.slice(0, 50).map(event => (
-                        <div key={event.id} style={{ 
-                            padding: "8px", 
-                            marginBottom: "6px", 
-                            background: "var(--background-secondary)", 
+                        <div key={event.id} style={{
+                            padding: "8px",
+                            marginBottom: "6px",
+                            background: "var(--background-secondary)",
                             borderRadius: "4px",
                             fontSize: "13px"
                         }}>
@@ -233,7 +233,7 @@ function DevToolsPanel() {
             <Forms.FormText style={{ color: "var(--text-danger)" }}>
                 ⚠️ Never share your Discord token! It provides full account access.
             </Forms.FormText>
-            
+
             <div style={{ marginTop: "15px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 <Button
                     size={Button.Sizes.SMALL}
@@ -283,10 +283,10 @@ function DevToolsPanel() {
                     </Forms.FormText>
                 ) : (
                     accounts.map((acc: any) => (
-                        <div key={acc.id} style={{ 
-                            padding: "12px", 
-                            marginBottom: "8px", 
-                            background: "var(--background-secondary)", 
+                        <div key={acc.id} style={{
+                            padding: "12px",
+                            marginBottom: "8px",
+                            background: "var(--background-secondary)",
                             borderRadius: "4px"
                         }}>
                             <div style={{ fontWeight: "bold", marginBottom: "5px", color: "var(--header-primary)" }}>
@@ -335,7 +335,7 @@ function DevToolsPanel() {
         <div style={{ padding: "20px" }}>
             <Forms.FormTitle tag="h3">Developer Console</Forms.FormTitle>
             <Forms.FormText>Quick access to developer tools</Forms.FormText>
-            
+
             <div style={{ marginTop: "20px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
                 <Button
                     onClick={() => {
@@ -349,7 +349,7 @@ function DevToolsPanel() {
                 >
                     📖 Show Help
                 </Button>
-                
+
                 <Button
                     onClick={() => {
                         console.clear();

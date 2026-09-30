@@ -1,18 +1,24 @@
 /*
+ * DDT Discord Client, a Discord client mod
+ * Copyright (c) 2024 DDT Development Team and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
  * DDT Custom Client - Account Switcher
  * Copyright (c) 2024 DDT Team
- * 
+ *
  * Switch between Discord accounts using access tokens
  * Features: Token validation, encrypted storage, one-click switching
  */
 
+import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import { openModal } from "@utils/modal";
 import definePlugin, { OptionType } from "@utils/types";
 import { Button, Forms, React, TextInput, Tooltip } from "@webpack/common";
-import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 
 // Import modal components properly
 const { ModalRoot, ModalHeader, ModalContent, ModalCloseButton } = require("@utils/modal");
@@ -100,7 +106,7 @@ async function switchAccount(token: string) {
         const decryptedToken = xorDecrypt(token);
         console.log("🔥 [DEBUG] Token decrypted, length:", decryptedToken?.length);
         logger.info("🔄 Starting account switch...");
-        
+
         let success = false;
 
         // Method 1: Vencord's Webpack Token Module (PRIMARY - PROVEN WORKING)
@@ -108,7 +114,7 @@ async function switchAccount(token: string) {
         try {
             const { Webpack } = Vencord;
             const tokenModule = Webpack.findByProps("getToken", "setToken");
-            
+
             if (tokenModule?.setToken) {
                 console.log("🔥 [DEBUG] Found setToken via Vencord.Webpack!");
                 tokenModule.setToken(decryptedToken);
@@ -147,7 +153,7 @@ async function switchAccount(token: string) {
             console.log("🔥 [DEBUG] RELOADING NOW!");
             location.reload();
         }, 1000);
-        
+
     } catch (error) {
         console.error("🔥 [DEBUG] Fatal error in switchAccount:", error);
         logger.error("❌ Fatal: Failed to switch account:", error);
@@ -319,16 +325,16 @@ function AccountCard({
                 }}
             />
             <div style={{ flex: 1 }}>
-                <div style={{ 
-                    fontWeight: "600", 
+                <div style={{
+                    fontWeight: "600",
                     color: "#ffffff",
                     fontSize: "16px",
                     marginBottom: "4px"
                 }}>
                     {displayName}
                     {isCurrent && (
-                        <span style={{ 
-                            marginLeft: "10px", 
+                        <span style={{
+                            marginLeft: "10px",
                             color: "#5865f2",
                             fontSize: "12px",
                             fontWeight: "500",
@@ -392,7 +398,7 @@ function AccountSwitcherModal({ modalProps, currentUserId }: { modalProps: any; 
     const handleSwitch = async (account: SavedAccount) => {
         console.log("🔥 [DEBUG] handleSwitch called for:", account.username);
         logger.info(`🔥 Attempting to switch to ${account.username}#${account.discriminator}`);
-        
+
         if (confirm(`Switch to ${account.username}#${account.discriminator}?\n\nDiscord will reload.`)) {
             console.log("🔥 [DEBUG] User confirmed switch");
             try {
@@ -497,7 +503,7 @@ function getCurrentUserId(): string {
     try {
         const token = localStorage.getItem("token");
         if (!token) return "";
-        
+
         // Decode JWT token to get user ID
         const base64 = token.replace(/"/g, "").split(".")[0];
         const decoded = atob(base64);
@@ -522,7 +528,7 @@ function getCurrentUserId(): string {
         try {
             const userInfo = await validateToken(token);
             const accounts = loadAccounts();
-            
+
             const newAccount: SavedAccount = {
                 id: userInfo.id,
                 username: userInfo.username,
@@ -651,11 +657,11 @@ export default definePlugin({
                             transition: "all 0.15s ease",
                             margin: "4px 0"
                         }}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={e => {
                             e.currentTarget.style.backgroundColor = "#404249";
                             e.currentTarget.style.transform = "scale(1.05)";
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseLeave={e => {
                             e.currentTarget.style.backgroundColor = "transparent";
                             e.currentTarget.style.transform = "scale(1)";
                         }}

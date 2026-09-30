@@ -17,10 +17,9 @@
 */
 
 import { Heading } from "@components/Heading";
+import { buildEmbed, decrypt } from "@userplugins/invisibleChat.desktop/index";
 import { RenderModalProps } from "@vencord/discord-types";
 import { Modal, openModal, React, TextInput } from "@webpack/common";
-
-import { buildEmbed, decrypt } from "../index";
 
 export function DecModal(props: RenderModalProps & { message: any; }) {
     const encryptedMessage: string = props?.message?.content;

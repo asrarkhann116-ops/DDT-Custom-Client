@@ -19,19 +19,18 @@
 import { findGroupChildrenByChildId, type NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { definePluginSettings } from "@api/Settings";
 import { MainSettingsIcon } from "@components/Icons";
+import { PluginInfo } from "@userplugins/betterScreenshare.desktop/constants";
+import { openScreenshareModal } from "@userplugins/betterScreenshare.desktop/modals";
+import { ScreenshareAudioPatcher, ScreensharePatcher } from "@userplugins/betterScreenshare.desktop/patchers";
+import { GoLivePanelWrapper, replacedSubmitFunction } from "@userplugins/betterScreenshare.desktop/patches";
+import { initScreenshareAudioStore, initScreenshareStore, type ScreenshareProfile, screenshareStore } from "@userplugins/betterScreenshare.desktop/stores";
+import { Emitter, ScreenshareSettingsIcon } from "@userplugins/philsPluginLibrary";
 import { Devs } from "@utils/constants";
 import { getIntlMessage } from "@utils/discord";
 import definePlugin, { OptionType } from "@utils/types";
 import type { RenderModalProps } from "@vencord/discord-types";
 import { findComponentByCodeLazy } from "@webpack";
 import { ChannelRTCStore, Forms, Menu, Modal, openModal, showToast, TextInput, Toasts, UserStore, useState } from "@webpack/common";
-
-import { PluginInfo } from "../betterScreenshare.desktop/constants";
-import { openScreenshareModal } from "../betterScreenshare.desktop/modals";
-import { ScreenshareAudioPatcher, ScreensharePatcher } from "../betterScreenshare.desktop/patchers";
-import { GoLivePanelWrapper, replacedSubmitFunction } from "../betterScreenshare.desktop/patches";
-import { initScreenshareAudioStore, initScreenshareStore, type ScreenshareProfile, screenshareStore } from "../betterScreenshare.desktop/stores";
-import { Emitter, ScreenshareSettingsIcon } from "../philsPluginLibrary";
 
 const Button = findComponentByCodeLazy(".NONE,disabled:", ".PANEL_BUTTON");
 

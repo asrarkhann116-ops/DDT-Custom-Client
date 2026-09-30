@@ -8,15 +8,14 @@ import "./QuestButton.css";
 
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Flex } from "@components/Flex";
+import { toggleQuestPanel } from "@userplugins/ddtQuestAutomator/questState";
+import settings from "@userplugins/ddtQuestAutomator/settings";
+import { QuestsStore } from "@userplugins/ddtQuestAutomator/stores";
 import {
     findByCodeLazy,
     findComponentByCodeLazy,
 } from "@webpack";
 import { NavigationRouter, Tooltip, useEffect, useState } from "@webpack/common";
-
-import { toggleQuestPanel } from "../questState";
-import settings from "../settings";
-import { QuestsStore } from "../stores";
 
 const QuestIcon = findByCodeLazy('"M7.5 21.7a8.95');
 const TopBarButton = findComponentByCodeLazy("badgePosition");

@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getExcludedLanguages, settings } from "@userplugins/messageTranslate/settings";
+import { CachedTranslation, TranslateResponse } from "@userplugins/messageTranslate/types";
 import { Logger } from "@utils/Logger";
-
-import { getExcludedLanguages, settings } from "../settings";
-import { CachedTranslation, TranslateResponse } from "../types";
 
 const logger = new Logger("MessageTranslate");
 

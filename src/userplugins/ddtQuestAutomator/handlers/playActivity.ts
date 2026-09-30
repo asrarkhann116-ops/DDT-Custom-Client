@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { setQuestRuntime } from "@userplugins/ddtQuestAutomator/questState";
+import settings from "@userplugins/ddtQuestAutomator/settings";
+import { readTaskProgress } from "@userplugins/ddtQuestAutomator/utils/quest";
+import { callWithRetry } from "@userplugins/ddtQuestAutomator/utils/retry";
 import { findByPropsLazy } from "@webpack";
 
-import { setQuestRuntime } from "../questState";
-import settings from "../settings";
-import { readTaskProgress } from "../utils/quest";
-import { callWithRetry } from "../utils/retry";
 import { QuestHandler } from "./types";
 
 const VoiceActions = findByPropsLazy("selectVoiceChannel", "selectChannel") as { selectVoiceChannel?: (channelId: string) => void; };

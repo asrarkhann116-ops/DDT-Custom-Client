@@ -7,13 +7,13 @@
 import { BaseText } from "@components/BaseText";
 import { Button } from "@components/Button";
 import { Flex } from "@components/Flex";
+import { sid } from "@song-spotlight/api/util";
 import { listData } from "@userplugins/songSpotlight.desktop/lib/api";
 import { useAuthorizationStore } from "@userplugins/songSpotlight.desktop/lib/stores/AuthorizationStore";
 import { useSongStore } from "@userplugins/songSpotlight.desktop/lib/stores/SongStore";
 import { cl } from "@userplugins/songSpotlight.desktop/lib/utils";
 import { Spinner, WidgetClasses } from "@userplugins/songSpotlight.desktop/ui/common";
 import { openSettingsModal } from "@userplugins/songSpotlight.desktop/ui/settings";
-import { sid } from "@song-spotlight/api/util";
 import { classes } from "@utils/misc";
 import { User } from "@vencord/discord-types";
 import { React, ScrollerThin, useEffect, UserStore, useState } from "@webpack/common";

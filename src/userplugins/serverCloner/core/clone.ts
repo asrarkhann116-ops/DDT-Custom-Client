@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { state, throwIfCancelled } from "@userplugins/serverCloner/store";
+import { CloneOptions } from "@userplugins/serverCloner/types";
+import { fetchAssetBase64, fetchGuildChannels, fetchGuildData, fetchGuildRoles } from "@userplugins/serverCloner/utils/api";
+import { translateError } from "@userplugins/serverCloner/utils/errorHandler";
+import { replaceEmojis, sleep } from "@userplugins/serverCloner/utils/helpers";
+import { completeMainProgress, createMainProgressNotification, formatElapsed, notify, updateProgress, updateWithTime } from "@userplugins/serverCloner/utils/notifications";
+import { TaskQueue } from "@userplugins/serverCloner/utils/TaskQueue";
 import { Guild } from "@vencord/discord-types";
 import { Constants, GuildStore, IconUtils, NavigationRouter, RestAPI } from "@webpack/common";
 
-import { state, throwIfCancelled } from "../store";
-import { CloneOptions } from "../types";
-import { fetchAssetBase64, fetchGuildChannels, fetchGuildData, fetchGuildRoles } from "../utils/api";
-import { translateError } from "../utils/errorHandler";
-import { replaceEmojis, sleep } from "../utils/helpers";
-import { completeMainProgress, createMainProgressNotification, formatElapsed, notify, updateProgress, updateWithTime } from "../utils/notifications";
-import { TaskQueue } from "../utils/TaskQueue";
 import { cloneSoundboard, cloneStickers } from "./cloneAssets";
 import { cloneChannels } from "./cloneChannels";
 import { cloneOnboarding } from "./cloneOnboarding";

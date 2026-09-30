@@ -207,13 +207,13 @@ function patchWebSocket() {
                 };
 
                 addPacket(packet);
-                
+
                 // Type narrowing: convert SharedArrayBuffer to regular ArrayBuffer
                 let bodyData: string | Blob | BufferSource;
-                
+
                 // Check if SharedArrayBuffer exists in this context
-                const hasSharedArrayBuffer = typeof SharedArrayBuffer !== 'undefined';
-                
+                const hasSharedArrayBuffer = typeof SharedArrayBuffer !== "undefined";
+
                 if (hasSharedArrayBuffer && data instanceof SharedArrayBuffer) {
                     // Copy SharedArrayBuffer to ArrayBuffer (WebSocket doesn't accept SharedArrayBuffer)
                     const regularBuffer = new ArrayBuffer(data.byteLength);
@@ -237,7 +237,7 @@ function patchWebSocket() {
                         bodyData = view.buffer as ArrayBuffer;
                     }
                 }
-                
+
                 return originalSend(bodyData);
             };
 
@@ -352,13 +352,13 @@ function getOpcodeName(opcode: number): string {
 
     stats: () => {
         const stats = (window as any).NetworkInspector.getStats();
-        
-        console.log(`[Network Inspector] Network Statistics:`);
+
+        console.log("[Network Inspector] Network Statistics:");
         console.log(`  Total Packets: ${stats.totalPackets}`);
         console.log(`  Sent: ${stats.sentPackets} (${(stats.sentBytes / 1024).toFixed(2)} KB)`);
         console.log(`  Received: ${stats.receivedPackets} (${(stats.receivedBytes / 1024).toFixed(2)} KB)`);
         console.log(`  Total Bandwidth: ${(stats.totalBytes / 1024).toFixed(2)} KB`);
-        
+
         if (stats.opcodes.length > 0) {
             console.log("\n  By Opcode:");
             console.table(stats.opcodes);
@@ -406,7 +406,7 @@ function getOpcodeName(opcode: number): string {
         }, 100);
 
         console.log(`[Network Inspector] Watching opcode ${opcode} (${getOpcodeName(opcode)})`);
-        
+
         return () => {
             clearInterval(interval);
             console.log(`[Network Inspector] Stopped watching opcode ${opcode}`);

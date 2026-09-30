@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "@userplugins/richPresence/settings";
+import { NameFormat } from "@userplugins/richPresence/types";
+import { SfmResponse, SfmTrackData } from "@userplugins/richPresence/types/statsfm";
 import { Logger } from "@utils/Logger";
 import { Activity, ActivityButton } from "@vencord/discord-types";
 import { ActivityFlags, ActivityType } from "@vencord/discord-types/enums";
 import { findByPropsLazy } from "@webpack";
 import { ApplicationAssetUtils, FluxDispatcher } from "@webpack/common";
-
-import { settings } from "../settings";
-import { NameFormat } from "../types";
-import { SfmResponse, SfmTrackData } from "../types/statsfm";
 
 const APPLICATION_ID = "1325126169179197500";
 const PLACEHOLDER_ID = "2a96cbd8b46e442fc41c2b86b821562f";

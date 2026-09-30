@@ -7,14 +7,13 @@
 import { Flex } from "@components/Flex";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
+import { settings } from "@userplugins/gifCollections/settings";
+import { Collection, Gif } from "@userplugins/gifCollections/types";
+import { cache_collections, createCollection, getItemCollectionNameFromId, moveGifToCollection, renameCollection } from "@userplugins/gifCollections/utils/collectionManager";
+import { cl, stripPrefix } from "@userplugins/gifCollections/utils/misc";
 import { classes } from "@utils/misc";
 import { RenderModalProps } from "@vencord/discord-types";
 import { Button, FluxDispatcher, Modal, openModal, TextInput, useCallback, useState } from "@webpack/common";
-
-import { settings } from "../settings";
-import { Collection, Gif } from "../types";
-import { cache_collections, createCollection, getItemCollectionNameFromId, moveGifToCollection, renameCollection } from "../utils/collectionManager";
-import { cl, stripPrefix } from "../utils/misc";
 
 export function openCollectionInfoModal(collection: Collection) {
     openModal(props => (

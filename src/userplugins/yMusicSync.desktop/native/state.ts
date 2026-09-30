@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { PlayerSnapshot, StationEntry, YnisonStatus } from "@userplugins/yMusicSync.desktop/types";
 import { Logger } from "@utils/Logger";
 
-import type { PlayerSnapshot, StationEntry, YnisonStatus } from "../types";
 import type { YnisonSocket } from "./ynisonSocket";
 import type { YnisonState } from "./ynisonTypes";
 

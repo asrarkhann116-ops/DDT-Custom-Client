@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { ExtendedMessage } from "@userplugins/scheduledMessages/types";
+import { phantomMessageMap } from "@userplugins/scheduledMessages/utils";
 import { classNameFactory } from "@utils/css";
 
-import { ExtendedMessage } from "../types";
-import { phantomMessageMap } from "../utils";
 import { TimerIcon } from "./Icons";
 
 const cl = classNameFactory("vc-scheduled-msg-");

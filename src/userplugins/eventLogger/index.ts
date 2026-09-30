@@ -145,14 +145,14 @@ const MONITORED_EVENTS = [
     "MESSAGE_REACTION_ADD",
     "MESSAGE_REACTION_REMOVE",
     "MESSAGE_ACK",
-    
+
     // Channel events
     "CHANNEL_SELECT",
     "CHANNEL_CREATE",
     "CHANNEL_UPDATE",
     "CHANNEL_DELETE",
     "CHANNEL_PINS_UPDATE",
-    
+
     // Guild events
     "GUILD_CREATE",
     "GUILD_UPDATE",
@@ -166,48 +166,48 @@ const MONITORED_EVENTS = [
     "GUILD_ROLE_DELETE",
     "GUILD_BAN_ADD",
     "GUILD_BAN_REMOVE",
-    
+
     // Voice events
     "VOICE_STATE_UPDATE",
     "VOICE_CHANNEL_SELECT",
     "VOICE_SERVER_UPDATE",
     "AUDIO_TOGGLE_SELF_MUTE",
     "AUDIO_TOGGLE_SELF_DEAF",
-    
+
     // User/Presence events
     "PRESENCE_UPDATE",
     "USER_UPDATE",
     "USER_SETTINGS_UPDATE",
     "USER_NOTE_UPDATE",
     "USER_GUILD_SETTINGS_UPDATE",
-    
+
     // Relationship events
     "RELATIONSHIP_ADD",
     "RELATIONSHIP_REMOVE",
     "RELATIONSHIP_UPDATE",
-    
+
     // Typing events
     "TYPING_START",
-    
+
     // Connection events
     "CONNECTION_OPEN",
     "CONNECTION_CLOSED",
-    
+
     // Notification events
     "NOTIFICATION_CREATE",
-    
+
     // Call events
     "CALL_CREATE",
     "CALL_UPDATE",
     "CALL_DELETE",
-    
+
     // Experiment events
     "EXPERIMENT_BUCKET_OVERRIDE",
-    
+
     // Modal events
     "MODAL_PUSH",
     "MODAL_POP",
-    
+
     // Layer events
     "LAYER_PUSH",
     "LAYER_POP"
@@ -218,7 +218,7 @@ function subscribeToEvents() {
         const handler = (data: any) => {
             addEvent(eventType, data, data);
         };
-        
+
         FluxDispatcher.subscribe(eventType, handler);
         state.subscriptions.set(eventType, handler);
     });
@@ -234,43 +234,43 @@ function unsubscribeFromEvents() {
 // Global API for console access
 (window as any).EventLogger = {
     getEvents: () => state.events,
-    
+
     clearEvents: () => {
         state.events = [];
         console.log("[Event Logger] Cleared all events");
     },
-    
+
     getEvent: (id: string) => state.events.find(e => e.id === id),
-    
+
     filterByType: (type: string) => {
         return state.events.filter(e => e.type === type);
     },
-    
+
     filterByTimeRange: (startTime: number, endTime: number) => {
         return state.events.filter(e => e.timestamp >= startTime && e.timestamp <= endTime);
     },
-    
+
     getEventTypes: () => {
         const types = new Set(state.events.map(e => e.type));
         return Array.from(types).sort();
     },
-    
+
     stats: () => {
         const total = state.events.length;
         const byType = state.events.reduce((acc, e) => {
             acc[e.type] = (acc[e.type] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
-        
+
         const sortedTypes = Object.entries(byType)
             .sort(([, a], [, b]) => b - a)
             .slice(0, 10);
-        
+
         console.log(`[Event Logger] Total Events: ${total}`);
         console.log("[Event Logger] Top 10 Event Types:");
         console.table(Object.fromEntries(sortedTypes));
     },
-    
+
     exportEvents: (filename?: string) => {
         const data = JSON.stringify(state.events, null, 2);
         const blob = new Blob([data], { type: "application/json" });
@@ -282,7 +282,7 @@ function unsubscribeFromEvents() {
         URL.revokeObjectURL(url);
         console.log("[Event Logger] Exported events");
     },
-    
+
     searchEvents: (query: string) => {
         const lowerQuery = query.toLowerCase();
         return state.events.filter(e => {
@@ -290,13 +290,13 @@ function unsubscribeFromEvents() {
             return e.type.toLowerCase().includes(lowerQuery) || dataStr.includes(lowerQuery);
         });
     },
-    
+
     addFilter: (eventType: string) => {
         state.filters.types.add(eventType);
         state.filters.enabled = true;
         console.log(`[Event Logger] Added filter for ${eventType}`);
     },
-    
+
     removeFilter: (eventType: string) => {
         state.filters.types.delete(eventType);
         if (state.filters.types.size === 0) {
@@ -304,15 +304,15 @@ function unsubscribeFromEvents() {
         }
         console.log(`[Event Logger] Removed filter for ${eventType}`);
     },
-    
+
     clearFilters: () => {
         state.filters.types.clear();
         state.filters.enabled = false;
         console.log("[Event Logger] Cleared all filters");
     },
-    
+
     getFilters: () => Array.from(state.filters.types),
-    
+
     watchEvent: (eventType: string, callback: (event: DiscordEvent) => void) => {
         const handler = (data: any) => {
             if (shouldLogEvent(eventType)) {
@@ -326,21 +326,21 @@ function unsubscribeFromEvents() {
                 callback(event);
             }
         };
-        
+
         FluxDispatcher.subscribe(eventType, handler);
         console.log(`[Event Logger] Started watching ${eventType}`);
-        
+
         return () => {
             FluxDispatcher.unsubscribe(eventType, handler);
             console.log(`[Event Logger] Stopped watching ${eventType}`);
         };
     },
-    
+
     timeline: (minutes: number = 5) => {
         const now = Date.now();
         const startTime = now - (minutes * 60 * 1000);
         const events = state.events.filter(e => e.timestamp >= startTime);
-        
+
         console.log(`[Event Logger] Timeline (Last ${minutes} minutes):`);
         events.reverse().forEach(e => {
             const time = new Date(e.timestamp).toLocaleTimeString();

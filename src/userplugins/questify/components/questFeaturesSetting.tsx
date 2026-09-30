@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getQuestifySettings, useQuestifySettings } from "@userplugins/questify/settings/access";
+import { resetDangerousSettings } from "@userplugins/questify/settings/dangerous";
+import { autoCompleteQuestTaskTypes, defaultAutoCompleteQuestTypes, isDesktopCompatible } from "@userplugins/questify/settings/def";
+import { Alerts, q } from "@userplugins/questify/utils/ui";
 import { QuestTaskType } from "@vencord/discord-types/enums";
 import type { JSX } from "react";
 
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import { resetDangerousSettings } from "../settings/dangerous";
-import { autoCompleteQuestTaskTypes, defaultAutoCompleteQuestTypes, isDesktopCompatible } from "../settings/def";
-import { Alerts, q } from "../utils/ui";
 import { ManaButton, type ManaSelectOption, SettingsCard, SettingsDescription, SettingsHeader, SettingsNotice, SettingsParagraph, SettingsSelect, SettingsSubheader, SettingsSubtleSwitch } from "./shared";
 
 type QuestDisableSettingKey =

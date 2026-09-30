@@ -16,14 +16,14 @@ import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings";
 import { SpecialCard } from "@components/settings/SpecialCard";
 import { Switch } from "@components/Switch";
+import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
+import { removeKamidereRuntimeTask, upsertKamidereRuntimeTask } from "@userplugins/_kamidereCompat/runtimeActivity";
 import { classNameFactory } from "@utils/css";
 import { Margins } from "@utils/margins";
 import { sleep } from "@utils/misc";
 import type { RenderModalProps, User } from "@vencord/discord-types";
 import { Alerts, ChannelStore, IconUtils, MessageActions, Modal, NavigationRouter, openModal, React, Select, TextInput, Toasts, UserStore, UserUtils, useStateFromStores } from "@webpack/common";
 
-import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
-import { removeKamidereRuntimeTask, upsertKamidereRuntimeTask } from "@userplugins/_kamidereCompat/runtimeActivity";
 import { parseProtectedDmChannels, parseProtectedDmUserIds, SendTrailPurgeTarget,settings } from "./settings";
 import { clearSentTrailRecords, removeSentTrailRecord, useSentTrailRecords } from "./store";
 import type { SentTrailMediaItem, SentTrailRecord } from "./types";

@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { CloneChannel, CloneRole, FullGuildData, PermissionOverwrite } from "@userplugins/serverCloner/core/types";
+import { state } from "@userplugins/serverCloner/store";
 import { Channel } from "@vencord/discord-types";
 import { GuildChannelStore, GuildRoleStore, GuildStore, RestAPI } from "@webpack/common";
 
-import { CloneChannel, CloneRole, FullGuildData, PermissionOverwrite } from "../core/types";
-import { state } from "../store";
 import { arrayBufferToBase64, isRecord } from "./helpers";
 
 const MAX_ASSET_BYTES = 10 * 1024 * 1024;

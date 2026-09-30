@@ -144,7 +144,7 @@ export function startDependenciesRecursive(p: Plugin) {
             logger.warn(`Dependency ${d} not found in settings, skipping`);
             return;
         }
-        
+
         if (!settings[d].enabled) {
             const dep = Plugins[d];
             startDependenciesRecursive(dep);

@@ -18,13 +18,12 @@
 
 import { Settings } from "@api/Settings";
 import { Flex } from "@components/Flex";
+import { AudioSourceSelect, OpenScreenshareSettingsButton } from "@userplugins/betterScreenshare.desktop/components";
+import { PluginInfo } from "@userplugins/betterScreenshare.desktop/constants";
+import Plugin from "@userplugins/betterScreenshare.desktop/index";
+import { screenshareStore } from "@userplugins/betterScreenshare.desktop/stores";
+import { SettingsModalCard, SettingsModalCardItem } from "@userplugins/philsPluginLibrary";
 import { React } from "@webpack/common";
-
-import { AudioSourceSelect, OpenScreenshareSettingsButton } from "../../betterScreenshare.desktop/components";
-import { PluginInfo } from "../../betterScreenshare.desktop/constants";
-import Plugin from "../../betterScreenshare.desktop/index";
-import { screenshareStore } from "../../betterScreenshare.desktop/stores";
-import { SettingsModalCard, SettingsModalCardItem } from "../../philsPluginLibrary";
 
 const ReplacedStreamSettings = () => {
     const { use } = screenshareStore;

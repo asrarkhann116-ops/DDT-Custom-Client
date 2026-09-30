@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { PlayerSnapshot, YnisonEvent, YnisonStatus } from "../types";
+import type { PlayerSnapshot, YnisonEvent, YnisonStatus } from "@userplugins/yMusicSync.desktop/types";
+
 import { MAX_EVENTS } from "./constants";
 import { state } from "./state";
 

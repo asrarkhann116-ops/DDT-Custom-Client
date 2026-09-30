@@ -16,12 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { MicrophoneSettingsModal } from "@userplugins/betterMicrophone.desktop/components";
+import { PluginInfo } from "@userplugins/betterMicrophone.desktop/constants";
+import Plugin from "@userplugins/betterMicrophone.desktop/index";
+import { microphoneStore } from "@userplugins/betterMicrophone.desktop/stores";
 import { openModalLazy } from "@webpack/common";
-
-import { MicrophoneSettingsModal } from "../../betterMicrophone.desktop/components";
-import { PluginInfo } from "../../betterMicrophone.desktop/constants";
-import Plugin from "../../betterMicrophone.desktop/index";
-import { microphoneStore } from "../../betterMicrophone.desktop/stores";
 
 const onMicrophoneModalDone = () => {
     const { microphonePatcher } = Plugin;

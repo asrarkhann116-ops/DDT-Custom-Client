@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { registerCommands } from "../api/registry";
+import { registerCommands } from "@userplugins/commandPalette/api/registry";
+
 import { loadCustomCommands, registerCustomCommands } from "./custom";
-import { discordCommands } from "./discordActions";
 import { DDTCommands } from "./DDT";
+import { discordCommands } from "./discordActions";
 import { navigationCommands } from "./navigation";
 import { pluginCommands } from "./pluginManagement";
 import { sendDmCommand } from "./sendDm";

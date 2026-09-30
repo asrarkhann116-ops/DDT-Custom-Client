@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { state } from "../store";
+import { state } from "@userplugins/serverCloner/store";
+
 import { isRecord, randomDelay, sleep } from "./helpers";
 
 function getNumber(error: unknown, key: string): number | undefined {

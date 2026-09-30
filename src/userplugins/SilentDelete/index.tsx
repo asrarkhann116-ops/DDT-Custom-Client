@@ -8,14 +8,13 @@ import { ApplicationCommandInputType, ApplicationCommandOptionType, sendBotMessa
 import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { addMessagePopoverButton as addButton, removeMessagePopoverButton as removeButton } from "@api/MessagePopover";
 import { definePluginSettings } from "@api/Settings";
+import { SilentEditIcon, startSilentEdit } from "@userplugins/SilentEdit";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import { sleep } from "@utils/misc";
 import definePlugin, { OptionType } from "@utils/types";
 import { Message } from "@vencord/discord-types";
 import { ChannelStore, Constants, Menu, RestAPI, UserStore } from "@webpack/common";
-
-import { SilentEditIcon, startSilentEdit } from "../SilentEdit";
 
 interface SilentDeleteMessage extends Message {
     deleted?: boolean;

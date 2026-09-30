@@ -5,10 +5,9 @@
  */
 
 import { DeleteIcon } from "@components/Icons";
+import { Entry, getFile, Group, Kind } from "@userplugins/betterImageEditor/library";
 import { classNameFactory } from "@utils/css";
 import { React, useCallback, useEffect, useRef, useState } from "@webpack/common";
-
-import { Entry, getFile, Group, Kind } from "../library";
 
 export const cl = classNameFactory("vc-bie-");
 

@@ -678,7 +678,7 @@ export const Devs: Record<string, any> = /* #__PURE__*/ Object.freeze({
         name: "irritably",
         id: 0n
     }
-} as Record<string, Dev>);
+} satisfies Record<string, Dev>);
 
 // iife so #__PURE__ works correctly
 export const DevsById = /* #__PURE__*/ (() =>

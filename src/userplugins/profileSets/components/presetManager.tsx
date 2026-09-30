@@ -6,13 +6,13 @@
 
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
+import { cl, settings } from "@userplugins/profileSets/index";
+import { exportPresets, ImportDecision, importPresets, savePreset } from "@userplugins/profileSets/utils/actions";
+import { loadPresetAsPending } from "@userplugins/profileSets/utils/profile";
+import { loadPresets, presets, PresetSection, setCurrentPresetIndex } from "@userplugins/profileSets/utils/storage";
 import { classes } from "@utils/misc";
 import { openModal, React, SelectedGuildStore, TextInput, useStateFromStores } from "@webpack/common";
 
-import { cl, settings } from "../index";
-import { exportPresets, ImportDecision, importPresets, savePreset } from "../utils/actions";
-import { loadPresetAsPending } from "../utils/profile";
-import { loadPresets, presets, PresetSection, setCurrentPresetIndex } from "../utils/storage";
 import { ImportProfilesModal } from "./confirmModal";
 import { PresetList } from "./presetList";
 

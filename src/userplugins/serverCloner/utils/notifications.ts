@@ -6,9 +6,8 @@
 
 import { popNotice, showNotice } from "@api/Notices";
 import { showNotification } from "@api/Notifications";
+import { state } from "@userplugins/serverCloner/store";
 import { Constants, RestAPI } from "@webpack/common";
-
-import { state } from "../store";
 
 let progressNoticeOpen = false;
 let progressTitle = "";

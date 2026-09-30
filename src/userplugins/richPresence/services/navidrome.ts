@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "@userplugins/richPresence/settings";
 import { Logger } from "@utils/Logger";
 import { parseUrl } from "@utils/misc";
 import { Activity } from "@vencord/discord-types";
 import { ActivityFlags, ActivityStatusDisplayType } from "@vencord/discord-types/enums";
 import { ApplicationAssetUtils, FluxDispatcher } from "@webpack/common";
 import md5 from "md5";
-
-import { settings } from "../settings";
 
 function md5Hex(str: string): string {
     return md5(str);

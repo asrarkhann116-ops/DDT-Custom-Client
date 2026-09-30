@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getQuestifySettings, useQuestifySettings } from "@userplugins/questify/settings/access";
+import { defaultQuestTileClaimedColorSetting, defaultQuestTileExpiredColorSetting, defaultQuestTileIgnoredColorSetting, defaultQuestTileUnclaimedColorSetting, type QuestTileColorSetting, type QuestTileGradient } from "@userplugins/questify/settings/def";
+import { rerenderQuests } from "@userplugins/questify/settings/rerender";
+import { getQuestTileClasses, getQuestTileStyle } from "@userplugins/questify/utils/questTiles";
+import { q } from "@userplugins/questify/utils/ui";
 import type { Quest } from "@vencord/discord-types";
 import { findComponentByCodeLazy } from "@webpack";
 import { QuestStore, useEffect, useMemo, useRef, useState, useStateFromStores } from "@webpack/common";
 import type { JSX, SyntheticEvent } from "react";
 
 import { enabledOnStartup } from "..";
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import { defaultQuestTileClaimedColorSetting, defaultQuestTileExpiredColorSetting, defaultQuestTileIgnoredColorSetting, defaultQuestTileUnclaimedColorSetting, type QuestTileColorSetting, type QuestTileGradient } from "../settings/def";
-import { rerenderQuests } from "../settings/rerender";
-import { getQuestTileClasses, getQuestTileStyle } from "../utils/questTiles";
-import { q } from "../utils/ui";
 import { ManaButton, type ManaSelectOption, SettingsCard, SettingsColorPicker, SettingsDescription, SettingsHeader, SettingsRow, SettingsRowItem, SettingsSelect, SettingsSubheader } from "./shared";
 
 const QuestTile = findComponentByCodeLazy(".rowIndex,trackGuildAndChannelMetadata") as React.ComponentType<{

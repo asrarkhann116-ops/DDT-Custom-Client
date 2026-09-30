@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { state, throwIfCancelled } from "@userplugins/serverCloner/store";
+import { handleCloneError } from "@userplugins/serverCloner/utils/errorHandler";
+import { arrayBufferToBase64 } from "@userplugins/serverCloner/utils/helpers";
+import { notify, updateWithTime } from "@userplugins/serverCloner/utils/notifications";
 import { Constants, GuildStore, RestAPI } from "@webpack/common";
 
-import { state, throwIfCancelled } from "../store";
-import { handleCloneError } from "../utils/errorHandler";
-import { arrayBufferToBase64 } from "../utils/helpers";
-import { notify, updateWithTime } from "../utils/notifications";
 import { CloneContext, CloneSound, CloneSticker } from "./types";
 
 const STICKER_SLOTS = { 0: 5, 1: 15, 2: 30, 3: 60 } as const;

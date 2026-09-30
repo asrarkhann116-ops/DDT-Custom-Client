@@ -8,14 +8,14 @@ import { BaseText } from "@components/BaseText";
 import { Flex } from "@components/Flex";
 import { LinkIcon } from "@components/Icons";
 import { Link } from "@components/Link";
+import { Song, UserData } from "@song-spotlight/api/structs";
+import { sid } from "@song-spotlight/api/util";
 import { apiConstants } from "@userplugins/songSpotlight.desktop/lib/api";
 import { cl } from "@userplugins/songSpotlight.desktop/lib/utils";
 import { useRender } from "@userplugins/songSpotlight.desktop/service";
 import { TrashIcon } from "@userplugins/songSpotlight.desktop/ui/common";
 import ServiceIcon from "@userplugins/songSpotlight.desktop/ui/components/ServiceIcon";
 import AddSong from "@userplugins/songSpotlight.desktop/ui/settings/AddSong";
-import { Song, UserData } from "@song-spotlight/api/structs";
-import { sid } from "@song-spotlight/api/util";
 import { copyWithToast } from "@utils/discord";
 import {
     ContextMenuApi,

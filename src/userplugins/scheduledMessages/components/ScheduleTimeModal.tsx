@@ -7,13 +7,13 @@
 import { Button } from "@components/Button";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Heading } from "@components/Heading";
+import { ScheduledAttachment } from "@userplugins/scheduledMessages/types";
+import { addScheduledMessage, getChannelDisplayInfo } from "@userplugins/scheduledMessages/utils";
 import { classNameFactory } from "@utils/css";
 import { RenderModalProps } from "@vencord/discord-types";
 import { findByPropsLazy } from "@webpack";
 import { ChannelStore, closeModal, DraftType, Modal, openModal, showToast, TextInput, Toasts, UploadManager, useState } from "@webpack/common";
 
-import { ScheduledAttachment } from "../types";
-import { addScheduledMessage, getChannelDisplayInfo } from "../utils";
 import { ErrorIcon } from "./Icons";
 
 const cl = classNameFactory("vc-scheduled-msg-");

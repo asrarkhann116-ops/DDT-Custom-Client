@@ -15,11 +15,11 @@ import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings";
 import { SpecialCard } from "@components/settings/SpecialCard";
 import { Switch } from "@components/Switch";
+import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
 import { classNameFactory } from "@utils/css";
 import { Margins } from "@utils/margins";
 import { Alerts, React, Select, showToast,Toasts, UserStore, UserUtils } from "@webpack/common";
 
-import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
 import {
     addPresenceLabOperator,
     addPresenceLabSession,

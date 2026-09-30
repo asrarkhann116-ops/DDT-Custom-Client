@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { debounce } from "@shared/debounce";
 import { PickerContent, PickerContentHeader, PickerContentRow, PickerContentRowGrid, PickerHeaderProps, SidebarProps, Sticker, StickerCategoryType, StickerPack } from "@userplugins/moreStickers/types";
 import { sendSticker } from "@userplugins/moreStickers/upload";
 import { clPicker, FFmpegStateContext } from "@userplugins/moreStickers/utils";
-import { debounce } from "@shared/debounce";
 import { Modal,openModal, React, TextInput } from "@webpack/common";
 import { JSX } from "react";
 

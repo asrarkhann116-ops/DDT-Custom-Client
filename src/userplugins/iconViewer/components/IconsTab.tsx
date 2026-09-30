@@ -8,15 +8,15 @@ import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
 import { TooltipContainer } from "@components/TooltipContainer";
-import { iconsModule } from "@userplugins/_core/concatenatedModules";
 import { debounce } from "@shared/debounce";
+import { iconsModule } from "@userplugins/_core/concatenatedModules";
+import { IconsDef } from "@userplugins/iconViewer/types";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
 import { useIntersection } from "@utils/react";
 import { Icon } from "@vencord/discord-types";
 import { Clickable, TextInput, useCallback, useEffect, useMemo, useState } from "@webpack/common";
 
-import { IconsDef } from "../types";
 import { openIconModal } from "./Modals";
 
 let cachedIcons: IconsDef | null = null;

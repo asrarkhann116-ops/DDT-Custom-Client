@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { settings } from "../index";
+import { settings } from "@userplugins/messageLoggerEnhanced/index";
 
 export class LimitedMap<K, V> {
     public map: Map<K, V> = new Map();

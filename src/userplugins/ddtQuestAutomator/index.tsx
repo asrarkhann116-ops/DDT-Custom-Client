@@ -570,7 +570,7 @@ function stopCompletingAll() {
 function completeQuest(quest: QuestValue) {
     // ⚔️ DDT Security: Enforce setting check before ANY completion logic
     if (!settings.store.acceptQuestsAutomatically) return;
-    
+
     const isApp = typeof DiscordNative !== "undefined";
     if (!quest) {
         console.log("You don't have any uncompleted quests!");

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { state } from "../store";
+import { state } from "@userplugins/serverCloner/store";
 
 export { sleep } from "@utils/misc";
 

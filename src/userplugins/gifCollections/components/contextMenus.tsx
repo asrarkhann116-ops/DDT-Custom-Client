@@ -6,15 +6,15 @@
 
 import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { FolderIcon, InfoIcon, LinkIcon, PencilIcon, PlusIcon, RemixIcon, TrashIcon } from "@components/Icons";
+import { settings } from "@userplugins/gifCollections/settings";
+import { Gif } from "@userplugins/gifCollections/types";
+import { addToCollection, cache_collections, deleteCollection, getGifById, getItemCollectionNameFromId, removeFromCollection } from "@userplugins/gifCollections/utils/collectionManager";
+import { getGif } from "@userplugins/gifCollections/utils/getGif";
+import { stripPrefix } from "@userplugins/gifCollections/utils/misc";
+import { uuidv4 } from "@userplugins/gifCollections/utils/uuidv4";
 import { copyToClipboard } from "@utils/clipboard";
 import { Alerts, Button, FluxDispatcher, Menu, showToast, Toasts } from "@webpack/common";
 
-import { settings } from "../settings";
-import { Gif } from "../types";
-import { addToCollection, cache_collections, deleteCollection, getGifById, getItemCollectionNameFromId, removeFromCollection } from "../utils/collectionManager";
-import { getGif } from "../utils/getGif";
-import { stripPrefix } from "../utils/misc";
-import { uuidv4 } from "../utils/uuidv4";
 import { openCollectionInfoModal, openCreateCollectionModal, openGifInfoModal, openMoveToCollectionModal, openRenameCollectionModal } from "./modals";
 
 function dispatchRefresh(collectionName: string) {

@@ -10,6 +10,7 @@ import { Flex } from "@components/Flex";
 import { HeadingSecondary } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
 import { TooltipContainer } from "@components/TooltipContainer";
+import { cssColors, getCssColorKeys, iconSizes, iconSizesInPx } from "@userplugins/iconViewer/utils";
 import { copyWithToast, getIntlMessage } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { saveFile } from "@utils/web";
@@ -29,8 +30,6 @@ import {
     useMemo,
     useState
 } from "@webpack/common";
-
-import { cssColors, getCssColorKeys, iconSizes, iconSizesInPx } from "../utils";
 
 const logger = new Logger("IconViewer");
 const BugIcon = findComponentByCodeLazy("1.1.27.1.37 0a6.66 6.6");

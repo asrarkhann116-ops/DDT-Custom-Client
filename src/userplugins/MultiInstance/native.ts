@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { RendererSettings } from "@main/settings";
 import { restrictWebPreferences } from "@userplugins/DiscordHardened/nativeSecurity";
 import { addContentPolicy } from "@userplugins/DiscordHardened/policy";
-import { RendererSettings } from "@main/settings";
 import { app, BrowserWindow, nativeImage, session, shell } from "electron";
 import DDTIcon from "file://../../../browser/DDT.png?base64";
 import { join } from "path";

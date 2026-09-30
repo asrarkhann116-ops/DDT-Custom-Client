@@ -6,13 +6,13 @@
 
 import "./VoiceChannelLogEntryComponent.css";
 
+import { getCallStartTime } from "@userplugins/voiceChannelLog/logs";
+import { VoiceChannelLogEntry } from "@userplugins/voiceChannelLog/types";
+import { cl, downloadSound, formatElapsedTime, getEmojiUrl, playSound } from "@userplugins/voiceChannelLog/utils";
 import { openUserProfile } from "@utils/discord";
 import { Channel } from "@vencord/discord-types";
 import { ApplicationStore, Clickable, closeAllModals,IconUtils, NavigationRouter, Timestamp, Tooltip, UserStore } from "@webpack/common";
 
-import { getCallStartTime } from "../logs";
-import { VoiceChannelLogEntry } from "../types";
-import { cl, downloadSound, formatElapsedTime, getEmojiUrl, playSound } from "../utils";
 import EventIcon from "./VoiceChannelLogEntryIcons";
 
 function getEventDescription(entry: VoiceChannelLogEntry): string {

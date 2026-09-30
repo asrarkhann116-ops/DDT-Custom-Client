@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { CommandPayload, PlayerCommand } from "../types";
+import type { CommandPayload, PlayerCommand } from "@userplugins/yMusicSync.desktop/types";
+
 import { wrapRequest } from "./connection";
 import { REPEAT_CYCLE, REPEAT_TO_YNISON } from "./constants";
 import { isSelfDevice, newVersion } from "./device";

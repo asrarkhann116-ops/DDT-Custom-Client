@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { PlayerDevice, PlayerSnapshot, RepeatMode } from "../types";
+import type { PlayerDevice, PlayerSnapshot, RepeatMode } from "@userplugins/yMusicSync.desktop/types";
+
 import { isSelfDevice } from "./device";
 import { state } from "./state";
 import { stationDevices } from "./station/devices";

@@ -23,13 +23,13 @@ import { CopyIcon, ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Ico
 import { Paragraph } from "@components/Paragraph";
 import { Span } from "@components/Span";
 import { debounce } from "@shared/debounce";
+import { settings } from "@userplugins/musicControls/settings";
 import { classNameFactory } from "@utils/css";
 import { copyWithToast, openImageModal } from "@utils/discord";
 import { classes } from "@utils/misc";
 import { formatDuration } from "@utils/text";
 import { ContextMenuApi, FluxDispatcher, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
-import { settings } from "../settings";
 import { SeekBar } from "./SeekBar";
 import { SpotifyStore, Track } from "./SpotifyStore";
 

@@ -16,12 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { PluginInfo } from "@userplugins/betterScreenshare.desktop/constants";
+import { logger } from "@userplugins/betterScreenshare.desktop/logger";
+import { screenshareAudioStore } from "@userplugins/betterScreenshare.desktop/stores/screenshareAudioStore";
+import { Emitter, MediaEngineStore, patchConnectionAudioTransportOptions, Patcher, types } from "@userplugins/philsPluginLibrary";
 import { UserStore } from "@webpack/common";
-
-import { PluginInfo } from "../../betterScreenshare.desktop/constants";
-import { logger } from "../../betterScreenshare.desktop/logger";
-import { screenshareAudioStore } from "../../betterScreenshare.desktop/stores/screenshareAudioStore";
-import { Emitter, MediaEngineStore, patchConnectionAudioTransportOptions, Patcher, types } from "../../philsPluginLibrary";
 
 export class ScreenshareAudioPatcher extends Patcher {
     private mediaEngineStore: types.MediaEngineStore;

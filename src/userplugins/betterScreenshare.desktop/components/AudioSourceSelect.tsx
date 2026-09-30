@@ -16,11 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { screenshareStore } from "@userplugins/betterScreenshare.desktop/stores";
+import { MediaEngineStore, types } from "@userplugins/philsPluginLibrary";
 import { Select, useEffect, useState } from "@webpack/common";
 import React from "react";
-
-import { screenshareStore } from "../../betterScreenshare.desktop/stores";
-import { MediaEngineStore, types } from "../../philsPluginLibrary";
 
 export const AudioSourceSelect = (props?: React.ComponentProps<typeof Select>) => {
     const { use } = screenshareStore;

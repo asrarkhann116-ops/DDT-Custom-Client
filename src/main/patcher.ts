@@ -34,7 +34,7 @@ console.log(`
 %c
 %c Discord Developer Tools v3.0
 %c 288+ Plugins | Zero Telemetry
-`, 
+`,
 "color: #667eea; font-weight: bold;",
 "color: #764ba2; font-weight: bold;",
 "color: #667eea; font-weight: bold;",

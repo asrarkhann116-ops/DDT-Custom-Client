@@ -5,12 +5,11 @@
  */
 
 import { getUserSettingLazy } from "@api/UserSettings";
+import type { PaletteCommand } from "@userplugins/commandPalette/api/types";
+import { CircleIcon, HeadphonesIcon, MicIcon, MoonIcon } from "@userplugins/commandPalette/ui/icons";
 import type { Theme } from "@vencord/discord-types";
 import { findByCodeLazy } from "@webpack";
 import { showToast, ThemeStore, Toasts, VoiceActions } from "@webpack/common";
-
-import type { PaletteCommand } from "../api/types";
-import { CircleIcon, HeadphonesIcon, MicIcon, MoonIcon } from "../ui/icons";
 
 const SECTION = "Discord";
 

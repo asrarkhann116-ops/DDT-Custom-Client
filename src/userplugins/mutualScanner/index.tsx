@@ -6,14 +6,14 @@
 
 import { MagnifyingGlassIcon } from "@components/Icons";
 import SettingsPlugin from "@plugins/_core/settings";
-import { Devs } from "@utils/constants";
-import { removeFromArray } from "@utils/misc";
-import definePlugin from "@utils/types";
-
 import {
     mountKamidereRuntimeActivity,
     unmountKamidereRuntimeActivity,
 } from "@userplugins/_kamidereCompat/runtimeActivity";
+import { Devs } from "@utils/constants";
+import { removeFromArray } from "@utils/misc";
+import definePlugin from "@utils/types";
+
 import MutualScannerTab from "./MutualScannerTab";
 import { resetMutualScannerRuntime } from "./runtime";
 

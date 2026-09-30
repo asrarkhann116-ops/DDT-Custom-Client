@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { CaptionDefinition } from "../types";
+import type { CaptionDefinition } from "@userplugins/gifMaker/types";
+
 import { captionCaption } from "./caption";
 import { noneCaption } from "./none";
 import { speechbubbleCaption } from "./speechbubble";

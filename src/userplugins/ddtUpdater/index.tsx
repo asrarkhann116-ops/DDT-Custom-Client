@@ -1,4 +1,10 @@
 /*
+ * DDT Discord Client, a Discord client mod
+ * Copyright (c) 2024 DDT Development Team and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
  * DDT Custom Client - Auto Updater
  * Copyright (c) 2024 DDT Team
  */
@@ -56,7 +62,7 @@ const settings = definePluginSettings({
     }
 });
 
-let lastCheckTime = 0;
+const lastCheckTime = 0;
 let currentCommitHash: string | null = null;
 let updateCheckInterval: NodeJS.Timeout | null = null;
 
@@ -86,7 +92,7 @@ function getCurrentCommitHash(): string {
     // This will be updated on each fresh install
     const CURRENT_BUILD_HASH = "8ec3597"; // Updated: 2026-09-19 20:45
     logger.info("Using fallback hash:", CURRENT_BUILD_HASH);
-    
+
     // Cache it for future
     try {
         if (typeof localStorage !== "undefined" && localStorage) {

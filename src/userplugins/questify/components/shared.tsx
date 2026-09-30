@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import "../settings.css";
+import "@userplugins/questify/settings.css";
 
 import { Card } from "@components/Card";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
+import { q } from "@userplugins/questify/utils/ui";
 import { findComponentByCodeLazy } from "@webpack";
 import { ColorPicker, Slider } from "@webpack/common";
-import type { ComponentProps, ComponentType, JSX, ReactNode } from "react";
-
-import { q } from "../utils/ui";
+import type { ComponentType, JSX, ReactNode } from "react";
 
 export function SettingsCard({ children }: { children: ReactNode; }): JSX.Element {
     return (

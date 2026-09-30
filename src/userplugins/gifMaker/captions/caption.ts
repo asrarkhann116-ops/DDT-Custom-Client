@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { getCanvasFont } from "../fonts";
-import type { CaptionDefinition } from "../types";
+import { getCanvasFont } from "@userplugins/gifMaker/fonts";
+import type { CaptionDefinition } from "@userplugins/gifMaker/types";
 
 type MeasureResult = { lines: string[]; lineHeight: number; };
 

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { PaletteAction } from "@userplugins/commandPalette/api/types";
 import { classNameFactory } from "@utils/css";
 import { useEffect, useRef } from "@webpack/common";
 
-import type { PaletteAction } from "../api/types";
 import { PaletteIcon } from "./PaletteIcon";
 
 const cl = classNameFactory("vc-cmdpal-");

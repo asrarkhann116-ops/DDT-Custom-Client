@@ -23,11 +23,10 @@ import {
     keys,
     set,
 } from "@api/DataStore";
+import { Flogger, Native } from "@userplugins/messageLoggerEnhanced";
+import { LoggedAttachment } from "@userplugins/messageLoggerEnhanced/types";
+import { DEFAULT_IMAGE_CACHE_DIR } from "@userplugins/messageLoggerEnhanced/utils/constants";
 import { sleep } from "@utils/misc";
-
-import { Flogger, Native } from "../..";
-import { LoggedAttachment } from "../../types";
-import { DEFAULT_IMAGE_CACHE_DIR } from "../constants";
 
 const ImageStore = createStore("MessageLoggerImageData", "MessageLoggerImageStore");
 

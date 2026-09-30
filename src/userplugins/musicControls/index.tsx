@@ -84,7 +84,7 @@ export default definePlugin({
                 },
                 {
                     // More flexible regex - match with or without extra checks
-                    match: /(?<=artists\.filter\(\i=>)(?:\i\.)?(?:\w+\.)?(\i)\.id\)\&\&/,
+                    match: /(?<=artists\.filter\(\i=>)(?:\i\.)?(?:\w+\.)?(\i)\.id\)&&/,
                     replace: ""
                 }
             ]

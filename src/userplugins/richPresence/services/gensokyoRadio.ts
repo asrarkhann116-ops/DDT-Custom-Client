@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "@userplugins/richPresence/settings";
 import { Logger } from "@utils/Logger";
 import { PluginNative } from "@utils/types";
 import { Activity } from "@vencord/discord-types";
 import { ActivityFlags, ActivityType } from "@vencord/discord-types/enums";
 import { ApplicationAssetUtils, FluxDispatcher } from "@webpack/common";
-
-import { settings } from "../settings";
 
 const Native = VencordNative.pluginHelpers.RichPresence as PluginNative<typeof import("../native")>;
 const logger = new Logger("RichPresence:GensokyoRadio");

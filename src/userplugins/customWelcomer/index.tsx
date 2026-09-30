@@ -1,13 +1,19 @@
 /*
+ * DDT Discord Client, a Discord client mod
+ * Copyright (c) 2024 DDT Development Team and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
  * DDT Custom Client - Custom Welcomer
  * Copyright (c) 2024 DDT Team
  */
 
+import { DataStore } from "@api/index";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { React } from "@webpack/common";
-import { DataStore } from "@api/index";
 
 const DEFAULT_VIDEO_URL = "https://raw.githubusercontent.com/asrarkhann116-ops/DDT-Custom-Client/main/src/userplugins/customWelcomer/assets/Pixel_rocket_launching_intro_ani…_20260919131544.mp4";
 const DEFAULT_AUDIO_URL = "https://raw.githubusercontent.com/asrarkhann116-ops/DDT-Custom-Client/main/src/userplugins/customWelcomer/assets/gta_iv.mp3";
@@ -97,7 +103,7 @@ const settings = definePluginSettings({
         description: "Upload Custom Video (max 10s, MP4/WebM)",
         component: () => {
             const { Button } = require("@webpack/common") as any;
-            
+
             return React.createElement(Button, {
                 onClick: () => {
                     const input = document.createElement("input");
@@ -106,13 +112,13 @@ const settings = definePluginSettings({
                     input.onchange = async (e: any) => {
                         const file = e.target?.files?.[0];
                         if (!file) return;
-                        
+
                         // Check duration
                         const video = document.createElement("video");
                         video.preload = "metadata";
                         video.src = URL.createObjectURL(file);
-                        
-                        await new Promise((resolve) => {
+
+                        await new Promise(resolve => {
                             video.onloadedmetadata = () => {
                                 if (video.duration > 10) {
                                     alert("❌ Video too long! Max 10 seconds allowed.");
@@ -123,7 +129,7 @@ const settings = definePluginSettings({
                                 resolve(true);
                             };
                         });
-                        
+
                         // Convert to base64 and persist
                         const reader = new FileReader();
                         reader.onload = async () => {
@@ -132,7 +138,7 @@ const settings = definePluginSettings({
                             alert(`✅ Video uploaded & saved: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB) — will persist after Ctrl+R`);
                         };
                         reader.readAsDataURL(file);
-                        
+
                         URL.revokeObjectURL(video.src);
                     };
                     input.click();
@@ -145,7 +151,7 @@ const settings = definePluginSettings({
         description: "Upload Custom Audio (max 10s, MP3/WAV)",
         component: () => {
             const { Button } = require("@webpack/common") as any;
-            
+
             return React.createElement(Button, {
                 onClick: () => {
                     const input = document.createElement("input");
@@ -154,13 +160,13 @@ const settings = definePluginSettings({
                     input.onchange = async (e: any) => {
                         const file = e.target?.files?.[0];
                         if (!file) return;
-                        
+
                         // Check duration
                         const audio = document.createElement("audio");
                         audio.preload = "metadata";
                         audio.src = URL.createObjectURL(file);
-                        
-                        await new Promise((resolve) => {
+
+                        await new Promise(resolve => {
                             audio.onloadedmetadata = () => {
                                 if (audio.duration > 10) {
                                     alert("❌ Audio too long! Max 10 seconds allowed.");
@@ -171,7 +177,7 @@ const settings = definePluginSettings({
                                 resolve(true);
                             };
                         });
-                        
+
                         // Convert to base64 and persist
                         const reader = new FileReader();
                         reader.onload = async () => {
@@ -180,7 +186,7 @@ const settings = definePluginSettings({
                             alert(`✅ Audio uploaded & saved: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB) — will persist after Ctrl+R`);
                         };
                         reader.readAsDataURL(file);
-                        
+
                         URL.revokeObjectURL(audio.src);
                     };
                     input.click();
@@ -193,7 +199,7 @@ const settings = definePluginSettings({
         description: "Clear uploaded local files",
         component: () => {
             const { Button } = require("@webpack/common") as any;
-            
+
             return React.createElement(Button, {
                 color: Button.Colors.RED,
                 onClick: async () => {
@@ -287,7 +293,7 @@ async function createWelcomeScreen() {
 
         // Wait for BOTH to be fully loaded
         console.log("[Custom Welcomer] Waiting for media to load...");
-        
+
         await Promise.all([
             new Promise((resolve, reject) => {
                 if (videoElement!.readyState >= 3) { // HAVE_FUTURE_DATA or better
@@ -327,7 +333,7 @@ async function createWelcomeScreen() {
 
         // NOW play both together in PERFECT SYNC
         const playStartTime = performance.now();
-        
+
         await Promise.all([
             videoElement.play().catch(err => {
                 console.error("[Custom Welcomer] Video play failed:", err);
@@ -473,7 +479,7 @@ export default definePlugin({
             (async () => {
                 localVideoData = await safeStorage.getItem(DS_VIDEO_KEY);
                 localAudioData = await safeStorage.getItem(DS_AUDIO_KEY);
-                
+
                 // Show welcome screen after loading cache
                 setTimeout(() => {
                     if (settings.store.enabled) {

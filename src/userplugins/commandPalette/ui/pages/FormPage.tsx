@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { FormField, FormFieldOption, FormPageSpec, FormSubmitExtras, FormValues, PaletteContext } from "@userplugins/commandPalette/api/types";
+import { tryMaskedLinkPaste } from "@userplugins/commandPalette/ui/markdownPaste";
+import { MessageMarkdownPreview } from "@userplugins/commandPalette/ui/MessageMarkdownPreview";
+import { PaletteIcon } from "@userplugins/commandPalette/ui/PaletteIcon";
 import { classNameFactory } from "@utils/css";
 import { ChannelStore, useEffect, useLayoutEffect, useMemo, useRef, useState } from "@webpack/common";
 import type { KeyboardEvent } from "react";
-
-import type { FormField, FormFieldOption, FormPageSpec, FormSubmitExtras, FormValues, PaletteContext } from "../../api/types";
-import { tryMaskedLinkPaste } from "../markdownPaste";
-import { MessageMarkdownPreview } from "../MessageMarkdownPreview";
-import { PaletteIcon } from "../PaletteIcon";
 
 const cl = classNameFactory("vc-cmdpal-");
 

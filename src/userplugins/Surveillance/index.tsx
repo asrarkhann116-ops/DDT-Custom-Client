@@ -9,6 +9,7 @@ import { showNotification } from "@api/Notifications";
 import { definePluginSettings } from "@api/Settings";
 import { LogIcon } from "@components/Icons";
 import SettingsPlugin from "@plugins/_core/settings";
+import { MonitoringLegalWarning } from "@userplugins/_legalWarnings";
 import { Devs } from "@utils/constants";
 import { LazyComponent } from "@utils/lazyReact";
 import { removeFromArray } from "@utils/misc";
@@ -17,7 +18,6 @@ import type { Activity, Channel, Guild, GuildMember, Message, OnlineStatus, Role
 import { ActivityType } from "@vencord/discord-types/enums";
 import { ChannelStore, FluxDispatcher, GuildStore, Menu, PresenceStore, RelationshipStore, SettingsRouter, UserStore, VoiceStateStore } from "@webpack/common";
 
-import { MonitoringLegalWarning } from "../_legalWarnings";
 import { recordEvent, trimEvents } from "./store";
 import type { MessageSnapshot, SurveillanceEvent, SurveillanceEventType, SurveillanceScope, VoiceParticipant, VoiceState, VoiceStateFlag } from "./types";
 

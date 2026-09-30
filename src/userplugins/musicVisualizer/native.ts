@@ -1,11 +1,10 @@
 /*
- * DDT MusicVisualizer Native Bridge ⚡
- * Manages local music relay server lifecycle from Electron Main process.
- * Features: spawn with system node (not fork), unlimited auto-restart, exponential backoff,
- *           crash-counter reset after stable run, intentional-stop guard.
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { ChildProcess, spawn, execFileSync } from "child_process";
+import { ChildProcess, execFileSync,spawn } from "child_process";
 import { existsSync } from "fs";
 import { join } from "path";
 
@@ -32,20 +31,20 @@ const NODE_BIN = findNodeBinary();
 // ── State ────────────────────────────────────────────────────────────────────
 let serverProcess: ChildProcess | null = null;
 let isStarting = false;
-let keepAlive = false;          // true = auto-restart on crash; false = intentionally stopped
+let keepAlive = false; // true = auto-restart on crash; false = intentionally stopped
 let crashCount = 0;
 let lastSpawnTime = 0;
 let crashResetTimer: ReturnType<typeof setTimeout> | null = null;
 
-const BASE_DELAY_MS  = 1_000;
-const MAX_DELAY_MS   = 10_000;
+const BASE_DELAY_MS = 1_000;
+const MAX_DELAY_MS = 10_000;
 const STABLE_UPTIME_MS = 30_000; // reset crash counter if server ran >30s without dying
 
 // ── Path resolution ──────────────────────────────────────────────────────────
 function resolveServerPath(): string | null {
     const candidates = [
-        join(__dirname, "music-relay-server", "server.js"),          // Electron dist (primary)
-        join(__dirname, "..", "music-relay-server", "server.js"),     // one level up
+        join(__dirname, "music-relay-server", "server.js"), // Electron dist (primary)
+        join(__dirname, "..", "music-relay-server", "server.js"), // one level up
         join(process.cwd(), "src", "userplugins", "musicVisualizer", "music-relay-server", "server.js"), // dev
         join(__dirname, "..", "src", "userplugins", "musicVisualizer", "music-relay-server", "server.js"),
     ];
@@ -121,8 +120,8 @@ export async function startServer(): Promise<{ success: boolean; port: number; m
     }
 
     isStarting = true;
-    keepAlive  = true;   // enable auto-restart
-    crashCount = 0;      // fresh manual start resets counter
+    keepAlive = true; // enable auto-restart
+    crashCount = 0; // fresh manual start resets counter
 
     const scriptPath = resolveServerPath();
     if (!scriptPath) {
@@ -151,7 +150,7 @@ export async function stopServer(): Promise<boolean> {
         console.log("[MusicViz] Stopping relay server (keepAlive=false)…");
         try { serverProcess.kill("SIGTERM"); } catch { serverProcess.kill("SIGKILL"); }
         serverProcess = null;
-        isStarting    = false;
+        isStarting = false;
         return true;
     }
     return false;

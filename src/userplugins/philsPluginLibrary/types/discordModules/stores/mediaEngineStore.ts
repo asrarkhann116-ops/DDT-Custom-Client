@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { types } from "../../../../philsPluginLibrary";
+import { types } from "@userplugins/philsPluginLibrary";
 
 export type MediaEngineStore = MediaEngineStore__ &
     MediaEngineStore_ & {

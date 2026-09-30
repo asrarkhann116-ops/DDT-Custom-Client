@@ -7,10 +7,10 @@
 import { Button } from "@components/Button";
 import { HeadingPrimary } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
+import { cl } from "@userplugins/profileSets/index";
+import { PresetSection } from "@userplugins/profileSets/utils/storage";
 import { GuildStore, React, SearchableSelect, SelectedGuildStore, useStateFromStores } from "@webpack/common";
 
-import { cl } from "../index";
-import { PresetSection } from "../utils/storage";
 import { PresetManager } from "./presetManager";
 
 function ProfileSetsTab() {

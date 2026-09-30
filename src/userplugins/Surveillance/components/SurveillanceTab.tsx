@@ -9,6 +9,8 @@ import "./styles.css";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { HeadingPrimary, HeadingTertiary } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
+import { clearEvents, getEvents, loadEvents, subscribe } from "@userplugins/Surveillance/store";
+import type { SurveillanceEvent, SurveillanceEventType, VoiceParticipant } from "@userplugins/Surveillance/types";
 import { copyToClipboard } from "@utils/clipboard";
 import { classNameFactory } from "@utils/css";
 import { fetchUserProfile, openUserProfile } from "@utils/discord";
@@ -17,8 +19,6 @@ import type { RenderModalProps } from "@vencord/discord-types";
 import { ChannelStore, GuildStore, Modal, openModal, React, RelationshipStore, TextInput, Toasts, useEffect, useMemo, UserProfileStore, UserStore, useState, useStateFromStores } from "@webpack/common";
 
 import { addServerTarget, getServerTargets, getTargets, removeServerTarget, removeTarget, setServerTargets, setTargets, settings, subscribeServerTargets, subscribeTargets } from "..";
-import { clearEvents, getEvents, loadEvents, subscribe } from "../store";
-import type { SurveillanceEvent, SurveillanceEventType, VoiceParticipant } from "../types";
 
 type EventFilter = "all" | "activity" | "message" | "presence" | "reaction" | "server" | "typing" | "voice";
 type SurveillancePage = "user" | "server";

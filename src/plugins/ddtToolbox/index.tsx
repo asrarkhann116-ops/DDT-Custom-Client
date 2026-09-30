@@ -26,13 +26,13 @@ import definePlugin, { OptionType } from "@utils/types";
 import { Popout, useRef, useState } from "@webpack/common";
 import type { PropsWithChildren } from "react";
 
-import { renderPopout } from "./menu";
 import { DDT_LOGO_DATA_URL } from "../../assets/ddtLogoSmall";
+import { renderPopout } from "./menu";
 
 function DDTTitleBadge() {
     return (
-        <div 
-            className="ddt-titlebar-badge" 
+        <div
+            className="ddt-titlebar-badge"
             title="DDT Custom Client — Active"
             onClick={() => {
                 const settingsBtn = document.querySelector('[data-tab-id="VencordPlugins"], [data-tab-id="DDTPlugins"], [aria-label="User Settings"], [aria-label="Parametri utente"]') as HTMLElement | null;

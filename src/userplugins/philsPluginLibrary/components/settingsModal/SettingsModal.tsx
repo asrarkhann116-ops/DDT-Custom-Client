@@ -17,12 +17,11 @@
 */
 
 import { Flex } from "@components/Flex";
+import { ContributorAuthorSummary } from "@userplugins/philsPluginLibrary/components/ContributorAuthorSummary";
+import { Author, Contributor } from "@userplugins/philsPluginLibrary/types";
 import type { ModalSize, RenderModalProps } from "@vencord/discord-types";
 import { Modal } from "@webpack/common";
 import type { JSX, ReactNode } from "react";
-
-import { ContributorAuthorSummary } from "../../../philsPluginLibrary/components/ContributorAuthorSummary";
-import { Author, Contributor } from "../../../philsPluginLibrary/types";
 
 export interface SettingsModalProps extends RenderModalProps {
     title?: string;

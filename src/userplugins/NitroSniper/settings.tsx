@@ -6,10 +6,10 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { Notice } from "@components/Notice";
+import { SniperLegalWarning } from "@userplugins/_legalWarnings";
 import { OptionType } from "@utils/types";
 import { Button, showToast, Toasts } from "@webpack/common";
 
-import { SniperLegalWarning } from "../_legalWarnings";
 import { sendTestWebhook } from "./webhook";
 
 function getToastErrorMessage(error: unknown) {

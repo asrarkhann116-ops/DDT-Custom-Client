@@ -88,7 +88,7 @@ async function fetchNekosBest(tags: string, limit = 20, page = 1): Promise<Media
 async function fetchNekosApi(tags: string, limit = 40, page = 1): Promise<MediaItem[]> {
     try {
         const offset = (page - 1) * limit;
-        const url = `https://api.nekosapi.com/v4/images?limit=${limit}&offset=${offset}${tags ? `&tag=${encodeURIComponent(tags)}` : ''}`;
+        const url = `https://api.nekosapi.com/v4/images?limit=${limit}&offset=${offset}${tags ? `&tag=${encodeURIComponent(tags)}` : ""}`;
         const data = await fetchApi(url);
         if (!data.items) return [];
 
@@ -127,18 +127,18 @@ function DashboardComponent({ onClose }: DashboardProps) {
     const [source, setSource] = React.useState<SourceKey>("nekosapi");
     const [query, setQuery] = React.useState("");
     const [items, setItems] = React.useState<MediaItem[]>([]);
-    
+
     // Pagination state
     const [page, setPage] = React.useState(1);
     const [loading, setLoading] = React.useState(false);
     const [loadingMore, setLoadingMore] = React.useState(false);
     const [hasMore, setHasMore] = React.useState(true);
-    
+
     // UI state
     const [selectedItem, setSelectedItem] = React.useState<MediaItem | null>(null);
     const [showWelcome, setShowWelcome] = React.useState(true);
     const [downloading, setDownloading] = React.useState(false);
-    
+
     // Favorites state
     const [favorites, setFavorites] = React.useState<MediaItem[]>([]);
 
@@ -171,25 +171,25 @@ function DashboardComponent({ onClose }: DashboardProps) {
         if (source === "favorites") return;
         const activeQuery = overrideQuery !== undefined ? overrideQuery : query;
         if (!activeQuery.trim() && !isLoadMore) return;
-        
+
         const targetPage = isLoadMore ? page + 1 : 1;
-        
+
         if (isLoadMore) setLoadingMore(true);
         else {
             setLoading(true);
             setItems([]);
             setShowWelcome(false);
         }
-        
+
         try {
             const results = await currentSource.fetch(activeQuery, 40, targetPage);
-            
+
             if (results.length < 40) setHasMore(false);
             else setHasMore(true);
 
             if (isLoadMore) setItems(prev => [...prev, ...results]);
             else setItems(results);
-            
+
             setPage(targetPage);
         } catch (err) {
             logger.error("Search failed:", err);
@@ -326,8 +326,8 @@ function DashboardComponent({ onClose }: DashboardProps) {
                             <p>😔</p>
                             <h3>{source === "favorites" ? "No favorites yet" : "No results found"}</h3>
                             <p className="nsfw-hub-hint">
-                                {source === "favorites" 
-                                    ? "Click the heart icon on any image to save it here!" 
+                                {source === "favorites"
+                                    ? "Click the heart icon on any image to save it here!"
                                     : "Try different tags or switch to another source."}
                             </p>
                         </div>
@@ -345,23 +345,23 @@ function DashboardComponent({ onClose }: DashboardProps) {
                                         <img src={item.thumbnail} alt="" loading="lazy" />
                                         <div className="nsfw-hub-thumb-overlay">
                                             <span className="nsfw-hub-score">⭐ {item.score}</span>
-                                            <button 
-                                                className={`nsfw-hub-fav-btn ${isFavorite(item) ? 'active' : ''}`}
-                                                onClick={(e) => toggleFavorite(item, e)}
+                                            <button
+                                                className={`nsfw-hub-fav-btn ${isFavorite(item) ? "active" : ""}`}
+                                                onClick={e => toggleFavorite(item, e)}
                                                 title={isFavorite(item) ? "Remove from Favorites" : "Add to Favorites"}
                                             >
-                                                {isFavorite(item) ? '❤️' : '🤍'}
+                                                {isFavorite(item) ? "❤️" : "🤍"}
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            
+
                             {/* Load More Button for Pagination */}
                             {source !== "favorites" && hasMore && displayedItems.length > 0 && (
                                 <div className="nsfw-hub-load-more-container">
-                                    <button 
-                                        className="nsfw-hub-load-more" 
+                                    <button
+                                        className="nsfw-hub-load-more"
                                         onClick={() => handleSearch(true)}
                                         disabled={loadingMore}
                                     >
@@ -378,19 +378,19 @@ function DashboardComponent({ onClose }: DashboardProps) {
                     <div className="nsfw-hub-viewer" onClick={() => setSelectedItem(null)}>
                         <div className="nsfw-hub-viewer-box" onClick={e => e.stopPropagation()}>
                             <button onClick={() => setSelectedItem(null)} className="nsfw-hub-viewer-close">×</button>
-                            
+
                             <img src={selectedItem.full} alt="" />
-                            
+
                             <div className="nsfw-hub-viewer-actions">
-                                <button 
+                                <button
                                     className="nsfw-hub-action-btn download"
                                     onClick={() => handleDownload(selectedItem)}
                                     disabled={downloading}
                                 >
                                     {downloading ? "⏳ Downloading..." : "💾 Download Image"}
                                 </button>
-                                <button 
-                                    className={`nsfw-hub-action-btn fav ${isFavorite(selectedItem) ? 'active' : ''}`}
+                                <button
+                                    className={`nsfw-hub-action-btn fav ${isFavorite(selectedItem) ? "active" : ""}`}
                                     onClick={() => toggleFavorite(selectedItem)}
                                 >
                                     {isFavorite(selectedItem) ? "❤️ Remove from Favorites" : "🤍 Add to Favorites"}
@@ -469,7 +469,7 @@ export default definePlugin({
 
     start() {
         logger.info("NSFW Hub ready! Use /nsfw command or DDT Toolbox");
-        
+
         // Global access
         (window as any).NSFWHub = {
             open: openDashboard,

@@ -5,13 +5,12 @@
  */
 
 import ErrorBoundary from "@components/ErrorBoundary";
+import { CloneOptions } from "@userplugins/serverCloner/types";
+import { extractChannels } from "@userplugins/serverCloner/utils/api";
 import { getTheme, Theme } from "@utils/discord";
 import { Guild, RenderModalProps } from "@vencord/discord-types";
 import { Button, Checkbox, GuildRoleStore, GuildStore, Modal, openModal, React, RestAPI, SearchableSelect, UserStore } from "@webpack/common";
 import type { PointerEvent } from "react";
-
-import { CloneOptions } from "../types";
-import { extractChannels } from "../utils/api";
 
 interface ConfirmOverwriteModalProps {
     deletingText: string;

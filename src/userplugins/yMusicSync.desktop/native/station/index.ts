@@ -6,11 +6,12 @@
 
 import { randomUUID } from "node:crypto";
 
-import type { CommandPayload, PlayerCommand, PlayerSnapshot, RepeatMode, StationEntry } from "../../types";
-import { emitSnapshot, enqueue } from "../events";
-import { absoluteCoverUrl, playerDevices } from "../mapping";
-import { errorMessage, log, state } from "../state";
-import { YnisonSocket } from "../ynisonSocket";
+import { emitSnapshot, enqueue } from "@userplugins/yMusicSync.desktop/native/events";
+import { absoluteCoverUrl, playerDevices } from "@userplugins/yMusicSync.desktop/native/mapping";
+import { errorMessage, log, state } from "@userplugins/yMusicSync.desktop/native/state";
+import { YnisonSocket } from "@userplugins/yMusicSync.desktop/native/ynisonSocket";
+import type { CommandPayload, PlayerCommand, PlayerSnapshot, RepeatMode, StationEntry } from "@userplugins/yMusicSync.desktop/types";
+
 import { isLocalAddress } from "./address";
 import { DISCOVERY_INTERVAL_MS, STATION_PING_MS, STATION_PREFIX, STATION_RECONNECT_MS } from "./constants";
 import { discoverStations } from "./mdns";

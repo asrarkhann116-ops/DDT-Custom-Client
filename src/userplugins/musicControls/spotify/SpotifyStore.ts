@@ -18,10 +18,9 @@
 
 import { isPluginEnabled } from "@api/PluginManager";
 import OpenInAppPlugin from "@plugins/openInApp";
+import { settings } from "@userplugins/musicControls/settings";
 import { findByProps, findByPropsLazy, proxyLazyWebpack } from "@webpack";
 import { Flux, FluxDispatcher } from "@webpack/common";
-
-import { settings } from "../settings";
 
 export interface Track {
     id: string;

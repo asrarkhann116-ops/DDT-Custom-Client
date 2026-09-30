@@ -1,4 +1,10 @@
 /*
+ * DDT Discord Client, a Discord client mod
+ * Copyright (c) 2024 DDT Development Team and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
  * DDT Custom Client - Theme Manager
  * Copyright (c) 2024 DDT Team
  */
@@ -6,6 +12,7 @@
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
+
 import { THEME_FILES, THEME_NAMES } from "./themeList";
 
 const settings = definePluginSettings({
@@ -35,12 +42,12 @@ async function loadThemeFromGitHub(filename: string): Promise<string> {
     try {
         const url = GITHUB_RAW_URL + encodeURIComponent(filename);
         console.log(`[DDT Theme] Loading theme from: ${url}`);
-        
+
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const cssContent = await response.text();
         return cssContent;
     } catch (error) {
@@ -169,12 +176,12 @@ async function applyTheme() {
         }
 
         removeTheme();
-        
+
         const selectedTheme = settings?.store?.selectedTheme || "none";
         const customCSS = settings?.store?.customCSS || "";
-        
+
         let themeCSS = "";
-        
+
         // Load theme based on selection
         if (selectedTheme === "none") {
             themeCSS = getDefaultDDTTheme();
@@ -182,7 +189,7 @@ async function applyTheme() {
             const filename = THEME_FILES[selectedTheme];
             if (filename) {
                 themeCSS = await loadThemeFromGitHub(filename);
-                
+
                 // Fallback to default if loading failed
                 if (!themeCSS || themeCSS.trim() === "") {
                     console.warn(`[DDT Theme] Failed to load "${selectedTheme}", using default`);
@@ -193,17 +200,17 @@ async function applyTheme() {
                 themeCSS = getDefaultDDTTheme();
             }
         }
-        
+
         // Append custom CSS if provided
         if (customCSS && customCSS.trim() !== "") {
             themeCSS += "\n\n/* User Custom CSS */\n" + customCSS;
         }
-        
+
         styleElement = document.createElement("style");
         styleElement.id = "ddt-theme-manager";
         styleElement.textContent = themeCSS;
         document.head.appendChild(styleElement);
-        
+
         console.log(`[DDT Theme] Applied theme: ${selectedTheme}`);
     } catch (error) {
         console.error("[DDT Theme] Failed to apply theme:", error);
@@ -227,7 +234,7 @@ function removeTheme() {
             styleElement.remove();
             styleElement = null;
         }
-        
+
         // Also remove any old theme elements
         const oldElements = document.querySelectorAll("#ddt-theme-manager, #discord-developer-tools-theme");
         oldElements.forEach(el => el.remove());
@@ -251,7 +258,7 @@ export default definePlugin({
                 applyTheme();
                 console.log("[DDT Theme] Started");
                 console.log(`[DDT Theme] Current theme: ${settings?.store?.selectedTheme || "none"}`);
-                console.log(`[DDT Theme] Available themes: 112`);
+                console.log("[DDT Theme] Available themes: 112");
             }, 1000);
         } catch (error) {
             console.error("[DDT Theme] Failed to start:", error);

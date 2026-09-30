@@ -9,7 +9,6 @@
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-import { findByProps } from "@webpack";
 
 // Type augmentation for XMLHttpRequest to store inspector metadata
 declare global {

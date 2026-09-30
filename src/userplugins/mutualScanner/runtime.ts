@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { GuildMemberCountStore, GuildStore, React, Toasts } from "@webpack/common";
-
 import {
     removeKamidereRuntimeTask,
     upsertKamidereRuntimeTask,
 } from "@userplugins/_kamidereCompat/runtimeActivity";
+import { GuildMemberCountStore, GuildStore, React, Toasts } from "@webpack/common";
+
 import {
     createGuildHydrationController,
     hydrateGuildMemberCache,

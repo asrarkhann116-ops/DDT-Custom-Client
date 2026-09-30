@@ -5,14 +5,13 @@
  */
 
 import ErrorBoundary from "@components/ErrorBoundary";
+import { CarouselControls } from "@userplugins/betterActivities/components/CarouselControls";
+import { settings } from "@userplugins/betterActivities/settings";
+import { AllActivitiesProps } from "@userplugins/betterActivities/types";
+import { ActivityView, getActivityApplication } from "@userplugins/betterActivities/utils";
 import { Activity } from "@vencord/discord-types";
 import { PresenceStore, React, useEffect, useMemo, UserStore, useState, useStateFromStores } from "@webpack/common";
 import { JSX } from "react";
-
-import { CarouselControls } from "../components/CarouselControls";
-import { settings } from "../settings";
-import { AllActivitiesProps } from "../types";
-import { ActivityView, getActivityApplication } from "../utils";
 
 export function showAllActivitiesComponent({ activity, user, ...props }: Readonly<AllActivitiesProps>): JSX.Element | null {
     const currentUser = UserStore.getCurrentUser();

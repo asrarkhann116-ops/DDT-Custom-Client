@@ -28,7 +28,6 @@ import { FormSwitch } from "@components/FormSwitch";
 import { Grid } from "@components/Grid";
 import { Heading } from "@components/Heading";
 import { CloudDownloadIcon, CloudUploadIcon, DeleteIcon, RestartIcon } from "@components/Icons";
-import { Link } from "@components/Link";
 import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
 import { Margins } from "@utils/margins";

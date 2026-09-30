@@ -5,10 +5,9 @@
  */
 
 import { Button } from "@components/Button";
+import { clearMessagesIDB } from "@userplugins/messageLoggerEnhanced/db";
+import { Flogger } from "@userplugins/messageLoggerEnhanced/index";
 import { Alerts, Toasts, useState } from "@webpack/common";
-
-import { clearMessagesIDB } from "../db";
-import { Flogger } from "../index";
 
 interface ClearLogsButtonProps {
     label?: string;

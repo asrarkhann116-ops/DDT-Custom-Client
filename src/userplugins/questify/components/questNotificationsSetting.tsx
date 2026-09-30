@@ -5,12 +5,12 @@
  */
 
 import { type AudioPlayerInterface, createAudioPlayer, defaultAudioNames } from "@api/AudioPlayer";
+import { getQuestifySettings, useQuestifySettings } from "@userplugins/questify/settings/access";
+import { startAutoFetchingQuests } from "@userplugins/questify/settings/fetching";
+import { q } from "@userplugins/questify/utils/ui";
 import { useEffect, useMemo, useRef, useState } from "@webpack/common";
 import type { JSX, MouseEvent } from "react";
 
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import { startAutoFetchingQuests } from "../settings/fetching";
-import { q } from "../utils/ui";
 import { ManaSelectFormattedOption, ManaSelectOption, SettingsCard, SettingsDescription, SettingsHeader, SettingsRow, SettingsRowItem, SettingsSelect, SettingsSlider, SettingsSubheader, SettingsSubtleSwitch } from "./shared";
 
 const questFetchIntervalOptions = [

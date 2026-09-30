@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { BanchoStatusEnum, GameState, Modes, TosuApi } from "@userplugins/richPresence/types/tosu";
 import { Activity } from "@vencord/discord-types";
 import { ActivityType } from "@vencord/discord-types/enums";
 import { ApplicationAssetUtils, FluxDispatcher } from "@webpack/common";
-
-import { BanchoStatusEnum, GameState, Modes, TosuApi } from "../types/tosu";
 
 const OSU_APP_ID = "367827983903490050";
 const OSU_LARGE_IMAGE = "373344233077211136";

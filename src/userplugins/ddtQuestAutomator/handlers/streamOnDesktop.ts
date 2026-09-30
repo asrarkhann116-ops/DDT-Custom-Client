@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { setQuestRuntime } from "../questState";
-import { ApplicationStreamingStore } from "../stores";
-import { HEARTBEAT_GRACE_MS, readTaskProgress } from "../utils/quest";
+import { setQuestRuntime } from "@userplugins/ddtQuestAutomator/questState";
+import { ApplicationStreamingStore } from "@userplugins/ddtQuestAutomator/stores";
+import { HEARTBEAT_GRACE_MS, readTaskProgress } from "@userplugins/ddtQuestAutomator/utils/quest";
+
 import { QuestHandler } from "./types";
 
 export const streamOnDesktopHandler: QuestHandler = {

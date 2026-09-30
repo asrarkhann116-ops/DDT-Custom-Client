@@ -23,7 +23,6 @@ import { cl } from "@plugins/reviewDB/utils";
 import { useForceUpdater } from "@utils/react";
 import * as t from "@vencord/discord-types";
 import { DefaultExtractAndLoadChunksRegex, extractAndLoadChunksLazy, findComponentByCodeLazy } from "@webpack";
-
 import { Modal,openModalLazy, Text, useRef, useState } from "@webpack/common";
 import { ComponentProps } from "react";
 

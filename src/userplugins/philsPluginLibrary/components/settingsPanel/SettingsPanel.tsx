@@ -16,9 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { panelClasses } from "@userplugins/philsPluginLibrary/discordModules";
 import { React } from "@webpack/common";
-
-import { panelClasses } from "../../../philsPluginLibrary/discordModules";
 
 export interface SettingsPanelProps {
     children: React.ComponentProps<"div">["children"];

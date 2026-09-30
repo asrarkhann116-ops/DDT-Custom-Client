@@ -1,3 +1,9 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 // Auto-generated theme list - All 112 themes
 export const THEME_FILES: Record<string, string> = {
     "none": "",

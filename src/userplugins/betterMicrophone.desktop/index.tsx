@@ -18,14 +18,13 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { UserAreaButton, type UserAreaRenderProps } from "@api/UserArea";
+import { PluginInfo } from "@userplugins/betterMicrophone.desktop/constants";
+import { openMicrophoneSettingsModal } from "@userplugins/betterMicrophone.desktop/modals";
+import { MicrophonePatcher } from "@userplugins/betterMicrophone.desktop/patchers";
+import { initMicrophoneStore } from "@userplugins/betterMicrophone.desktop/stores";
+import { Emitter, MicrophoneSettingsIcon } from "@userplugins/philsPluginLibrary";
 import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
-
-import { PluginInfo } from "../betterMicrophone.desktop/constants";
-import { openMicrophoneSettingsModal } from "../betterMicrophone.desktop/modals";
-import { MicrophonePatcher } from "../betterMicrophone.desktop/patchers";
-import { initMicrophoneStore } from "../betterMicrophone.desktop/stores";
-import { Emitter, MicrophoneSettingsIcon } from "../philsPluginLibrary";
 
 const SETTINGS_KEYS: Array<"hideSettingsIcon"> = ["hideSettingsIcon"];
 

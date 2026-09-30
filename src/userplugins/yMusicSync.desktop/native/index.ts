@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { CommandPayload, PlayerCommand, YnisonEvent, YnisonStatus } from "@userplugins/yMusicSync.desktop/types";
 import type { IpcMainInvokeEvent } from "electron";
 
-import type { CommandPayload, PlayerCommand, YnisonEvent, YnisonStatus } from "../types";
 import { runCommand } from "./commands";
 import { closeConnection, openConnection } from "./connection";
 import { TOKEN_PATTERN } from "./constants";

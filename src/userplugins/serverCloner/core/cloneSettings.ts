@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { throwIfCancelled } from "@userplugins/serverCloner/store";
+import { handleCloneError } from "@userplugins/serverCloner/utils/errorHandler";
+import { isRecord } from "@userplugins/serverCloner/utils/helpers";
+import { updateWithTime } from "@userplugins/serverCloner/utils/notifications";
 import { Constants, RestAPI } from "@webpack/common";
 
-import { throwIfCancelled } from "../store";
-import { handleCloneError } from "../utils/errorHandler";
-import { isRecord } from "../utils/helpers";
-import { updateWithTime } from "../utils/notifications";
 import { CloneContext } from "./types";
 
 function getErrorCode(error: unknown): number | undefined {

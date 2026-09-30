@@ -1,6 +1,7 @@
 /*
- * Xneko - Atlas-based sprite follower
- * For packed sprite atlases with variable-sized frames
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 /* eslint-disable */

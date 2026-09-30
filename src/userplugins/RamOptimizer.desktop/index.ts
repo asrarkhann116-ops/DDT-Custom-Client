@@ -6,12 +6,12 @@
 
 import { ApplicationCommandInputType, sendBotMessage } from "@api/Commands";
 import { definePluginSettings, migratePluginSetting } from "@api/Settings";
+import { getMemoryRecommendations } from "@userplugins/ClientDiagnostics";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType, type PluginNative } from "@utils/types";
 import { ApplicationStreamingStore, RTCConnectionStore } from "@webpack/common";
 
-import { getMemoryRecommendations } from "../ClientDiagnostics";
 import type { ImageAnimationPolicy, MemorySnapshot, OptimizationResult } from "./native";
 
 const Native = VencordNative.pluginHelpers.RamOptimizer as PluginNative<typeof import("./native")>;

@@ -22,22 +22,13 @@ import { Divider } from "@components/Divider";
 import { FormSwitch } from "@components/FormSwitch";
 import { FolderIcon, GithubIcon, LinkIcon, LogIcon, PaintbrushIcon, RestartIcon } from "@components/Icons";
 import { QuickAction, QuickActionCard } from "@components/settings/QuickAction";
-import { SpecialCard } from "@components/settings/SpecialCard";
 import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
-import { openContributorModal } from "@components/settings/tabs/plugins/ContributorModal";
 import { openPluginModal } from "@components/settings/tabs/plugins/PluginModal";
 import SettingsPlugin from "@plugins/_core/settings";
-import { gitRemote } from "@shared/vencordUserAgent";
 import { IS_WINDOWS } from "@utils/constants";
 import { Margins } from "@utils/margins";
-import { isPluginDev } from "@utils/misc";
 import { relaunch } from "@utils/native";
 import { ConfirmModal, Forms, openModal, React, useMemo, UserStore } from "@webpack/common";
-
-import { DonateButtonComponent, isDonor } from "./DonateButton";
-import { MacOSVibrancySettings } from "./MacVibrancySettings";
-import { NotificationSection } from "./NotificationSettings";
-import { WindowsMaterialSettings } from "./WindowsMaterialSettings";
 // @ts-ignore
 import ddtWaifu from "file://./ddt_waifu.webp?base64";
 // @ts-ignore
@@ -46,6 +37,10 @@ import ddtWaifu2 from "file://./ddt_waifu2.webp?base64";
 import ddtWaifu3 from "file://./ddt_waifu3.webp?base64";
 // @ts-ignore
 import ddtWaifu4 from "file://./ddt_waifu4.webp?base64";
+
+import { MacOSVibrancySettings } from "./MacVibrancySettings";
+import { NotificationSection } from "./NotificationSettings";
+import { WindowsMaterialSettings } from "./WindowsMaterialSettings";
 
 const DEFAULT_DONATE_IMAGE = "https://cdn.discordapp.com/emojis/1026533090627174460.png";
 const SHIGGY_DONATE_IMAGE = "https://media.discordapp.net/stickers/1039992459209490513.png";

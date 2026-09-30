@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { PLUGIN_VERSION, UPDATE_CHECK_URL } from "@userplugins/serverCloner/constants";
+import { compareVersions } from "@userplugins/serverCloner/utils/helpers";
 import { Button, React } from "@webpack/common";
 
-import { PLUGIN_VERSION, UPDATE_CHECK_URL } from "../constants";
-import { compareVersions } from "../utils/helpers";
 import { showUpdateModal } from "./UpdateModal";
 
 type UpdateStatus = "idle" | "checking" | "up-to-date" | "available" | "failed";

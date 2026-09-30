@@ -17,12 +17,11 @@
 */
 
 import { Flex } from "@components/Flex";
+import { AuthorUserSummaryItem } from "@userplugins/philsPluginLibrary/components/AuthorSummaryItem";
+import { Author, Contributor } from "@userplugins/philsPluginLibrary/types";
+import { openURL } from "@userplugins/philsPluginLibrary/utils";
 import { Text } from "@webpack/common";
 import React from "react";
-
-import { AuthorUserSummaryItem } from "../../philsPluginLibrary/components/AuthorSummaryItem";
-import { Author, Contributor } from "../../philsPluginLibrary/types";
-import { openURL } from "../../philsPluginLibrary/utils";
 
 export interface ContributorAuthorSummaryProps {
     author?: Author;

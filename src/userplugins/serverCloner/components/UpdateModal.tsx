@@ -5,8 +5,7 @@
  */
 
 import { showNotification } from "@api/Notifications";
-
-import { GITHUB_RELEASE_URL, PLUGIN_VERSION } from "../constants";
+import { GITHUB_RELEASE_URL, PLUGIN_VERSION } from "@userplugins/serverCloner/constants";
 
 export function showUpdateModal(version: string, releaseNotes: string): void {
     const body = releaseNotes

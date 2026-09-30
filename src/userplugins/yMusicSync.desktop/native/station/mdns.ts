@@ -7,7 +7,8 @@
 import { createSocket, type Socket } from "node:dgram";
 import { networkInterfaces } from "node:os";
 
-import { log } from "../state";
+import { log } from "@userplugins/yMusicSync.desktop/native/state";
+
 import { isPrivateAddress } from "./address";
 import { DISCOVERY_TIMEOUT_MS, MDNS_ADDRESS, MDNS_PORT, MDNS_QUERY_DELAYS, MDNS_SERVICE } from "./constants";
 

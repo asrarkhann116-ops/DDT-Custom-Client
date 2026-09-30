@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { state, throwIfCancelled } from "@userplugins/serverCloner/store";
+import { handleCloneError } from "@userplugins/serverCloner/utils/errorHandler";
+import { replaceEmojis } from "@userplugins/serverCloner/utils/helpers";
+import { updateWithTime } from "@userplugins/serverCloner/utils/notifications";
 import { RestAPI } from "@webpack/common";
 
-import { state, throwIfCancelled } from "../store";
-import { handleCloneError } from "../utils/errorHandler";
-import { replaceEmojis } from "../utils/helpers";
-import { updateWithTime } from "../utils/notifications";
 import { CloneContext, OnboardingData, OnboardingOption } from "./types";
 
 interface MappedOption {

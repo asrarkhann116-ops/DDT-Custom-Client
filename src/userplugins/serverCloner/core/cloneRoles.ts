@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { state } from "@userplugins/serverCloner/store";
+import { checkGuildExistence, fetchGuildRoles } from "@userplugins/serverCloner/utils/api";
+import { handleCloneError } from "@userplugins/serverCloner/utils/errorHandler";
+import { arrayBufferToBase64, isRecord, replaceEmojis } from "@userplugins/serverCloner/utils/helpers";
+import { updateWithTime } from "@userplugins/serverCloner/utils/notifications";
 import { findByPropsLazy } from "@webpack";
 import { GuildStore, IconUtils, RestAPI } from "@webpack/common";
 
-import { state } from "../store";
-import { checkGuildExistence, fetchGuildRoles } from "../utils/api";
-import { handleCloneError } from "../utils/errorHandler";
-import { arrayBufferToBase64, isRecord, replaceEmojis } from "../utils/helpers";
-import { updateWithTime } from "../utils/notifications";
 import { CloneContext, CloneEmoji, CloneRole, OnboardingData } from "./types";
 
 const RoleIconUtils: { getRoleIconURL(data: { id: string; icon: string; size: number; }): string; } = findByPropsLazy("getRoleIconURL");

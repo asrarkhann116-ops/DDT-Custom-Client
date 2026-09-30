@@ -7,13 +7,11 @@
 import "./QuestPanel.css";
 
 import { Button } from "@components/Button";
-import { PluginNative } from "@utils/types";
+import { getQuestRuntime, isPanelOpen, QuestRuntime, setPanelOpen, subscribeQuestState, toggleQuestPanel } from "@userplugins/ddtQuestAutomator/questState";
+import settings from "@userplugins/ddtQuestAutomator/settings";
+import { QuestsStore } from "@userplugins/ddtQuestAutomator/stores";
+import { PLUGIN_VERSION } from "@userplugins/ddtQuestAutomator/utils/version";
 import { createRoot, NavigationRouter, ReactDOM, Tooltip, useEffect, useRef, useState } from "@webpack/common";
-
-import { getQuestRuntime, isPanelOpen, QuestRuntime, setPanelOpen, subscribeQuestState, toggleQuestPanel } from "../questState";
-import settings from "../settings";
-import { QuestsStore } from "../stores";
-import { PLUGIN_VERSION } from "../utils/version";
 
 // navigateToQuestHome no longer exists on current builds. The route itself is stable, so go
 // through the router rather than depending on that helper being found.

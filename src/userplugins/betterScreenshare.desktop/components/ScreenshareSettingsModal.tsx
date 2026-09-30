@@ -19,12 +19,9 @@
 import { Card } from "@components/Card";
 import { Flex } from "@components/Flex";
 import { Switch } from "@components/Switch";
-import { SelectOption } from "@vencord/discord-types";
-import { Button, Forms, openModalLazy, React, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
-
-import { MicrophoneSettingsModal } from "../../betterMicrophone.desktop/components";
-import { PluginInfo } from "../../betterScreenshare.desktop/constants";
-import { ScreenshareAudioProfile, ScreenshareAudioStore, ScreenshareProfile, ScreenshareStore } from "../../betterScreenshare.desktop/stores";
+import { MicrophoneSettingsModal } from "@userplugins/betterMicrophone.desktop/components";
+import { PluginInfo } from "@userplugins/betterScreenshare.desktop/constants";
+import { ScreenshareAudioProfile, ScreenshareAudioStore, ScreenshareProfile, ScreenshareStore } from "@userplugins/betterScreenshare.desktop/stores";
 import {
     MediaEngineStore,
     openURL,
@@ -37,8 +34,10 @@ import {
     types,
     validateNumberInput,
     validateTextInputNumber
-} from "../../philsPluginLibrary";
-import { Styles } from "../../philsPluginLibrary/styles";
+} from "@userplugins/philsPluginLibrary";
+import { Styles } from "@userplugins/philsPluginLibrary/styles";
+import { SelectOption } from "@vencord/discord-types";
+import { Button, Forms, openModalLazy, React, Select, Slider, TextInput, useEffect, useState } from "@webpack/common";
 
 const simpleResolutions: readonly (SelectOption & { value: types.Resolution; })[] = [
     {

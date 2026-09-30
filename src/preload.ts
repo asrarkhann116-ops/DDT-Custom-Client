@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { debounce } from "./shared/debounce";
-import { IpcEvents } from "./shared/IpcEvents";
 import { contextBridge, webFrame } from "electron/renderer";
 
+import { debounce } from "./shared/debounce";
+import { IpcEvents } from "./shared/IpcEvents";
 import VencordNative, { invoke, sendSync } from "./VencordNative";
 
 contextBridge.exposeInMainWorld("VencordNative", VencordNative);

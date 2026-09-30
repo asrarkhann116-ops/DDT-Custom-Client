@@ -16,12 +16,12 @@ import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings";
 import { SpecialCard } from "@components/settings/SpecialCard";
 import { Switch } from "@components/Switch";
+import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
 import { classNameFactory } from "@utils/css";
 import { openUserProfile } from "@utils/discord";
 import { Margins } from "@utils/margins";
 import { Alerts, GuildMemberCountStore, GuildMemberStore, GuildStore, React, Toasts, useStateFromStores } from "@webpack/common";
 
-import { BRAND_ICON_DATA_URL, BRAND_NAME } from "@userplugins/_kamidereCompat/branding";
 import {
     clearHydratedGuildSnapshot,
     clearHydratedGuildSnapshots,

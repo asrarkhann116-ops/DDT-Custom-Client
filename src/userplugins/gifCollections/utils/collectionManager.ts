@@ -5,10 +5,10 @@
  */
 
 import { DataStore } from "@api/index";
+import { settings } from "@userplugins/gifCollections/settings";
+import { Collection, Gif } from "@userplugins/gifCollections/types";
 import { Toasts } from "@webpack/common";
 
-import { settings } from "../settings";
-import { Collection, Gif } from "../types";
 import { getFormat } from "./getFormat";
 import { logger } from "./misc";
 

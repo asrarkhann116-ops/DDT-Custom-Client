@@ -5,14 +5,13 @@
  */
 
 import { BaseText } from "@components/BaseText";
+import { ICONS, TEXT } from "@userplugins/yMusicSync.desktop/constants";
+import { cl } from "@userplugins/yMusicSync.desktop/css";
+import { YMusicSyncStore } from "@userplugins/yMusicSync.desktop/store";
+import type { PlayerSnapshot } from "@userplugins/yMusicSync.desktop/types";
 import { makeLazy } from "@utils/lazy";
 import { formatDurationMs } from "@utils/text";
 import { Button, React, Slider, Tooltip, useEffect, useRef, useState } from "@webpack/common";
-
-import { ICONS, TEXT } from "../constants";
-import { cl } from "../css";
-import { YMusicSyncStore } from "../store";
-import type { PlayerSnapshot } from "../types";
 
 export function Icon({ path }: { path: string; }) {
     return (

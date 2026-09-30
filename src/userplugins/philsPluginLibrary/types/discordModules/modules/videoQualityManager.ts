@@ -16,7 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Bitrate, Framerate, Resolution } from "../../../../philsPluginLibrary/types";
+import { Bitrate, Framerate, Resolution } from "@userplugins/philsPluginLibrary/types";
+
 import { Connection } from "./";
 
 export type VideoQualityManager = VideoQualityManager_ & {

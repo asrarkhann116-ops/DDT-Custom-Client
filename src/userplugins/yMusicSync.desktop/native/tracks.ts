@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { lruSet } from "@userplugins/yMusicSync.desktop/constants";
 import { net } from "electron";
 
-import { lruSet } from "../constants";
 import { MAX_ARTIST_CACHE_ENTRIES, TRACKS_FETCH_TIMEOUT_MS, TRACKS_URL } from "./constants";
 import { errorMessage, log, state } from "./state";
 import type { YnisonState } from "./ynisonTypes";

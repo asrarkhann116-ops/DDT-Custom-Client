@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { clearLogs, getVcLogs, vcLogSubscribe } from "@userplugins/voiceChannelLog/logs";
+import { cl } from "@userplugins/voiceChannelLog/utils";
 import { classes } from "@utils/misc";
 import { Channel, RenderModalProps } from "@vencord/discord-types";
 import { AccessibilityStore, Modal, openModal, React, ScrollerThin } from "@webpack/common";
 
-import { clearLogs, getVcLogs, vcLogSubscribe } from "../logs";
-import { cl } from "../utils";
 import { VoiceChannelLogEntryComponent } from "./VoiceChannelLogEntryComponent";
 
 export function openVoiceChannelLog(channel: Channel) {

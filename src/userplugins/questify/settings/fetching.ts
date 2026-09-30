@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { fetchAndAlertQuests } from "@userplugins/questify/utils/fetching";
+import { QL } from "@userplugins/questify/utils/logging";
 import type { Quest } from "@vencord/discord-types";
 
-import { fetchAndAlertQuests } from "../utils/fetching";
-import { QL } from "../utils/logging";
 import { getCurrentUserId, getQuestifySettings } from "./access";
 
 let autoFetchInterval: null | ReturnType<typeof setInterval> = null;

@@ -6,18 +6,18 @@
 
 import { plugins } from "@api/PluginManager";
 import { ErrorBoundary } from "@components/index";
+import { getQuestifySettings, useQuestifySettings } from "@userplugins/questify/settings/access";
+import type { QuestButtonAction, QuestButtonDisplayMode, QuestButtonIndicatorMode } from "@userplugins/questify/settings/def";
+import { getIgnoredQuestIDs, ignoreAllQuests, resetIgnoredQuests } from "@userplugins/questify/settings/ignoredQuests";
+import { rerenderQuests } from "@userplugins/questify/settings/rerender";
+import { initialQuestDataFetched } from "@userplugins/questify/state";
+import { getActiveAutoCompletes, getQueueableAutoCompleteQuests, isQuestEnrollmentRateLimited, isQueueAllAutoCompleteQuestsInProgress, queueAllAutoCompleteQuests, stopAllAutoCompletes } from "@userplugins/questify/utils/completion";
+import { fetchAndAlertQuests } from "@userplugins/questify/utils/fetching";
+import { decimalToRGB, formatLowerBadge, isDarkish, leftClick, middleClick, q, QUEST_PAGE, rightClick } from "@userplugins/questify/utils/ui";
 import { findComponentByCodeLazy } from "@webpack";
 import { ContextMenuApi, Menu, NavigationRouter, useState } from "@webpack/common";
 import type { CSSProperties, JSX, MouseEvent } from "react";
 
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import type { QuestButtonAction, QuestButtonDisplayMode, QuestButtonIndicatorMode } from "../settings/def";
-import { getIgnoredQuestIDs, ignoreAllQuests, resetIgnoredQuests } from "../settings/ignoredQuests";
-import { rerenderQuests } from "../settings/rerender";
-import { initialQuestDataFetched } from "../state";
-import { getActiveAutoCompletes, getQueueableAutoCompleteQuests, isQuestEnrollmentRateLimited, isQueueAllAutoCompleteQuestsInProgress, queueAllAutoCompleteQuests, stopAllAutoCompletes } from "../utils/completion";
-import { fetchAndAlertQuests } from "../utils/fetching";
-import { decimalToRGB, formatLowerBadge, isDarkish, leftClick, middleClick, q, QUEST_PAGE, rightClick } from "../utils/ui";
 import { openQuestifySettingsModal } from "./settingsModal";
 
 const GuildlessServerListItemComponent = findComponentByCodeLazy("tooltip:", "lowerBadgeSize:");

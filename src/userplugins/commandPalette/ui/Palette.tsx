@@ -4,21 +4,21 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getVisibleCommands, subscribePalette } from "@userplugins/commandPalette/api/registry";
+import type { PageEntry, PaletteAction, PaletteCommand, PaletteContext, PaletteListItem } from "@userplugins/commandPalette/api/types";
+import { evaluateExpression } from "@userplugins/commandPalette/commands/calculator/evaluator";
+import { fuzzyScore, rankCommands } from "@userplugins/commandPalette/search/ranker";
+import { settings } from "@userplugins/commandPalette/settings";
+import { getAlias, setAlias } from "@userplugins/commandPalette/state/aliases";
+import { recordUse, topFrecent } from "@userplugins/commandPalette/state/frecency";
+import { getHotkey, setHotkey } from "@userplugins/commandPalette/state/hotkeys";
+import { getPins, isPinned, togglePin } from "@userplugins/commandPalette/state/pins";
 import { IS_MAC } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
 import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { useEffect, useRef, useState } from "@webpack/common";
 
-import { getVisibleCommands, subscribePalette } from "../api/registry";
-import type { PageEntry, PaletteAction, PaletteCommand, PaletteContext, PaletteListItem } from "../api/types";
-import { evaluateExpression } from "../commands/calculator/evaluator";
-import { fuzzyScore, rankCommands } from "../search/ranker";
-import { settings } from "../settings";
-import { getAlias, setAlias } from "../state/aliases";
-import { recordUse, topFrecent } from "../state/frecency";
-import { getHotkey, setHotkey } from "../state/hotkeys";
-import { getPins, isPinned, togglePin } from "../state/pins";
 import { ActionBar, Shortcut } from "./ActionBar";
 import { ActionsPanel } from "./ActionsPanel";
 import { CalculatorIcon, ChevronLeftIcon, CopyIcon, KeyboardIcon, PencilIcon, PinIcon, SearchIcon } from "./icons";

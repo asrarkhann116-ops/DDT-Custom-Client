@@ -1,0 +1,11 @@
+name = "ddt-profile-pro"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[vars]
+DISCORD_CLIENT_ID = "PUT_YOUR_DISCORD_APP_CLIENT_ID_HERE"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ddt-profile-pro"
+database_id = "PUT_YOUR_D1_DATABASE_ID_HERE"

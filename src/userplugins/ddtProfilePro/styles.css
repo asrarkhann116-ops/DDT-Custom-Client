@@ -1,0 +1,43 @@
+.vc-ddtpp-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.vc-ddtpp-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    border-left: 3px solid #7c3aed;
+    border-radius: 6px;
+    background: var(--background-mod-subtle);
+}
+
+.vc-ddtpp-song {
+    color: var(--text-link);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.vc-ddtpp-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vc-ddtpp-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.vc-ddtpp-error {
+    color: var(--text-danger);
+}

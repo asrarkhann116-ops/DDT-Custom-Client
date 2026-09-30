@@ -67,6 +67,7 @@ export const CspPolicies: PolicyMap = {
     "sponsor.ajay.app": ConnectSrc, // Dearrow API
     "dearrow-thumb.ajay.app": ImageSrc, // Dearrow Thumbnail CDN
     "usrbg.is-hardly.online": ImageSrc, // USRBG API
+    "*.workers.dev": ConnectSrc, // Cloudflare Workers, used by DDT Profile Pro
     "icons.duckduckgo.com": ImageSrc, // DuckDuckGo Favicon API (Reverse Image Search)
 
     // Tenor, used by TenorSearch plugin and some themes

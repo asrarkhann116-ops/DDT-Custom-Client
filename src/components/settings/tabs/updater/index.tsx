@@ -110,6 +110,24 @@ function Updater() {
                 ? <Newer {...commonProps} />
                 : <Updatable {...commonProps} />
             }
+
+            <Divider className={classes(Margins.top16, Margins.bottom16)} />
+
+            <Forms.FormTitle tag="h5">Manual Terminal Update</Forms.FormTitle>
+            <Paragraph className={Margins.bottom8}>
+                If you think the repo is updated then you can manually download the latest update by running this command in your PowerShell:
+            </Paragraph>
+            <Card style={{ padding: "10px", fontFamily: "monospace", userSelect: "text", wordBreak: "break-all", background: "var(--background-secondary)" }} className={Margins.bottom16}>
+                Remove-Item -Recurse -Force "$env:USERPROFILE\Downloads\DDT-Custom-Client*" -ErrorAction SilentlyContinue; $zip="$env:TEMP\ddt.zip"; (New-Object System.Net.WebClient).DownloadFile("https://github.com/asrarkhann116-ops/DDT-Custom-Client/archive/refs/heads/main.zip", $zip); Expand-Archive -Force $zip "$env:USERPROFILE\Downloads"; Rename-Item "$env:USERPROFILE\Downloads\DDT-Custom-Client-main" "DDT-Custom-Client"; cd "$env:USERPROFILE\Downloads\DDT-Custom-Client"; python install.py
+            </Card>
+            <Button
+                onClick={() => {
+                    // This triggers the native powershell execution we added in git.ts
+                    VencordNative.updater.update();
+                }}
+            >
+                Run Command
+            </Button>
         </SettingsTab>
     );
 }

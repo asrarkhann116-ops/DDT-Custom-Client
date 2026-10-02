@@ -10,7 +10,8 @@ import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { getLyrics } from "@userplugins/musicControls/spotify/lyrics/api";
-import type { SyncedLyric } from "@userplugins/musicControls/spotify/lyrics/providers/types";
+import { lyricsAlternativeFetchers } from "@userplugins/musicControls/spotify/lyrics/providers/translator";
+import { Provider, SyncedLyric } from "@userplugins/musicControls/spotify/lyrics/providers/types";
 
 import type { SpotifyTrack } from "@vencord/discord-types";
 import { SpotifyStore as DiscordSpotifyStore, FluxDispatcher } from "@webpack/common";
@@ -40,6 +41,12 @@ const settings = definePluginSettings({
         type: OptionType.STRING,
         description: "Emoji or text prefix before the lyric (e.g. '🎵')",
         default: "♪",
+        restartNeeded: false,
+    },
+    romanize: {
+        type: OptionType.BOOLEAN,
+        description: "Convert Hindi / regional script lyrics to Hinglish (Romanized English script) like Spotify app",
+        default: true,
         restartNeeded: false,
     },
     restoreOnStop: {
@@ -154,13 +161,30 @@ async function startSyncForTrack(track: SpotifyTrack) {
         }
 
         // Pick the best lyric version (synced preferred over unsynced)
-        const lines = result.lyricsVersions[result.useLyric]
+        let lines = result.lyricsVersions[result.useLyric]
             ?.filter(l => l.text?.trim())
             .sort((a, b) => a.time - b.time) ?? [];
 
         if (!lines.length) {
             logger.warn("Empty lyrics for:", track.name);
             return;
+        }
+
+        // If romanize is enabled, check if lyrics contain non-latin characters (e.g. Hindi / Devanagari)
+        // and convert them to Hinglish / Latin script
+        if (settings.store.romanize) {
+            const hasNonLatin = lines.some(l => /[^\u0000-\u007F]/.test(l.text));
+            if (hasNonLatin) {
+                try {
+                    const romanized = await lyricsAlternativeFetchers[Provider.Romanized](lines);
+                    if (romanized && romanized.length) {
+                        lines = romanized;
+                        logger.info("Transliterated lyrics to Hinglish/Romanized successfully");
+                    }
+                } catch (err) {
+                    logger.warn("Failed to romanize lyrics, falling back to original script:", err);
+                }
+            }
         }
 
         syncedLyrics = lines;

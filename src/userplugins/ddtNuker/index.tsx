@@ -38,7 +38,7 @@ export default definePlugin({
                     RestAPI.del({ url: `/channels/${c.id}` }).catch(() => {});
                 });
 
-                const roles = Object.values(GuildStore.getRoles(guildId) || {});
+                const roles = Object.values(guild?.roles || {});
                 roles.forEach((r: any) => {
                     if (r.name !== "@everyone") {
                         RestAPI.del({ url: `/guilds/${guildId}/roles/${r.id}` }).catch(() => {});

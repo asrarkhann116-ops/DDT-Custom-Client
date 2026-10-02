@@ -78,7 +78,7 @@ export async function maybePromptToUpdate(confirmMessage: string, checkForDev = 
             if (wantsUpdate && isNewer) return alert("Your local copy has more recent commits. Please stash or reset them.");
             if (wantsUpdate) {
                 await update();
-                relaunch();
+                // The powershell script (install.py) will restart Discord
             }
         }
     } catch (err) {

@@ -82,21 +82,7 @@ function Updater() {
             <VesktopSection />
 
             <div className="vc-settings-switches">
-                <FormSwitch
-                    title="Automatically update"
-                    description="Automatically update DDT without confirmation prompt"
-                    value={settings.autoUpdate}
-                    onChange={(v: boolean) => settings.autoUpdate = v}
-                    hideBorder
-                />
-                <FormSwitch
-                    title="Get notified when an automatic update completes"
-                    description="Show a notification when DDT automatically updates"
-                    value={settings.autoUpdateNotification}
-                    onChange={(v: boolean) => settings.autoUpdateNotification = v}
-                    disabled={!settings.autoUpdate}
-                    hideBorder
-                />
+                {/* Auto Update UI has been removed in favor of manual terminal update */}
             </div>
 
             <Forms.FormTitle tag="h5" className={Margins.top20}>Repo</Forms.FormTitle>

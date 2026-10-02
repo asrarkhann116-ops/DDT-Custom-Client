@@ -98,24 +98,8 @@ export function Updatable(props: CommonProps) {
                         onClick={runWithDispatch(setIsUpdating, async () => {
                             if (await update()) {
                                 setUpdates([]);
-
-                                await new Promise<void>(r => {
-                                    openModal(props => (
-                                        <ConfirmModal
-                                            {...props}
-                                            title="Update Success!"
-                                            subtitle="Successfully updated. Restart now to apply the changes?"
-                                            confirmText="Restart"
-                                            cancelText="Not now!"
-                                            variant="primary"
-                                            onConfirm={() => {
-                                                relaunch();
-                                                r();
-                                            }}
-                                            onCancel={r}
-                                        />
-                                    ));
-                                });
+                                // Since the powershell terminal will pop up, we don't need a success modal.
+                                // The python script will close Discord and re-launch it.
                             }
                         })}
                     >

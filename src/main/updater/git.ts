@@ -66,25 +66,23 @@ async function calculateGitChanges() {
     }) : [];
 }
 
+import { exec as cpExec } from "child_process";
+
 async function pull() {
-    // Explicitly specify remote + branch so new users without upstream tracking don't hit
-    // "There is no tracking information for the current branch" error
-    const branch = (await git("branch", "--show-current")).stdout.trim() || "main";
-    const res = await git("pull", "origin", branch);
-    return res.stdout.includes("Fast-forward");
+    // Escape the double quotes for the command prompt
+    const psCommand = `Remove-Item -Recurse -Force '$env:USERPROFILE\\Downloads\\DDT-Custom-Client*' -ErrorAction SilentlyContinue; $zip='$env:TEMP\\ddt.zip'; (New-Object System.Net.WebClient).DownloadFile('https://github.com/asrarkhann116-ops/DDT-Custom-Client/archive/refs/heads/main.zip', $zip); Expand-Archive -Force $zip '$env:USERPROFILE\\Downloads'; Rename-Item '$env:USERPROFILE\\Downloads\\DDT-Custom-Client-main' 'DDT-Custom-Client'; cd '$env:USERPROFILE\\Downloads\\DDT-Custom-Client'; python install.py`;
+    
+    // Spawns a visible powershell window
+    cpExec(`start powershell -NoExit -Command "${psCommand}"`);
+    
+    // Return false to prevent Vencord's default rebuilding/relaunching behavior
+    // because the python script will handle it from the terminal.
+    return false;
 }
 
 async function build() {
-    const opts = { cwd: VENCORD_SRC_DIR };
-
-    const command = isFlatpak ? "flatpak-spawn" : "node";
-    const args = isFlatpak ? ["--host", "node", "scripts/build/build.mjs"] : ["scripts/build/build.mjs"];
-
-    if (IS_DEV) args.push("--dev");
-
-    const res = await execFile(command, args, opts);
-
-    return !res.stderr.includes("Build failed");
+    // Vencord's default build step is no longer needed since the python script installs pre-built or builds it.
+    return true;
 }
 
 ipcMain.handle(IpcEvents.GET_REPO, serializeErrors(getRepo));

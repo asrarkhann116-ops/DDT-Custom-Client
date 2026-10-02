@@ -44,6 +44,7 @@ export interface Settings {
     eagerPatches: boolean;
     enabledThemes: string[];
     enableReactDevtools: boolean;
+    showWaifuBanner: boolean;
     themeLinks: string[];
     themeNames: string[];
     enabledThemeLinks: string[];
@@ -105,6 +106,7 @@ const DefaultSettings: Settings = {
     eagerPatches: false, // Eagerly patching no longer works due to module factories with the same id being able to have different sources now.
     enabledThemes: [],
     enableReactDevtools: false,
+    showWaifuBanner: true,
     frameless: false,
     transparent: false,
     winCtrlQ: false,

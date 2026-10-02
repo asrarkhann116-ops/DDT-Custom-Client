@@ -59,9 +59,14 @@ type KeysOfType<Object, Type> = {
 }[keyof Object];
 
 function Switches() {
-    const settings = useSettings(["useQuickCss", "enableReactDevtools", "frameless", "winNativeTitleBar", "transparent", "winCtrlQ", "disableMinSize"]);
+    const settings = useSettings(["useQuickCss", "enableReactDevtools", "frameless", "winNativeTitleBar", "transparent", "winCtrlQ", "disableMinSize", "showWaifuBanner"]);
 
     const Switches = [
+        {
+            key: "showWaifuBanner",
+            title: "Show Waifu Banner",
+            description: "Toggle the visibility of the waifu support banner at the top of the Developer Tools tab"
+        },
         {
             key: "useQuickCss",
             title: "Enable Custom CSS",
@@ -143,6 +148,7 @@ function Switches() {
 }
 
 function VencordSettings() {
+    const settings = useSettings(["showWaifuBanner"]);
     const donateImage = useMemo(() =>
         Math.random() > 0.5 ? DEFAULT_DONATE_IMAGE : SHIGGY_DONATE_IMAGE,
         []
@@ -153,6 +159,7 @@ function VencordSettings() {
     return (
         <SettingsTab>
             {/* DDT Waifu Banner */}
+            {settings.showWaifuBanner && (
             <div style={{
                 display: "flex",
                 flexDirection: "row",
@@ -232,6 +239,7 @@ function VencordSettings() {
                     alt="DDT Waifu 4"
                 />
             </div>
+            )}
             <section>
                 <Forms.FormTitle tag="h5">Quick Actions</Forms.FormTitle>
 

@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import "./style.css";
+
 import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
 import { ApplicationCommandInputType } from "@api/Commands";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import definePlugin, { OptionType } from "@utils/types";
-import { ChannelStore, GuildStore, IconUtils, React, RelationshipStore, UserStore, useState } from "@webpack/common";
+import { ChannelStore, GuildStore, IconUtils, Modal, openModal, React, RelationshipStore, UserStore, useState } from "@webpack/common";
 
 const logger = new Logger("DDT:ChatStats");
 
@@ -73,7 +74,7 @@ function saveStatsToVencord() {
     }
 }
 
-// Clean Modern SVG Icons (NO EMOJIS)
+// Clean Minimal Vector SVG Icons (ui-ux-pro-max standard)
 function ChartIcon({ size = 18, color = "currentColor" }: { size?: number; color?: string; }) {
     return (
         <svg viewBox="0 0 24 24" width={size} height={size} fill={color}>
@@ -137,13 +138,7 @@ function getChannelName(id: string) {
     return guild ? `${guild.name} / #${ch.name}` : `#${ch.name}`;
 }
 
-const CustomModalRoot = ModalRoot as any;
-const CustomModalHeader = ModalHeader as any;
-const CustomModalContent = ModalContent as any;
-const CustomModalFooter = ModalFooter as any;
-const CustomModalCloseButton = ModalCloseButton as any;
-
-function ChatStatsModal({ modalProps }: { modalProps: any }) {
+export function ChatStatsModal({ rootProps }: { rootProps: any }) {
     const [activeTab, setActiveTab] = useState<"overview" | "friends" | "channels" | "activity">("overview");
 
     const topChannels = Object.entries(stats.channelCounts)
@@ -158,68 +153,65 @@ function ChatStatsModal({ modalProps }: { modalProps: any }) {
     const totalActiveChannels = Object.keys(stats.channelCounts).length;
 
     const peakHourEntry = Object.entries(stats.hourlyCounts).sort(([, a], [, b]) => b - a)[0];
-    const peakHourText = peakHourEntry ? `${peakHourEntry[0]}:00 - ${peakHourEntry[0]}:59 (${peakHourEntry[1]} messages)` : "No data yet";
+    const peakHourText = peakHourEntry ? `${peakHourEntry[0]}:00 - ${peakHourEntry[0]}:59 (${peakHourEntry[1]} msgs)` : "No activity recorded";
 
     return (
-        <CustomModalRoot {...modalProps} size={ModalSize.LARGE} style={{ width: "760px", maxWidth: "90vw", overflow: "hidden" }}>
-            {/* Header */}
-            <CustomModalHeader style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px", borderBottom: "1px solid var(--background-modifier-accent)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "700", fontSize: "19px", color: "var(--header-primary)" }}>
-                    <ChartIcon size={24} color="var(--brand-experiment, #5865F2)" />
-                    <span>DDT Client Intelligence & Analytics</span>
+        <Modal
+            {...rootProps}
+            size="md"
+            title="DDT Analytics & Intelligence Hub"
+            actions={[
+                {
+                    text: "Reset Analytics",
+                    variant: "critical-primary",
+                    onClick: () => {
+                        stats = { totalMessagesSent: 0, channelCounts: {}, recentFriends: {}, hourlyCounts: {} };
+                        saveStatsToVencord();
+                        rootProps.onClose();
+                    }
+                },
+                {
+                    text: "Close",
+                    variant: "secondary",
+                    onClick: rootProps.onClose,
+                }
+            ]}
+        >
+            <div className="ddt-stats-backdrop">
+                {/* Banner Card */}
+                <div className="ddt-stats-banner">
+                    <div>
+                        <div className="ddt-stats-banner-title">
+                            <ChartIcon size={20} color="#5865F2" />
+                            <span>Client Telemetry & Insights</span>
+                            <span className="ddt-stats-banner-tag">LIVE</span>
+                        </div>
+                        <div className="ddt-stats-banner-sub">
+                            Encrypted local tracking powered by Vencord Settings Store
+                        </div>
+                    </div>
                 </div>
-                <CustomModalCloseButton onClick={modalProps.onClose} />
-            </CustomModalHeader>
 
-            {/* Content (No horizontal scroll, fully auto-sized) */}
-            <CustomModalContent style={{ padding: "20px 24px", overflowX: "hidden", display: "flex", flexDirection: "column", gap: "18px" }}>
-                {/* Navigation Header Tabs (SVG Icons) */}
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: "10px",
-                    borderBottom: "1px solid var(--background-modifier-accent)",
-                    paddingBottom: "14px"
-                }}>
+                {/* Aesthetic Tab Navigation */}
+                <div className="ddt-stats-nav">
                     {[
                         { id: "overview", label: "Overview", icon: ChartIcon, count: null },
-                        { id: "friends", label: "Talked Friends", icon: UsersIcon, count: totalFriendsTalked },
-                        { id: "channels", label: "Top Channels", icon: HashIcon, count: totalActiveChannels },
-                        { id: "activity", label: "Peak Activity", icon: ClockIcon, count: null }
+                        { id: "friends", label: "Friends", icon: UsersIcon, count: totalFriendsTalked },
+                        { id: "channels", label: "Channels", icon: HashIcon, count: totalActiveChannels },
+                        { id: "activity", label: "Activity", icon: ClockIcon, count: null }
                     ].map(tab => {
-                        const IconComponent = tab.icon;
+                        const IconComp = tab.icon;
                         const isCurrent = activeTab === tab.id;
                         return (
                             <button
                                 key={tab.id}
+                                className={`ddt-stats-tab-btn ${isCurrent ? "active" : ""}`}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                style={{
-                                    padding: "10px 8px",
-                                    borderRadius: "8px",
-                                    border: "none",
-                                    background: isCurrent ? "var(--brand-experiment, #5865F2)" : "var(--background-secondary)",
-                                    color: isCurrent ? "#ffffff" : "var(--text-muted)",
-                                    fontWeight: "600",
-                                    fontSize: "13px",
-                                    cursor: "pointer",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "8px",
-                                    transition: "background 0.15s ease"
-                                }}
                             >
-                                <IconComponent size={16} color={isCurrent ? "#ffffff" : "var(--text-muted)"} />
+                                <IconComp size={15} color="currentColor" />
                                 <span>{tab.label}</span>
-                                {tab.count !== null && (
-                                    <span style={{
-                                        fontSize: "11px",
-                                        padding: "1px 6px",
-                                        borderRadius: "10px",
-                                        background: isCurrent ? "rgba(0,0,0,0.25)" : "var(--background-tertiary)"
-                                    }}>
-                                        {tab.count}
-                                    </span>
+                                {tab.count !== null && tab.count > 0 && (
+                                    <span className="ddt-stats-badge">{tab.count}</span>
                                 )}
                             </button>
                         );
@@ -228,84 +220,82 @@ function ChatStatsModal({ modalProps }: { modalProps: any }) {
 
                 {/* TAB 1: OVERVIEW */}
                 {activeTab === "overview" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(3, 1fr)",
-                            gap: "14px"
-                        }}>
-                            <div style={{ background: "var(--background-secondary)", padding: "18px 14px", borderRadius: "10px", textAlign: "center" }}>
-                                <div style={{ fontSize: "32px", fontWeight: "800", color: "var(--brand-experiment, #5865F2)" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                        <div className="ddt-stats-cards-grid">
+                            <div className="ddt-stats-card">
+                                <div className="ddt-stats-card-val" style={{ color: "#7B8BFF" }}>
                                     {stats.totalMessagesSent}
                                 </div>
-                                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: "700", marginTop: "4px" }}>
-                                    Total Sent Messages
-                                </div>
+                                <div className="ddt-stats-card-lbl">Sent Messages</div>
                             </div>
 
-                            <div style={{ background: "var(--background-secondary)", padding: "18px 14px", borderRadius: "10px", textAlign: "center" }}>
-                                <div style={{ fontSize: "32px", fontWeight: "800", color: "var(--status-positive, #57F287)" }}>
+                            <div className="ddt-stats-card">
+                                <div className="ddt-stats-card-val" style={{ color: "#57F287" }}>
                                     {totalFriendsTalked}
                                 </div>
-                                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: "700", marginTop: "4px" }}>
-                                    Friends Interacted
-                                </div>
+                                <div className="ddt-stats-card-lbl">Friends Reached</div>
                             </div>
 
-                            <div style={{ background: "var(--background-secondary)", padding: "18px 14px", borderRadius: "10px", textAlign: "center" }}>
-                                <div style={{ fontSize: "32px", fontWeight: "800", color: "var(--status-warning, #FEE75C)" }}>
+                            <div className="ddt-stats-card">
+                                <div className="ddt-stats-card-val" style={{ color: "#FEE75C" }}>
                                     {totalActiveChannels}
                                 </div>
-                                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: "700", marginTop: "4px" }}>
-                                    Active Channels
-                                </div>
+                                <div className="ddt-stats-card-lbl">Active Channels</div>
                             </div>
                         </div>
 
-                        {/* Peak Chatter Card */}
+                        {/* Peak Activity Banner */}
                         <div style={{
-                            background: "var(--background-secondary-alt)",
-                            padding: "14px 18px",
-                            borderRadius: "10px",
                             display: "flex",
+                            alignItems: "center",
                             justifyContent: "space-between",
-                            alignItems: "center"
+                            background: "rgba(20, 27, 44, 0.6)",
+                            border: "1px solid rgba(255, 255, 255, 0.06)",
+                            borderRadius: "10px",
+                            padding: "12px 18px"
                         }}>
                             <div>
-                                <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
-                                    <ZapIcon size={14} color="var(--status-warning, #FEE75C)" />
+                                <div style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#64748b", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <ZapIcon size={14} color="#FEE75C" />
                                     <span>Peak Messaging Window</span>
                                 </div>
-                                <div style={{ fontSize: "16px", fontWeight: "600", marginTop: "4px" }}>{peakHourText}</div>
+                                <div style={{ fontSize: "15px", fontWeight: "700", color: "#e2e8f0", marginTop: "3px" }}>
+                                    {peakHourText}
+                                </div>
                             </div>
-                            <ClockIcon size={28} color="var(--text-muted)" />
+                            <ClockIcon size={24} color="#64748b" />
                         </div>
 
                         {/* Top Contact Highlight */}
-                        <div style={{ background: "var(--background-secondary)", padding: "14px 18px", borderRadius: "10px" }}>
-                            <div style={{ fontSize: "12px", fontWeight: "700", marginBottom: "10px", textTransform: "uppercase", color: "var(--header-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
-                                <TrophyIcon size={15} color="var(--status-warning, #FEE75C)" />
+                        <div style={{
+                            background: "rgba(20, 27, 44, 0.6)",
+                            border: "1px solid rgba(255, 255, 255, 0.06)",
+                            borderRadius: "10px",
+                            padding: "14px 18px"
+                        }}>
+                            <div style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "#64748b", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                <TrophyIcon size={14} color="#FEE75C" />
                                 <span>Most Contacted Friend</span>
                             </div>
                             {friendsList.length > 0 ? (
-                                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                                     {friendsList[0].avatarUrl ? (
-                                        <img src={friendsList[0].avatarUrl} style={{ width: "42px", height: "42px", borderRadius: "50%" }} />
+                                        <img src={friendsList[0].avatarUrl} style={{ width: "40px", height: "40px", borderRadius: "50%", border: "2px solid #5865F2" }} />
                                     ) : (
-                                        <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "var(--brand-experiment, #5865F2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                            <UsersIcon size={20} color="#ffffff" />
+                                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#5865F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <UsersIcon size={20} color="#fff" />
                                         </div>
                                     )}
                                     <div>
-                                        <div style={{ fontWeight: "700", fontSize: "15px" }}>{friendsList[0].username}</div>
-                                        <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
+                                        <div style={{ fontWeight: "700", fontSize: "14px", color: "#fff" }}>{friendsList[0].username}</div>
+                                        <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "1px" }}>
                                             {friendsList[0].count} messages exchanged • Last interacted {new Date(friendsList[0].lastTalked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div style={{ color: "var(--text-muted)", fontSize: "13px", fontStyle: "italic" }}>
-                                    No friend interactions recorded yet. Send a DM to start tracking!
+                                <div style={{ color: "#64748b", fontSize: "12px", fontStyle: "italic" }}>
+                                    No friend interactions recorded yet. Send a direct message to begin tracking!
                                 </div>
                             )}
                         </div>
@@ -314,52 +304,31 @@ function ChatStatsModal({ modalProps }: { modalProps: any }) {
 
                 {/* TAB 2: TALKED FRIENDS */}
                 {activeTab === "friends" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "360px", paddingRight: "4px" }}>
+                    <div className="ddt-stats-list-container">
                         {friendsList.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", fontSize: "14px" }}>
-                                No direct messages or friend interactions recorded yet.
+                            <div style={{ textAlign: "center", padding: "36px", color: "#64748b", fontSize: "13px" }}>
+                                No direct messages or friend chats logged yet.
                             </div>
                         ) : (
                             friendsList.map((friend, i) => (
-                                <div
-                                    key={friend.id}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        background: "var(--background-secondary)",
-                                        padding: "12px 16px",
-                                        borderRadius: "8px",
-                                        border: "1px solid var(--background-tertiary)"
-                                    }}
-                                >
+                                <div key={friend.id} className="ddt-stats-list-item">
                                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                                        <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: "700", width: "22px" }}>#{i + 1}</span>
+                                        <span style={{ fontSize: "12px", color: "#64748b", fontWeight: "800", width: "20px" }}>#{i + 1}</span>
                                         {friend.avatarUrl ? (
-                                            <img src={friend.avatarUrl} style={{ width: "36px", height: "36px", borderRadius: "50%" }} />
+                                            <img src={friend.avatarUrl} style={{ width: "34px", height: "34px", borderRadius: "50%" }} />
                                         ) : (
-                                            <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--brand-experiment, #5865F2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                <UsersIcon size={16} color="#ffffff" />
+                                            <div style={{ width: "34px", height: "34px", borderRadius: "50%", background: "#5865F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <UsersIcon size={16} color="#fff" />
                                             </div>
                                         )}
                                         <div>
-                                            <div style={{ fontWeight: "600", fontSize: "14px" }}>{friend.username}</div>
-                                            <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "1px" }}>
+                                            <div style={{ fontWeight: "700", fontSize: "13.5px", color: "#fff" }}>{friend.username}</div>
+                                            <div style={{ fontSize: "11px", color: "#64748b" }}>
                                                 Last: {new Date(friend.lastTalked).toLocaleDateString()} {new Date(friend.lastTalked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </div>
                                     </div>
-
-                                    <span style={{
-                                        background: "var(--background-tertiary)",
-                                        padding: "4px 12px",
-                                        borderRadius: "14px",
-                                        fontSize: "12px",
-                                        fontWeight: "700",
-                                        color: "var(--brand-experiment, #5865F2)"
-                                    }}>
-                                        {friend.count} msgs
-                                    </span>
+                                    <span className="ddt-stats-pill-count">{friend.count} msgs</span>
                                 </div>
                             ))
                         )}
@@ -368,40 +337,22 @@ function ChatStatsModal({ modalProps }: { modalProps: any }) {
 
                 {/* TAB 3: TOP CHANNELS */}
                 {activeTab === "channels" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "360px", paddingRight: "4px" }}>
+                    <div className="ddt-stats-list-container">
                         {topChannels.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", fontSize: "14px" }}>
-                                No channel messages recorded yet.
+                            <div style={{ textAlign: "center", padding: "36px", color: "#64748b", fontSize: "13px" }}>
+                                No channel interactions recorded yet.
                             </div>
                         ) : (
                             topChannels.map(([id, count], idx) => (
-                                <div
-                                    key={id}
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        padding: "12px 16px",
-                                        background: "var(--background-secondary)",
-                                        borderRadius: "8px"
-                                    }}
-                                >
-                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", maxWidth: "75%" }}>
-                                        <span style={{ color: "var(--text-muted)", fontSize: "13px", width: "20px", fontWeight: "700" }}>#{idx + 1}</span>
-                                        <HashIcon size={16} color="var(--text-muted)" />
-                                        <span style={{ fontWeight: "600", fontSize: "13.5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                <div key={id} className="ddt-stats-list-item">
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "75%" }}>
+                                        <span style={{ color: "#64748b", fontSize: "12px", width: "18px", fontWeight: "800" }}>#{idx + 1}</span>
+                                        <HashIcon size={15} color="#5865F2" />
+                                        <span style={{ fontWeight: "600", fontSize: "13px", color: "#e2e8f0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                             {getChannelName(id)}
                                         </span>
                                     </div>
-                                    <span style={{
-                                        background: "var(--background-tertiary)",
-                                        padding: "4px 12px",
-                                        borderRadius: "14px",
-                                        fontSize: "12px",
-                                        fontWeight: "600"
-                                    }}>
-                                        {count} msg{count === 1 ? "" : "s"}
-                                    </span>
+                                    <span className="ddt-stats-pill-count">{count} msgs</span>
                                 </div>
                             ))
                         )}
@@ -410,86 +361,35 @@ function ChatStatsModal({ modalProps }: { modalProps: any }) {
 
                 {/* TAB 4: PEAK ACTIVITY */}
                 {activeTab === "activity" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        <div style={{ fontSize: "12px", color: "var(--text-muted)", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                            <ClockIcon size={14} color="var(--text-muted)" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div style={{ fontSize: "12px", color: "#64748b", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                            <ClockIcon size={13} color="#64748b" />
                             <span>24-Hour Messaging Activity Distribution</span>
                         </div>
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(6, 1fr)",
-                            gap: "8px",
-                            maxHeight: "340px"
-                        }}>
+                        <div className="ddt-stats-heatmap-grid">
                             {Array.from({ length: 24 }).map((_, i) => {
                                 const hourKey = i.toString().padStart(2, "0");
                                 const count = stats.hourlyCounts[hourKey] || 0;
                                 return (
                                     <div
                                         key={hourKey}
-                                        style={{
-                                            background: count > 0 ? "rgba(88, 101, 242, 0.15)" : "var(--background-secondary)",
-                                            border: count > 0 ? "1px solid var(--brand-experiment, #5865F2)" : "1px solid transparent",
-                                            borderRadius: "8px",
-                                            padding: "10px 6px",
-                                            textAlign: "center"
-                                        }}
+                                        className={`ddt-stats-heatmap-slot ${count > 0 ? "active" : ""}`}
                                     >
-                                        <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "600" }}>{hourKey}:00</div>
-                                        <div style={{ fontSize: "15px", fontWeight: "800", marginTop: "3px", color: count > 0 ? "var(--brand-experiment, #5865F2)" : "var(--text-muted)" }}>
-                                            {count}
-                                        </div>
+                                        <div className="ddt-stats-heatmap-hour">{hourKey}:00</div>
+                                        <div className="ddt-stats-heatmap-val">{count}</div>
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
                 )}
-            </CustomModalContent>
-
-            {/* Footer */}
-            <CustomModalFooter style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", background: "var(--background-secondary)" }}>
-                <button
-                    onClick={() => {
-                        stats = { totalMessagesSent: 0, channelCounts: {}, recentFriends: {}, hourlyCounts: {} };
-                        saveStatsToVencord();
-                        modalProps.onClose();
-                    }}
-                    style={{
-                        padding: "8px 16px",
-                        borderRadius: "4px",
-                        border: "none",
-                        background: "var(--button-danger-background, #DA373C)",
-                        color: "#ffffff",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        fontSize: "13px"
-                    }}
-                >
-                    Reset Analytics
-                </button>
-                <button
-                    onClick={modalProps.onClose}
-                    style={{
-                        padding: "8px 24px",
-                        borderRadius: "4px",
-                        border: "none",
-                        background: "var(--button-secondary-background, #4e5058)",
-                        color: "#ffffff",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        fontSize: "13px"
-                    }}
-                >
-                    Close
-                </button>
-            </CustomModalFooter>
-        </CustomModalRoot>
+            </div>
+        </Modal>
     );
 }
 
 function openStatsModal() {
-    openModal(modalProps => <ChatStatsModal modalProps={modalProps} />);
+    openModal(props => <ChatStatsModal rootProps={props} />);
 }
 
 export default definePlugin({

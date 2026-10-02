@@ -29,7 +29,13 @@ function makeSpotifyLyricsApiUrl(trackId: string, customBaseUrl?: string): strin
 }
 
 export async function getLyricsSpotify(trackId: string, customBaseUrl?: string): Promise<LyricsData | null> {
-    const resp = await fetch(makeSpotifyLyricsApiUrl(trackId, customBaseUrl));
+    let resp: Response;
+    try {
+        resp = await fetch(makeSpotifyLyricsApiUrl(trackId, customBaseUrl));
+    } catch {
+        // CORS or network error (e.g. third-party vercel API blocked by discord.com origin)
+        return null;
+    }
     if (!resp.ok) return null;
 
     let data: LyricsAPIResp;

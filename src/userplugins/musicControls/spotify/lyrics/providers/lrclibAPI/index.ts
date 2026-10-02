@@ -36,11 +36,17 @@ export async function getLyricsLrclib(track: Track): Promise<LyricsData | null> 
 
     const params = new URLSearchParams(info);
     const url = `${baseUrlLrclib}?${params.toString()}`;
-    const response = await fetch(url, {
-        headers: {
-            "User-Agent": "SpotifyLyrics for DDT (https://github.com/Masterjoona/vc-spotifylyrics)"
-        }
-    });
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            headers: {
+                "User-Agent": "SpotifyLyrics for DDT (https://github.com/Masterjoona/vc-spotifylyrics)"
+            }
+        });
+    } catch {
+        // Network error or 503 from lrclib.net
+        return null;
+    }
 
     if (!response.ok) return null;
 

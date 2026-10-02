@@ -54,11 +54,15 @@ export async function getLyrics(track: Track | null): Promise<LyricsData | null>
     const providersToTry = [settings.store.lyricsProvider, ...providers.filter(p => p !== settings.store.lyricsProvider)];
 
     for (const provider of providersToTry) {
-        const lyricsInfo = await lyricFetchers[provider](track);
+        try {
+            const lyricsInfo = await lyricFetchers[provider](track);
 
-        if (lyricsInfo) {
-            await DataStore.set(LyricsCacheKey, { ...cached, [cacheKey]: lyricsInfo });
-            return lyricsInfo;
+            if (lyricsInfo) {
+                await DataStore.set(LyricsCacheKey, { ...cached, [cacheKey]: lyricsInfo });
+                return lyricsInfo;
+            }
+        } catch {
+            // Ignored - provider threw (e.g. CORS on third-party Vercel API or network 503)
         }
 
         const updatedNullCacheEntry = nullLyricCache.get(cacheKey) || {};

@@ -39,7 +39,7 @@ const settings = definePluginSettings({
     prefix: {
         type: OptionType.STRING,
         description: "Emoji or text prefix before the lyric (e.g. '🎵')",
-        default: "🎵",
+        default: "♪ 💀🍷",
         restartNeeded: false,
     },
     restoreOnStop: {

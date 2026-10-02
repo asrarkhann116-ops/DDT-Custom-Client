@@ -54,10 +54,11 @@ export async function getLyricsSpotify(trackId: string, customBaseUrl?: string):
         useLyric: Provider.Spotify,
         lyricsVersions: {
             Spotify: lyrics.map(line => {
-                const trimmedText = line.words.trim();
+                // Strip word-level timestamp tags like <00:47.699> from Musixmatch word-sync format
+                const cleanedText = line.words.replace(/<\d{2}:\d{2}\.\d{3}>/g, "").trim();
                 return {
                     time: Number(line.startTimeMs) / 1000,
-                    text: (trimmedText === "" || trimmedText === "♪") ? null : trimmedText
+                    text: (cleanedText === "" || cleanedText === "♪") ? null : cleanedText
                 };
             })
         }

@@ -1,0 +1,26 @@
+/**
+ * @name aider
+ * @description Yet another skeuo theme, focused around being square, while others are circles.
+ * @author Blade0, Aidak
+ * @authorId 1124341362955919371
+ * @version 1.0
+ * @updateUrl https://blade04208.github.io/aider/theme/aider.theme.css
+ * @source https://github.com/Blade04208/aider
+ * @invite KEcCnVuTV7
+ */
+/* This contains the actual theme, removing will remove the theme, so dont ok thank you */
+@import url(https://blade04208.github.io/aider/build/import.css);
+
+:root {
+    --aider-chat-avatars: compact;
+    /* Should Aider's avatars be beside the username?   Syntax: compact | cozy */
+    --aider-banner-slant: true;
+    /* Should the popout banner be slanted?             Syntax: true | false  */
+    --aider-bubbles: true;
+    /* Should messages be displayed as bubbles?         Syntax: true | false  */
+    --aider-bubble-others-bg: blurple;
+    /* The background color of other users' bubbles.    Syntax: any valid CSS color | aqua | purple | pink | orange | lemon | lime | graphite */
+    --aider-bubble-you-bg: graphite;
+    /* The background color of your own bubbles.        Syntax: any valid CSS color | aqua | purple | pink | orange | lemon | lime | graphite */
+
+}

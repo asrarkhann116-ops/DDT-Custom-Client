@@ -1,0 +1,364 @@
+{
+  "image": "neko bikini.png",
+  "image_size": {
+    "width": 1774,
+    "height": 887
+  },
+  "format": "packed_sprite_atlas",
+  "sprite_count": 39,
+  "coordinate_origin": "top-left",
+  "boxes": [
+    {
+      "x": 29,
+      "y": 6,
+      "width": 91,
+      "height": 216,
+      "row": 1,
+      "index": 1,
+      "pose": "row1_pose1"
+    },
+    {
+      "x": 191,
+      "y": 11,
+      "width": 96,
+      "height": 201,
+      "row": 1,
+      "index": 2,
+      "pose": "row1_pose2"
+    },
+    {
+      "x": 356,
+      "y": 64,
+      "width": 132,
+      "height": 148,
+      "row": 1,
+      "index": 3,
+      "pose": "row1_pose3"
+    },
+    {
+      "x": 508,
+      "y": 45,
+      "width": 98,
+      "height": 163,
+      "row": 1,
+      "index": 4,
+      "pose": "row1_pose4"
+    },
+    {
+      "x": 637,
+      "y": 46,
+      "width": 146,
+      "height": 149,
+      "row": 1,
+      "index": 5,
+      "pose": "row1_pose5"
+    },
+    {
+      "x": 778,
+      "y": 122,
+      "width": 203,
+      "height": 90,
+      "row": 1,
+      "index": 6,
+      "pose": "row1_pose6"
+    },
+    {
+      "x": 959,
+      "y": 71,
+      "width": 152,
+      "height": 137,
+      "row": 1,
+      "index": 7,
+      "pose": "row1_pose7"
+    },
+    {
+      "x": 1127,
+      "y": 67,
+      "width": 157,
+      "height": 144,
+      "row": 1,
+      "index": 8,
+      "pose": "row1_pose8"
+    },
+    {
+      "x": 1302,
+      "y": 71,
+      "width": 146,
+      "height": 145,
+      "row": 1,
+      "index": 9,
+      "pose": "row1_pose9"
+    },
+    {
+      "x": 1472,
+      "y": 74,
+      "width": 110,
+      "height": 149,
+      "row": 1,
+      "index": 10,
+      "pose": "row1_pose10"
+    },
+    {
+      "x": 1634,
+      "y": 46,
+      "width": 93,
+      "height": 173,
+      "row": 1,
+      "index": 11,
+      "pose": "row1_pose11"
+    },
+    {
+      "x": 32,
+      "y": 231,
+      "width": 100,
+      "height": 219,
+      "row": 2,
+      "index": 12,
+      "pose": "row2_pose1"
+    },
+    {
+      "x": 201,
+      "y": 235,
+      "width": 120,
+      "height": 216,
+      "row": 2,
+      "index": 13,
+      "pose": "row2_pose2"
+    },
+    {
+      "x": 358,
+      "y": 311,
+      "width": 112,
+      "height": 134,
+      "row": 2,
+      "index": 14,
+      "pose": "row2_pose3"
+    },
+    {
+      "x": 498,
+      "y": 250,
+      "width": 112,
+      "height": 193,
+      "row": 2,
+      "index": 15,
+      "pose": "row2_pose4"
+    },
+    {
+      "x": 655,
+      "y": 282,
+      "width": 115,
+      "height": 142,
+      "row": 2,
+      "index": 16,
+      "pose": "row2_pose5"
+    },
+    {
+      "x": 799,
+      "y": 263,
+      "width": 221,
+      "height": 148,
+      "row": 2,
+      "index": 17,
+      "pose": "row2_pose6"
+    },
+    {
+      "x": 1048,
+      "y": 274,
+      "width": 169,
+      "height": 157,
+      "row": 2,
+      "index": 18,
+      "pose": "row2_pose7"
+    },
+    {
+      "x": 1269,
+      "y": 268,
+      "width": 131,
+      "height": 167,
+      "row": 2,
+      "index": 19,
+      "pose": "row2_pose8"
+    },
+    {
+      "x": 1452,
+      "y": 270,
+      "width": 119,
+      "height": 161,
+      "row": 2,
+      "index": 20,
+      "pose": "row2_pose9"
+    },
+    {
+      "x": 1640,
+      "y": 261,
+      "width": 98,
+      "height": 166,
+      "row": 2,
+      "index": 21,
+      "pose": "row2_pose10"
+    },
+    {
+      "x": 16,
+      "y": 461,
+      "width": 100,
+      "height": 209,
+      "row": 3,
+      "index": 22,
+      "pose": "row3_pose1"
+    },
+    {
+      "x": 187,
+      "y": 468,
+      "width": 109,
+      "height": 194,
+      "row": 3,
+      "index": 23,
+      "pose": "row3_pose2"
+    },
+    {
+      "x": 365,
+      "y": 565,
+      "width": 104,
+      "height": 98,
+      "row": 3,
+      "index": 24,
+      "pose": "row3_pose3"
+    },
+    {
+      "x": 474,
+      "y": 471,
+      "width": 139,
+      "height": 162,
+      "row": 3,
+      "index": 25,
+      "pose": "row3_pose4"
+    },
+    {
+      "x": 666,
+      "y": 483,
+      "width": 129,
+      "height": 162,
+      "row": 3,
+      "index": 26,
+      "pose": "row3_pose5"
+    },
+    {
+      "x": 860,
+      "y": 499,
+      "width": 232,
+      "height": 131,
+      "row": 3,
+      "index": 27,
+      "pose": "row3_pose6"
+    },
+    {
+      "x": 1099,
+      "y": 491,
+      "width": 140,
+      "height": 177,
+      "row": 3,
+      "index": 28,
+      "pose": "row3_pose7"
+    },
+    {
+      "x": 1302,
+      "y": 455,
+      "width": 140,
+      "height": 217,
+      "row": 3,
+      "index": 29,
+      "pose": "row3_pose8"
+    },
+    {
+      "x": 1498,
+      "y": 486,
+      "width": 131,
+      "height": 170,
+      "row": 3,
+      "index": 30,
+      "pose": "row3_pose9"
+    },
+    {
+      "x": 1653,
+      "y": 489,
+      "width": 100,
+      "height": 173,
+      "row": 3,
+      "index": 31,
+      "pose": "row3_pose10"
+    },
+    {
+      "x": 33,
+      "y": 678,
+      "width": 96,
+      "height": 196,
+      "row": 4,
+      "index": 32,
+      "pose": "row4_pose1"
+    },
+    {
+      "x": 198,
+      "y": 680,
+      "width": 121,
+      "height": 194,
+      "row": 4,
+      "index": 33,
+      "pose": "row4_pose2"
+    },
+    {
+      "x": 396,
+      "y": 684,
+      "width": 122,
+      "height": 188,
+      "row": 4,
+      "index": 34,
+      "pose": "row4_pose3"
+    },
+    {
+      "x": 620,
+      "y": 703,
+      "width": 200,
+      "height": 164,
+      "row": 4,
+      "index": 35,
+      "pose": "row4_pose4"
+    },
+    {
+      "x": 862,
+      "y": 751,
+      "width": 333,
+      "height": 109,
+      "row": 4,
+      "index": 36,
+      "pose": "row4_pose5"
+    },
+    {
+      "x": 1275,
+      "y": 681,
+      "width": 120,
+      "height": 186,
+      "row": 4,
+      "index": 37,
+      "pose": "row4_pose6"
+    },
+    {
+      "x": 1453,
+      "y": 684,
+      "width": 106,
+      "height": 188,
+      "row": 4,
+      "index": 38,
+      "pose": "row4_pose7"
+    },
+    {
+      "x": 1627,
+      "y": 703,
+      "width": 111,
+      "height": 168,
+      "row": 4,
+      "index": 39,
+      "pose": "row4_pose8"
+    }
+  ],
+  "note": "Foreground bounding boxes detected automatically; coordinates can differ by a few pixels depending on trimming threshold."
+}

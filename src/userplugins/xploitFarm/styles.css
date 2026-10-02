@@ -1,0 +1,271 @@
+/*
+ * DDT Xploit Farm Plugin Styles
+ * Clean Minimalist Dark aesthetic (ui-ux-pro-max standard)
+ */
+
+.ddt-farm-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 4px;
+    color: #E2E8F0;
+    font-family: var(--font-primary, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+}
+
+.ddt-farm-header-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0D1117;
+    border: 1px solid #21262D;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.ddt-farm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ddt-farm-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: #161B22;
+    border: 1px solid #30363D;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5865F2;
+}
+
+.ddt-farm-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #F0F6FC;
+}
+
+.ddt-farm-subtitle {
+    font-size: 12px;
+    color: #8B949E;
+    margin-top: 2px;
+}
+
+.ddt-farm-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.ddt-farm-stat-card {
+    background: #0D1117;
+    border: 1px solid #21262D;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ddt-farm-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #8B949E;
+}
+
+.ddt-farm-stat-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: #58A6FF;
+}
+
+.ddt-farm-stat-val.active-cooldown {
+    color: #F85149;
+}
+
+.ddt-farm-unverified-box {
+    background: rgba(248, 81, 73, 0.08);
+    border: 1px solid rgba(248, 81, 73, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ddt-farm-unverified-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #F85149;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ddt-farm-unverified-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12.5px;
+    color: #C9D1D9;
+}
+
+.ddt-farm-unverified-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.ddt-farm-unverified-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.ddt-farm-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
+}
+
+.ddt-farm-btn-primary {
+    background: #5865F2;
+    color: #FFFFFF;
+}
+
+.ddt-farm-btn-primary:hover {
+    background: #4752C4;
+}
+
+.ddt-farm-btn-secondary {
+    background: #21262D;
+    color: #C9D1D9;
+    border-color: #30363D;
+}
+
+.ddt-farm-btn-secondary:hover {
+    background: #30363D;
+    color: #FFFFFF;
+}
+
+.ddt-farm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #0D1117;
+    border: 1px solid #21262D;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.ddt-farm-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ddt-farm-form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8B949E;
+}
+
+.ddt-farm-input {
+    background: #161B22;
+    border: 1px solid #30363D;
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #F0F6FC;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ddt-farm-input:focus {
+    border-color: #5865F2;
+}
+
+.ddt-farm-footer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: #8B949E;
+    padding: 0 4px;
+}
+
+.ddt-farm-link {
+    color: #58A6FF;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ddt-farm-link:hover {
+    text-decoration: underline;
+}
+
+/* Coming Soon & Lock State */
+.ddt-farm-lock-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    background: #0D1117;
+    border: 1px solid #30363D;
+    border-radius: 14px;
+    padding: 32px 20px;
+    margin: 8px 0;
+}
+
+.ddt-farm-lock-icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: #161B22;
+    border: 1px solid #30363D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F85149;
+}
+
+.ddt-farm-lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(248, 81, 73, 0.12);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    color: #F85149;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.ddt-farm-lock-heading {
+    font-size: 18px;
+    font-weight: 800;
+    color: #F0F6FC;
+}
+
+.ddt-farm-lock-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #8B949E;
+    max-width: 420px;
+}

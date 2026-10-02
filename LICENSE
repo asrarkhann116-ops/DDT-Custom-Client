@@ -1,0 +1,44 @@
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+DDT Custom Discord Client
+Copyright (C) 2026 Asrar Khan (DDT Development Team)
+
+This project is a derivative work based on DDT, originally created by asrarkhann116-ops.
+Original DDT Copyright (C) 2026 asrarkhann116-ops and contributers
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+ATTRIBUTION NOTICE:
+
+DDT Custom Discord Client contains modifications and enhancements to the 
+original Vencord codebase. The following components are original DDT work:
+
+- API Inspector Plugin
+- Event Logger Plugin  
+- Network Inspector Plugin
+- Token Manager Plugin
+- Developer Theme Plugin
+- Dev Tools Panel Plugin
+- DDT Quest Automator Plugin
+- Core branding modifications ([DDT] logger, UI changes)
+- All UserPlugins Over 290+
+
+
+The base framework and infrastructure remain credited to the DDT project
+and its contributors under the same GPL-3.0-or-later license.
+
+For the full GPL-3.0 license text, see: https://www.gnu.org/licenses/gpl-3.0.txt

@@ -1,0 +1,207 @@
+/**
+* @name WizardUI
+* @author NEBULYS
+* @authorLink https://github.com/GoldenLys
+* @version 1.91
+* @invite SBuYeHh
+* @description An amazing modular and fully customizable theme, made with 💖 by NEBULYS.
+* @website https://nebulys.eu/themegen
+*/
+
+@import url("https://fonts.googleapis.com/css?family=Quicksand&amp;display=swap");
+
+@import url("https://goldenlys.github.io/WizardUI/base.css");
+
+/* 
+    PurpleServerList.css
+
+  This is an addon that moves the servers to the top with an horizontal width.
+*/
+@import url("https://goldenlys.github.io/WizardUI/addons/PurpleServerList.css");
+
+/* 
+    LettersInPSL.css
+    -  requires: PurpleServerList
+
+  This is a modification for PurpleServerList which replaces the folders icons with letters.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/LettersInPSL.css"); 
+*/
+
+/* 
+    AlternateFoldersInPSL.css 
+    - requires: PurpleServerList, LettersInPSL (optionnal)
+
+  This addon modifies the view of closed folders in PurpleServerList, to make it show the 4 servers inside a folder in a 2x2 grid.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/AlternateFoldersInPSL.css");
+*/
+
+/* 
+    HoverMembers.css
+
+  This is an addon that makes the members list hidden until you hover it.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/HoverMembers.css"); 
+*/
+
+/* 
+    UserIsTyping.css
+
+  This is an addon that moves the "user is typing" text to the bottom of the app, like the default discord.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/UserIsTyping.css"); 
+*/
+
+/* 
+    EvenMoreColors/[number from 1 to 10].css
+
+  This is an addon that recolors alot of elements in the app with the main theme color but you can even add an RGB animated effect if you change the number before the ".css" (with a maximum of 10 colors).
+
+@import url("https://goldenlys.github.io/WizardUI/addons/EvenMoreColors/1.css"); 
+*/
+
+/* 
+    EvenMoreBackgrounds/[number from 1 to 10].css
+
+  This is an addon that add support for animated backgrounds / changing backgrounds every x seconds; if you change the number before the ".css" (with a maximum of 10 images).
+
+@import url("https://goldenlys.github.io/WizardUI/addons/EvenMoreBackgrounds/1.css"); 
+*/
+
+/* 
+    UniqueGroupsIcons.css
+
+  This is an addon that adds unique emojis/icons for the server groups, full list of icons is available on the discord server.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/UniqueGroupsIcons.css"); 
+*/
+
+/* 
+    NoRoleGradient.css
+
+  This is an addon that removes the gradients from the role colors. 
+
+@import url("https://goldenlys.github.io/WizardUI/addons/NoRoleGradient.css"); 
+*/
+
+/* 
+    NoRoleFont.css
+
+  This is an addon that removes the custom font from usernames.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/NoRoleFont.css"); 
+*/
+
+/* 
+    NoNameplates.css
+  
+This is an addon that removes the custom nameplates in the members list.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/NoNameplates.css"); 
+*/
+
+/* 
+    Vitrum.css
+  
+This is an addon that add a blur/glassy effect to the app.
+
+@import url("https://goldenlys.github.io/WizardUI/addons/Vitrum.css"); 
+*/
+
+
+:root {
+    /* GENERAL */
+    --Watermark: "- WizardUI v" var(--version);
+    --font: 'Quicksand', 'emoji', sans-serif;
+    --logo: url("https://goldenlys.github.io/WizardUI/images/home.png");
+    --sendmessage-text-lines: 8;
+
+    /* COLORS */
+    --Primary: rgb(117 76 205);
+    --Text: rgb(255, 255, 255);
+    --text-link: var(--Primary);
+    --text-shadow: rgb(0 0 0);
+    --Highlighted: rgba(117 76 205 / 50%);
+    --MessageHover: transparent;
+    --Unread: rgb(173, 16, 16);
+
+    /* STATUS */
+    --Online: rgb(0, 255, 6);
+    --Idle: rgb(18, 100, 239);
+    --Unavailable: rgb(228, 15, 0);
+    --Offline: rgb(90, 95, 100);
+    --Streaming: rgb(110, 0, 196);
+
+    /* UI */
+    --grey: rgb(18, 19, 31);
+    --grey5: rgba(18, 19, 31, .75);
+    --darkgrey: rgb(10, 10, 20);
+    --darkgrey5: rgba(10, 10, 20, .75);
+    --ui-success: rgb(69, 208, 34);
+    --ui-warning: rgb(238, 165, 30);
+    --ui-error: rgb(208, 34, 34);
+    --Hover: rgb(18 19 31 / 50%);
+
+    /* BACKGROUNDS */
+    --background: url("https://goldenlys.github.io/WizardUI/images/backgrounds/nebula.jpg");
+    --bg-titlebar: rgba(0, 0, 0, 0.65);
+    --bg-servers: rgba(0, 0, 0, 0.65);
+    --bg-ui: rgba(0, 0, 0, 0.65);
+    --bg-ui-elements: rgba(0, 0, 0, 0.65);
+    --bg-chatbox: rgba(0, 0, 0, 0.5);
+    --bg-sendmessage: rgba(0, 0, 0, 0.65);
+    --bg-members: rgba(0, 0, 0, 0.65);
+    --bg-chat-elements: rgba(0, 0, 0, 0.5);
+    --bg-settings: var(--darkgrey);
+    --bg-colorprofile: rgba(0, 0, 0, 0.5);
+    --bg-alt-message: transparent;
+
+    /* RGB (disabled by default) */
+    --ColorTime: 2s;
+    --Color2: rgb(0, 225, 255);
+    --Color3: rgb(0 0 0);
+    --Color4: rgb(0 0 0);
+    --Color5: rgb(0 0 0);
+    --Color6: rgb(0 0 0);
+    --Color7: rgb(0 0 0);
+    --Color8: rgb(0 0 0);
+    --Color9: rgb(0 0 0);
+    --Color10: rgb(0 0 0);
+
+    /* EMB (disabled by default) */
+    --BackgroundTime: 60s;
+    --EMB_1: url("none");
+    --EMB_2: url("none");
+    --EMB_3: url("none");
+    --EMB_4: url("none");
+    --EMB_5: url("none");
+    --EMB_6: url("none");
+    --EMB_7: url("none");
+    --EMB_8: url("none");
+    --EMB_9: url("none");
+
+    /* MISCS */
+    --ServerSize: 45px;
+    --ServerPills: var(--Primary);
+    --ServerFoldersColor: var(--Primary);
+    --Rounding: 5px;
+    --AvatarRounding: var(--Rounding);
+
+    /* 
+        SHOWN BUTTONS IN THE MESSSAGE BOX
+
+      Choose between 'none' or 'flex'
+      none will disable / hide the button and flex will make it appear again
+    
+    */
+    --Show_Gift_Button: none;
+    --Show_GIF_Button: none;
+    --Show_Sticker_Button: none;
+    --Show_Apps_Button: flex;
+    --Show_Now_Playing_Tab: flex;
+    --Show_Category_Visibility_Icon: flex;
+
+    /* VITRUM ADDON EFFECT */
+    --VitrumBlur: 8px;
+}

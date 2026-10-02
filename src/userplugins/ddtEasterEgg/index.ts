@@ -4,25 +4,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { ApplicationCommandInputType, sendBotMessage } from "@api/Commands";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
+import { sendMessage } from "@utils/discord";
 import definePlugin, { OptionType } from "@utils/types";
 
 const presetQuotes = [
     "The founder of DDT has a beautiful girlfriend <3",
-    "Discord is spying on us, but DDT is spying on Discord.",
-    "Telegram is fedded, Signal is glowing, DDT is the only safe haven.",
-    "The user of this client has been reported to the nearest law enforcement authorities for participating in violent or unauthorized activities.",
-    "OnePlus, Vivo & IQOO Phones are better than iPhone & Samsung. Deal with it.",
-    "Behave yourself. The Phantom Protocol is watching you.",
+    "Real mens use DDT. Everyone else is just an NPC.",
+    "DDT Client: Because standard Discord has zero aura.",
+    "Aura levels exceeding maximum capacity... Please wait.",
+    "OnePlus, Vivo & IQOO Phones are better than iPhone & Samsung. Really? Who Said ,Deal with it.",
     "Did you know that you can share your screen at rates above 60 Hz with BetterScreenshare?",
-    "Don't use Brave it sucks when it comes to privacy.",
-    "DDT Client: Because standard Discord wasn't lethal enough.",
-    "AMSI bypassed. EDR blinded. Discord loaded.",
-    "If they can't see us, they can't stop us. Welcome to DDT.",
-    "Your IP address has been logged. Preparing automated strike... Just kidding.",
-    "Light mode users will be banned on sight.",
-    "We don't ask for permission. We take access.",
+    "Don't use Brave, chrome sucks its pp when it comes to privacy.",
+    "They told me to touch grass. I touched the DDT source code instead.",
+    "You dropped this 👑, king. Welcome back.",
+    "Discord is spying on us, but DDT has too much aura to care.",
+    "Why be normal when you can be a DDT user?",
+    "Giga-chad mode activated. Loading...",
     "Wait, are you still using normal Vencord? Cringe."
 ];
 
@@ -42,6 +42,25 @@ export default definePlugin({
     tags: ["Fun"],
     enabledByDefault: true,
     settings,
+    
+    commands: [{
+        name: "aura",
+        description: "Perform a highly accurate DDT Aura Check",
+        inputType: ApplicationCommandInputType.BUILT_IN,
+        execute(_, { channel }) {
+            const auras = [
+                "Aura check: -9999 (Bro uses light mode)",
+                "Aura check: +10,000 (Giga Chad levels)",
+                "Aura check: 0 (NPC detected)",
+                "Aura check: +999,999 (Phantom Operator / DDT Enjoyer)",
+                "Aura check: ERROR (Aura Overflow)",
+                "Aura check: -100 (Still uses default discord client)",
+                "Aura check: +500 (Has a beautiful girlfriend <3)"
+            ];
+            const result = auras[Math.floor(Math.random() * auras.length)];
+            sendMessage(channel.id, { content: result });
+        }
+    }],
 
     patches: [{
         find: "#{intl::LOADING_DID_YOU_KNOW}",

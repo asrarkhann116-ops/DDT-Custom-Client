@@ -158,7 +158,7 @@ export function ChatStatsModal({ rootProps }: { rootProps: any }) {
     return (
         <Modal
             {...rootProps}
-            size="md"
+            size="xl"
             title="DDT Analytics & Intelligence Hub"
             actions={[
                 {

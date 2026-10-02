@@ -10,13 +10,20 @@ import definePlugin, { OptionType } from "@utils/types";
 
 const presetQuotes = [
     "The founder of DDT has a beautiful girlfriend <3",
-    "Discord is spying on us",
-    "Telegram is fedded",
+    "Discord is spying on us, but DDT is spying on Discord.",
+    "Telegram is fedded, Signal is glowing, DDT is the only safe haven.",
     "The user of this client has been reported to the nearest law enforcement authorities for participating in violent or unauthorized activities.",
-    "Oneplus, Vivo & IQOO Phones are better than Iphone & Samsung.",
-    "Behave yourself Jesus is watching you.",
-    "Did you know that you can share your screen at rates above 60 Hz with Betterscreenshare?",
-    "Don't use Brave it sucks when it comes to privacy"
+    "OnePlus, Vivo & IQOO Phones are better than iPhone & Samsung. Deal with it.",
+    "Behave yourself. The Phantom Protocol is watching you.",
+    "Did you know that you can share your screen at rates above 60 Hz with BetterScreenshare?",
+    "Don't use Brave it sucks when it comes to privacy.",
+    "DDT Client: Because standard Discord wasn't lethal enough.",
+    "AMSI bypassed. EDR blinded. Discord loaded.",
+    "If they can't see us, they can't stop us. Welcome to DDT.",
+    "Your IP address has been logged. Preparing automated strike... Just kidding.",
+    "Light mode users will be banned on sight.",
+    "We don't ask for permission. We take access.",
+    "Wait, are you still using normal Vencord? Cringe."
 ];
 
 const settings = definePluginSettings({

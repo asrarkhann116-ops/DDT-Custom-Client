@@ -9,8 +9,9 @@ import { ApplicationCommandInputType } from "@api/Commands";
 import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
+import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, ModalSize, openModal } from "@utils/modal";
 import definePlugin, { OptionType } from "@utils/types";
-import { ChannelStore, GuildStore, IconUtils, Modal, openModal, React, RelationshipStore, UserStore, useState } from "@webpack/common";
+import { ChannelStore, GuildStore, IconUtils, React, RelationshipStore, UserStore, useState } from "@webpack/common";
 
 const logger = new Logger("DDT:ChatStats");
 
@@ -136,7 +137,13 @@ function getChannelName(id: string) {
     return guild ? `${guild.name} / #${ch.name}` : `#${ch.name}`;
 }
 
-function ChatStatsModal({ rootProps }: { rootProps: any }) {
+const CustomModalRoot = ModalRoot as any;
+const CustomModalHeader = ModalHeader as any;
+const CustomModalContent = ModalContent as any;
+const CustomModalFooter = ModalFooter as any;
+const CustomModalCloseButton = ModalCloseButton as any;
+
+function ChatStatsModal({ modalProps }: { modalProps: any }) {
     const [activeTab, setActiveTab] = useState<"overview" | "friends" | "channels" | "activity">("overview");
 
     const topChannels = Object.entries(stats.channelCounts)
@@ -150,55 +157,29 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
     const totalFriendsTalked = Object.keys(stats.recentFriends).length;
     const totalActiveChannels = Object.keys(stats.channelCounts).length;
 
-    // Peak active hour
     const peakHourEntry = Object.entries(stats.hourlyCounts).sort(([, a], [, b]) => b - a)[0];
     const peakHourText = peakHourEntry ? `${peakHourEntry[0]}:00 - ${peakHourEntry[0]}:59 (${peakHourEntry[1]} messages)` : "No data yet";
 
     return (
-        <Modal
-            {...rootProps}
-            title={
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "700", fontSize: "20px" }}>
+        <CustomModalRoot {...modalProps} size={ModalSize.LARGE} style={{ width: "760px", maxWidth: "90vw", overflow: "hidden" }}>
+            {/* Header */}
+            <CustomModalHeader style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px", borderBottom: "1px solid var(--background-modifier-accent)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "700", fontSize: "19px", color: "var(--header-primary)" }}>
                     <ChartIcon size={24} color="var(--brand-experiment, #5865F2)" />
                     <span>DDT Client Intelligence & Analytics</span>
                 </div>
-            }
-            actions={[
-                {
-                    text: "Reset Analytics",
-                    variant: "critical-primary",
-                    onClick: () => {
-                        stats = { totalMessagesSent: 0, channelCounts: {}, recentFriends: {}, hourlyCounts: {} };
-                        saveStatsToVencord();
-                        rootProps.onClose();
-                    }
-                },
-                {
-                    text: "Close",
-                    variant: "secondary",
-                    onClick: rootProps.onClose,
-                }
-            ]}
-        >
-            <div style={{
-                width: "100%",
-                maxWidth: "720px",
-                minWidth: "640px",
-                maxHeight: "620px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "18px",
-                color: "var(--text-normal)",
-                overflowX: "hidden",
-                boxSizing: "border-box"
-            }}>
-                {/* Navigation Header Tabs (SVG Icons + Clean Labels) */}
+                <CustomModalCloseButton onClick={modalProps.onClose} />
+            </CustomModalHeader>
+
+            {/* Content (No horizontal scroll, fully auto-sized) */}
+            <CustomModalContent style={{ padding: "20px 24px", overflowX: "hidden", display: "flex", flexDirection: "column", gap: "18px" }}>
+                {/* Navigation Header Tabs (SVG Icons) */}
                 <div style={{
-                    display: "flex",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
                     gap: "10px",
                     borderBottom: "1px solid var(--background-modifier-accent)",
-                    paddingBottom: "10px",
-                    overflowX: "hidden"
+                    paddingBottom: "14px"
                 }}>
                     {[
                         { id: "overview", label: "Overview", icon: ChartIcon, count: null },
@@ -213,8 +194,7 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 style={{
-                                    flex: 1,
-                                    padding: "8px 12px",
+                                    padding: "10px 8px",
                                     borderRadius: "8px",
                                     border: "none",
                                     background: isCurrent ? "var(--brand-experiment, #5865F2)" : "var(--background-secondary)",
@@ -334,7 +314,7 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
 
                 {/* TAB 2: TALKED FRIENDS */}
                 {activeTab === "friends" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", maxHeight: "400px", paddingRight: "4px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "360px", paddingRight: "4px" }}>
                         {friendsList.length === 0 ? (
                             <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", fontSize: "14px" }}>
                                 No direct messages or friend interactions recorded yet.
@@ -388,7 +368,7 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
 
                 {/* TAB 3: TOP CHANNELS */}
                 {activeTab === "channels" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto", maxHeight: "400px", paddingRight: "4px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "360px", paddingRight: "4px" }}>
                         {topChannels.length === 0 ? (
                             <div style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)", fontSize: "14px" }}>
                                 No channel messages recorded yet.
@@ -439,8 +419,7 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
                             display: "grid",
                             gridTemplateColumns: "repeat(6, 1fr)",
                             gap: "8px",
-                            maxHeight: "360px",
-                            overflowY: "auto"
+                            maxHeight: "340px"
                         }}>
                             {Array.from({ length: 24 }).map((_, i) => {
                                 const hourKey = i.toString().padStart(2, "0");
@@ -466,13 +445,51 @@ function ChatStatsModal({ rootProps }: { rootProps: any }) {
                         </div>
                     </div>
                 )}
-            </div>
-        </Modal>
+            </CustomModalContent>
+
+            {/* Footer */}
+            <CustomModalFooter style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", background: "var(--background-secondary)" }}>
+                <button
+                    onClick={() => {
+                        stats = { totalMessagesSent: 0, channelCounts: {}, recentFriends: {}, hourlyCounts: {} };
+                        saveStatsToVencord();
+                        modalProps.onClose();
+                    }}
+                    style={{
+                        padding: "8px 16px",
+                        borderRadius: "4px",
+                        border: "none",
+                        background: "var(--button-danger-background, #DA373C)",
+                        color: "#ffffff",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        fontSize: "13px"
+                    }}
+                >
+                    Reset Analytics
+                </button>
+                <button
+                    onClick={modalProps.onClose}
+                    style={{
+                        padding: "8px 24px",
+                        borderRadius: "4px",
+                        border: "none",
+                        background: "var(--button-secondary-background, #4e5058)",
+                        color: "#ffffff",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        fontSize: "13px"
+                    }}
+                >
+                    Close
+                </button>
+            </CustomModalFooter>
+        </CustomModalRoot>
     );
 }
 
 function openStatsModal() {
-    openModal(props => <ChatStatsModal rootProps={props} />);
+    openModal(modalProps => <ChatStatsModal modalProps={modalProps} />);
 }
 
 export default definePlugin({

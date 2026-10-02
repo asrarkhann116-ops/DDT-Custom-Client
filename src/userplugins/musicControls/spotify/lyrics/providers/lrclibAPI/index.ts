@@ -60,8 +60,9 @@ export async function getLyricsLrclib(track: Track): Promise<LyricsData | null> 
         useLyric: Provider.Lrclib,
         lyricsVersions: {
             LRCLIB: lines.map(line => {
-                const [lrcTime, text] = line.split("]");
-                const trimmedText = text.trim();
+                const [lrcTime, rawText] = line.split("]");
+                // Strip word-level timestamps like <00:59.172> from extended LRC format
+                const trimmedText = rawText.replace(/<\d{2}:\d{2}\.\d{3}>/g, "").trim();
                 return {
                     time: lyricTimeToSeconds(lrcTime),
                     text: (trimmedText === "" || trimmedText === "♪") ? null : trimmedText

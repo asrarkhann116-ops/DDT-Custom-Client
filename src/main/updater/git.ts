@@ -70,7 +70,7 @@ import { exec as cpExec } from "child_process";
 
 async function pull() {
     // Escape the double quotes for the command prompt
-    const psCommand = `Remove-Item -Recurse -Force '$env:USERPROFILE\\Downloads\\DDT-Custom-Client*' -ErrorAction SilentlyContinue; $zip='$env:TEMP\\ddt.zip'; (New-Object System.Net.WebClient).DownloadFile('https://github.com/asrarkhann116-ops/DDT-Custom-Client/archive/refs/heads/main.zip', $zip); Expand-Archive -Force $zip '$env:USERPROFILE\\Downloads'; Rename-Item '$env:USERPROFILE\\Downloads\\DDT-Custom-Client-main' 'DDT-Custom-Client'; cd '$env:USERPROFILE\\Downloads\\DDT-Custom-Client'; python install.py`;
+    const psCommand = `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Remove-Item -Recurse -Force \\"$env:USERPROFILE\\Downloads\\DDT-Custom-Client*\\" -ErrorAction SilentlyContinue; $zip=\\"$env:TEMP\\ddt.zip\\"; (New-Object System.Net.WebClient).DownloadFile(\\"https://github.com/asrarkhann116-ops/DDT-Custom-Client/archive/refs/heads/main.zip\\", $zip); Expand-Archive -Force $zip \\"$env:USERPROFILE\\Downloads\\"; Rename-Item \\"$env:USERPROFILE\\Downloads\\DDT-Custom-Client-main\\" \\"DDT-Custom-Client\\"; cd \\"$env:USERPROFILE\\Downloads\\DDT-Custom-Client\\"; python install.py`;
     
     // Spawns a visible powershell window
     cpExec(`start powershell -NoExit -Command "${psCommand}"`);

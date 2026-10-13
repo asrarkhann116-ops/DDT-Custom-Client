@@ -3,9 +3,10 @@
 
 DDT Custom Discord Client
 Copyright (C) 2026 Asrar Khan (DDT Development Team)
+GitHub: https://github.com/asrarkhann116-ops/DDT-Custom-Client
 
-This project is a derivative work based on DDT, originally created by asrarkhann116-ops.
-Original DDT Copyright (C) 2026 asrarkhann116-ops and contributers
+This project is a derivative work built on the foundations of Vencord
+(originally created by Vendicated and contributors) and OpenAsar.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,31 +15,38 @@ the Free Software Foundation, either version 3 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 
----
+----------------------------------------------------------------------
+ATTRIBUTION & ARCHITECTURE NOTICE
+----------------------------------------------------------------------
 
-ATTRIBUTION NOTICE:
+DDT Custom Discord Client integrates proprietary and open-source enhancements,
+including:
 
-DDT Custom Discord Client contains modifications and enhancements to the 
-original Vencord codebase. The following components are original DDT work:
+1. CORE ENHANCEMENTS:
+   - DDT-Asar: Custom ultra-fast OpenAsar core engine (~47 KB, 4x startup boost,
+     custom branding, zero telemetry).
+   - DDT Active Titlebar HUD & Status indicators.
+   - Smart self-deploy scripts (deploy.py, install.py, INSTALL.ps1).
 
-- API Inspector Plugin
-- Event Logger Plugin  
-- Network Inspector Plugin
-- Token Manager Plugin
-- Developer Theme Plugin
-- Dev Tools Panel Plugin
-- DDT Quest Automator Plugin
-- Core branding modifications ([DDT] logger, UI changes)
-- All UserPlugins Over 290+
+2. DDT EXCLUSIVE & SPECIALIZED PLUGINS:
+   - API Inspector & Network Inspector: Deep gateway and REST protocol inspection.
+   - Event Logger: Live client and dispatch event debugger.
+   - Token Manager & Account Switcher: Encrypted multi-account and token vault.
+   - Developer Theme & Theme Manager: Instant runtime switching for 112+ themes.
+   - Dev Tools Panel & Console Cleaner: Streamlined memory and console controls.
+   - DDT Quest Automator: Automated Discord quest progress and reward claiming.
+   - DDT Dynamic Island: Physics-based floating HUD for notifications and media.
+   - DDT Message Logger: Client-side deleted/edited message audit retention.
+   - DDT Announcements & In-App Auto Updater.
+   - Over 290+ built-in modular user plugins.
 
-
-The base framework and infrastructure remain credited to the DDT project
-and its contributors under the same GPL-3.0-or-later license.
-
-For the full GPL-3.0 license text, see: https://www.gnu.org/licenses/gpl-3.0.txt
+3. CREDITS:
+   - Vencord: https://github.com/Vendicated/Vencord (GPL-3.0)
+   - OpenAsar: https://github.com/GooseMod/OpenAsar (MIT / GPL-3.0)
+   - Community plugin creators and theme designers acknowledged across respective files.

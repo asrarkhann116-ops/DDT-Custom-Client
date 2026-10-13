@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="430" viewBox="0 0 1000 430" role="img" aria-labelledby="t d">
+<title id="t">DDT-Asar speed and size</title>
+<desc id="d">Animated comparison: stock Discord takes about 6 seconds to start, DDT-Asar about 1.5 seconds; the file shrinks from about 9 MB to about 47 KB.</desc>
+<defs>
+
+<linearGradient id="slow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#46577d"/><stop offset="1" stop-color="#8da2c8"/></linearGradient>
+<linearGradient id="fast" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2f81ff"/><stop offset="1" stop-color="#38d5ff"/></linearGradient>
+<linearGradient id="x4g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5aa9ff"/><stop offset="1" stop-color="#38d5ff"/></linearGradient>
+<linearGradient id="hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#38d5ff" stop-opacity="0"/><stop offset=".5" stop-color="#38d5ff"/><stop offset="1" stop-color="#38d5ff" stop-opacity="0"/></linearGradient>
+
+<style>
+text{font-family:Inter,'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+.mono{font-family:'JetBrains Mono','Fira Code','SF Mono',Consolas,'DejaVu Sans Mono',Menlo,monospace}
+.fb{transform-box:fill-box;transform-origin:center}
+.fl{transform-box:fill-box;transform-origin:left center}
+.top{animation:topsw 5s ease-in-out infinite alternate}@keyframes topsw{from{transform:translateX(-300px)}to{transform:translateX(300px)}}@keyframes barA{0.0%{transform:scaleX(0);opacity:1}4.545%{transform:scaleX(0);animation-timing-function:linear;}59.091%{transform:scaleX(1)}90.909%{opacity:1}98.182%{opacity:0}100.0%{transform:scaleX(0);opacity:0}}.barA{animation:barA 11.0s infinite}@keyframes tA{0.0%{opacity:0}58.182%{opacity:0}60.909%{opacity:1}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0}}.tA{animation:tA 11.0s infinite}@keyframes barB{0.0%{transform:scaleX(0);opacity:1}4.545%{transform:scaleX(0);animation-timing-function:cubic-bezier(.1,.7,.2,1);}18.182%{transform:scaleX(1)}90.909%{opacity:1}98.182%{opacity:0}100.0%{transform:scaleX(0);opacity:0}}.barB{animation:barB 11.0s infinite}@keyframes rdy{0.0%{opacity:0}18.182%{opacity:0}20.0%{opacity:1}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0}}.rdy{animation:rdy 11.0s infinite}@keyframes pop{0.0%{transform:scale(.4)}18.182%{transform:scale(.4);animation-timing-function:cubic-bezier(.2,1.7,.4,1);}22.727%{transform:scale(1)}100.0%{transform:scale(1)}}.pop{animation:pop 11.0s infinite}@keyframes x4{0.0%{opacity:0;transform:translateX(24px)}20.909%{opacity:0;transform:translateX(24px);animation-timing-function:cubic-bezier(.2,.9,.2,1);}27.273%{opacity:1;transform:translateX(0)}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0;transform:translateX(24px)}}.x4{animation:x4 11.0s infinite}@keyframes barC{0.0%{transform:scaleX(0);opacity:1}4.545%{transform:scaleX(0);animation-timing-function:cubic-bezier(.1,.7,.2,1);}14.545%{transform:scaleX(1)}90.909%{opacity:1}98.182%{opacity:0}100.0%{transform:scaleX(0);opacity:0}}.barC{animation:barC 11.0s infinite}@keyframes tC{0.0%{opacity:0}13.636%{opacity:0}16.364%{opacity:1}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0}}.tC{animation:tC 11.0s infinite}@keyframes barD{0.0%{opacity:0;transform:scale(.2)}15.455%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.2,1.7,.4,1);}20.0%{opacity:1;transform:scale(1)}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0;transform:scale(.2)}}.barD{animation:barD 11.0s infinite}@keyframes tD{0.0%{opacity:0}19.091%{opacity:0}21.818%{opacity:1}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0}}.tD{animation:tD 11.0s infinite}@keyframes x99{0.0%{opacity:0;transform:translateX(24px)}23.636%{opacity:0;transform:translateX(24px);animation-timing-function:cubic-bezier(.2,.9,.2,1);}30.0%{opacity:1;transform:translateX(0)}90.909%{opacity:1}98.182%{opacity:0}100.0%{opacity:0;transform:translateX(24px)}}.x99{animation:x99 11.0s infinite}@media (prefers-reduced-motion:reduce){.top,.barA,.barB,.barC,.barD,.tA,.tC,.tD,.rdy,.pop,.x4,.x99{animation:none!important}}</style>
+</defs>
+<rect x=".75" y=".75" width="998.5" height="428.5" rx="18" fill="#0b1020" stroke="#1c2a47" stroke-width="1.5"/>
+<rect class="top" x="380.0" y="1" width="240" height="2.5" rx="1.2" fill="url(#hl)"/>
+<text x="40" y="46" font-size="12.5" font-weight="700" letter-spacing="2.6" fill="#5aa9ff">STARTUP TIME</text>
+<text x="960" y="46" text-anchor="end" font-size="12" fill="#8da2c8">typical results, varies by system</text>
+<text x="40" y="103" font-size="16" font-weight="700" fill="#e8eefc">Stock Discord</text><text x="40" y="122" font-size="12" fill="#8da2c8">original app.asar</text>
+<text x="40" y="171" font-size="16" font-weight="700" fill="#e8eefc">DDT-Asar</text><text x="40" y="190" font-size="12" fill="#8da2c8">optimised launcher</text>
+<rect x="262" y="87" width="676" height="26" rx="13" fill="#0a1020" stroke="#1c2a47"/>
+<rect x="262" y="155" width="676" height="26" rx="13" fill="#0a1020" stroke="#1c2a47"/>
+<rect class="fl barA" x="262" y="87" width="676" height="26" rx="13" fill="url(#slow)"/>
+<text class="tA" x="924" y="105.5" text-anchor="end" font-size="14" font-weight="700" fill="#cfe0ff">~6 s</text>
+<rect class="fl barB" x="262" y="155" width="169.0" height="26" rx="13" fill="url(#fast)"/>
+<g class="rdy"><g transform="translate(447.0,154)"><g class="fb pop"><rect width="92" height="28" rx="14" fill="#34d399" fill-opacity=".14" stroke="#34d399"/><polyline points="14,14 19,19 28,9" fill="none" stroke="#34d399" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><text x="36" y="19" font-size="12.5" font-weight="800" letter-spacing="1.2" fill="#34d399">READY</text></g></g></g>
+<text class="x4" x="924" y="177" text-anchor="end" font-size="34" font-weight="900" fill="url(#x4g)">~4x faster</text>
+<line x1="40" y1="212" x2="960" y2="212" stroke="#1c2a47"/>
+<text x="40" y="252" font-size="12.5" font-weight="700" letter-spacing="2.6" fill="#5aa9ff">FILE SIZE</text>
+<text x="40" y="309" font-size="16" font-weight="700" fill="#e8eefc">Stock app.asar</text><text x="40" y="328" font-size="12" fill="#8da2c8">Discord original</text>
+<text x="40" y="375" font-size="16" font-weight="700" fill="#e8eefc">DDT-Asar</text><text x="40" y="394" font-size="12" fill="#8da2c8">app.asar in this repo</text>
+<rect x="262" y="293" width="676" height="26" rx="13" fill="#0a1020" stroke="#1c2a47"/>
+<rect x="262" y="359" width="676" height="26" rx="13" fill="#0a1020" stroke="#1c2a47"/>
+<rect class="fl barC" x="262" y="293" width="676" height="26" rx="13" fill="url(#slow)"/>
+<text class="tC" x="924" y="311.5" text-anchor="end" font-size="14" font-weight="700" fill="#cfe0ff">~9 MB</text>
+<rect class="fb barD" x="262" y="359" width="9" height="26" rx="4.5" fill="url(#fast)"/>
+<text class="tD" x="286" y="377.5" font-size="14" font-weight="700" fill="#38d5ff">~47 KB</text>
+<text class="x99" x="924" y="381" text-anchor="end" font-size="34" font-weight="900" fill="url(#x4g)">99% smaller</text>
+<text x="500.0" y="416" text-anchor="middle" font-size="11.5" fill="#6f84ab">Startup times are typical figures from the DDT-Asar notes; actual speed depends on your PC.</text>
+</svg>

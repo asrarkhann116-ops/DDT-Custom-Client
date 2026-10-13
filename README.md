@@ -1,46 +1,77 @@
-# DDT Custom Client
+<div align="center">
+
+  <img src="assets/hero.svg" alt="DDT Custom Client: Build, Customize, Explore" width="100%" />
+
+  <br><br>
+
+  <img src="assets/typing.svg" alt="290+ built-in plugins. Zero telemetry. 112+ themes. 4x faster startup with DDT-Asar." width="760" />
+
+  <br><br>
+
+  <p align="center">
+    <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Server" /></a>
+    <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repo" /></a>
+    <img src="https://img.shields.io/badge/Version-2.0.0-7289DA?style=for-the-badge" alt="Version 2.0.0" />
+    <img src="https://img.shields.io/badge/Plugins-290+_Built--in-00D26A?style=for-the-badge" alt="290+ Plugins" />
+    <img src="https://img.shields.io/badge/Themes-112+_Available-FEE75C?style=for-the-badge&logoColor=black" alt="112+ Themes" />
+    <img src="https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 22+" />
+    <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="GPL-3.0 License" />
+  </p>
+
+  <p align="center">
+    <a href="#overview"><b>Overview</b></a> &nbsp;/&nbsp;
+    <a href="#architecture--pipeline"><b>Architecture</b></a> &nbsp;/&nbsp;
+    <a href="#quick-install"><b>Quick Install</b></a> &nbsp;/&nbsp;
+    <a href="#ddt-asar-performance-boost"><b>DDT-Asar</b></a> &nbsp;/&nbsp;
+    <a href="#security--telemetry-shield"><b>Security</b></a> &nbsp;/&nbsp;
+    <a href="#acoustic--media-suite"><b>Audio HUD</b></a> &nbsp;/&nbsp;
+    <a href="#manual-installation"><b>Manual Install</b></a> &nbsp;/&nbsp;
+    <a href="#curated-themes-suite"><b>Themes</b></a> &nbsp;/&nbsp;
+    <a href="#highlighted-plugins"><b>Highlights</b></a> &nbsp;/&nbsp;
+    <a href="#complete-plugin-directory"><b>All Plugins</b></a> &nbsp;/&nbsp;
+    <a href="#community--support"><b>Community</b></a>
+  </p>
+
+  <img src="assets/divider.svg" alt="" width="100%" />
+
+</div>
+
+## Overview
+
+**DDT (Discord Developer Tool)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). It supercharges your Discord client with **290+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, stealth and privacy shields, theme loaders, and an active titlebar status indicator.
 
 <p align="center">
-  <img src="./DDT%20CLIENT.png" alt="DDT Client Banner" width="100%" />
+  <img src="assets/stats.svg" alt="DDT at a glance: 290+ user plugins, 170+ core plugins, 112+ themes, 230K+ lines of code, 0% telemetry" width="100%" />
 </p>
+
+- **Lean:** ~1.1 MB optimized renderer bundle
+- **Private:** Zero telemetry, 100% local execution
+- **Modern:** Built for Node.js 22+ and pnpm
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Architecture & Pipeline
+
+DDT employs a modular, isolated injection architecture that isolates host Discord Electron processes from client modifications:
 
 <p align="center">
-  <img src="./ddt%20cleint%20icon.png" alt="DDT Icon" width="90" height="90" />
-  <br/>
-  <b>Discord Developer Tools Client</b>
-  <br/>
-  <i>Engineered for Developers, Power Users, and Enthusiasts.</i>
+  <img src="assets/pipeline.svg" alt="DDT Core Architecture Pipeline: Host Electron -> DDT-Asar Core -> DDT Runtime -> 290+ Modular Plugins" width="100%" />
 </p>
+
+- **Zero-Tamper Binary Isolation:** Discord core packages stay pristine while DDT hooks into Webpack and React lifecycles dynamically at runtime.
+- **Fail-Safe Recovery:** If an internal update occurs, Discord falls back cleanly without corrupting user profile caches.
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Quick Install
+
+Run the installer and watch DDT build itself, inject into Discord, and optionally install DDT-Asar:
 
 <p align="center">
-  <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community_Server-5865F2?style=for-the-badge" alt="Discord Server" /></a>
-  <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge" alt="GitHub Repo" /></a>
-  <img src="https://img.shields.io/badge/Plugins-288+_Builtin-00D26A?style=for-the-badge" alt="Plugins" />
-  <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="License" />
+  <img src="assets/terminal.svg" alt="Animated terminal: python install.py checks Node.js and pnpm, installs dependencies, builds DDT, injects it into Discord and installs DDT-Asar" width="100%" />
 </p>
 
----
-
-##  What is DDT?
-
-**DDT (Discord Developer Tools)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). DDT supercharges your Discord experience with an enormous catalog of **288+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, theme loaders, and an active titlebar status indicator.
-
----
-
-## Live Project Stats
-
-| Metric | Details |
-| :--- | :--- |
-| **Total DDT Plugins** | **288+ Custom Plugins** (Full built-in catalog) |
-| **Core Framework Plugins** | **171 Built-in System Plugins** |
-| **Curated Themes** | **112+ Themes** available via Theme Manager |
-| **Source Lines** | **206,000+ Lines** of TypeScript/React |
-| **Bundle Size** | **~1.0 MB** ultra-optimized renderer bundle |
-| **Telemetry & Tracking** | **0% (Zero Telemetry, 100% Local)** |
-
----
-
-##  Quick Install (Recommended)
+> **Requirements:** Windows, Python 3 and Node.js 22+. The installer automatically validates prerequisites and configures pnpm.
 
 ### Windows Automated One-Liner (PowerShell)
 
@@ -56,46 +87,75 @@ cd "$env:USERPROFILE\Downloads\DDT-Custom-Client"
 python install.py
 ```
 
----
+After the installer finishes, fully close Discord (check the system tray) and restart it.
 
-##  DDT-Asar Performance Boost (Optional)
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-During installation, you'll be prompted to install **DDT-Asar** - an optional performance enhancement:
+## DDT-Asar Performance Boost
 
-### What is DDT-Asar?
-- **2-4x faster Discord startup** (typically 6 seconds → 1.5 seconds)
-- **Custom DDT-branded purple splash screen** with smooth animations
-- **99% smaller file size** (58 KB vs 9 MB original Discord asar)
-- **Zero tracking or telemetry** (unlike original Discord asar)
-- **100% compatible** with DDT Client injection
+During installation you will be prompted to install **DDT-Asar**, an optional performance enhancement:
 
-### How it works
-DDT-Asar is a custom-branded fork of OpenAsar that replaces Discord's bloated `app.asar` with an optimized version:
-- ✅ DDT plugins continue working perfectly (injection is separate)
-- ✅ Automatic backup created before installation
-- ✅ Completely optional - DDT works great without it
-- ✅ Pre-built and bundled (no build tools needed)
+<p align="center">
+  <img src="assets/speed.svg" alt="DDT-Asar starts Discord about 4x faster than the stock asar (about 1.5 s vs 6 s) and is 99% smaller (about 47 KB vs 9 MB)" width="100%" />
+</p>
 
-### Installation
-The installer (`install.py`) will automatically:
-1. Detect if DDT is already injected
-2. Prompt: **"Install DDT-Asar? (y/n)"**
-3. If yes: safely replace Discord's core with DDT-Asar
-4. If no: skip and continue with standard setup
+| Metric | Stock Discord Client | DDT Client + DDT-Asar | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Startup Duration** | ~5.8s – 7.2s | **1.2s – 1.8s** | **~4x Faster (75% reduction)** |
+| **Core Asar Size** | ~9.2 MB | **~47.5 KB** | **99.4% Smaller** |
+| **Telemetry / Tracking** | Enabled by default | **100% Stripped / Zero** | **Total Local Privacy** |
+| **Splash Screen** | Default Discord | **DDT Branded Animated Splash** | **Custom Aesthetic** |
+| **Plugin Compatibility** | None | **100% Integrated** | **290+ Native Plugins** |
 
-**Recommended:** Say **yes** for best performance! 🚀
+### How It Works
 
----
+DDT-Asar is a custom-branded fork of OpenAsar that replaces Discord's bloated `app.asar` with an optimized, lightweight binary:
 
-##  Manual Installation
+- DDT plugins operate seamlessly because injection is isolated from core execution
+- An automatic backup (`_app.asar`) is created before replacement
+- Completely optional: DDT operates independently without it
+- Bundled pre-compiled, eliminating external build tool dependencies
+
+The installer (`install.py`) prompts: **"Install DDT-Asar? (y/n)"**. Type **y** to enable maximum performance.
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Security & Telemetry Shield
+
+DDT treats privacy as a foundational requirement rather than an optional toggle:
+
+<p align="center">
+  <img src="assets/security.svg" alt="DDT Security & OPSEC Shield: Telemetry Blocked, WebRTC IP Protected, Zero-Width Tracking Sanitized" width="100%" />
+</p>
+
+- **Anti-Fingerprinting:** Automatically purges zero-width tracking characters and invisible identifiers from incoming and outgoing messages.
+- **WebRTC IP Armor:** Forces audio routing through strict endpoints, preventing local IP disclosure.
+- **Client Pin Lock:** Optional local passcode gate to lock Discord when away from your keyboard.
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Acoustic & Media Suite
+
+Experience rich studio-grade audio processing and customizable real-time visualizers directly inside Discord:
+
+<p align="center">
+  <img src="assets/audio.svg" alt="DDT Audio HUD & Waveform Visualizer: 32-Bit float stereo audio, real-time waveform analyzer, 3D spatial sound" width="100%" />
+</p>
+
+- **Real-Time Waveform HUD:** 32-band reactive frequency analyzer that responds to voice chat and background media.
+- **Spatial 3D Audio:** Binaural positional modeling that positions voices in virtual 3D space.
+- **Lossless Microphone Stream:** Uncompressed 48 kHz stereo capture for studio-quality voice quality.
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Manual Installation
 
 ```powershell
 # 1. Clone repository
 git clone https://github.com/asrarkhann116-ops/DDT-Custom-Client.git
 cd DDT-Custom-Client
 
-# 2. Install dependencies
-npm install -g pnpm
+# 2. Install workspace dependencies
 pnpm install
 
 # 3. Build DDT
@@ -105,336 +165,214 @@ pnpm build
 pnpm inject
 ```
 
----
+### Discord Update Deployment
 
-## Highlighted DDT Plugins
+When Discord auto-updates to a new version folder (e.g. `app-1.0.XXXX`), run the deploy script to re-link your build instantly:
 
-### Native DDT Suites
-- **DDT Auto Updater** (`ddtUpdater`)  Real-time updates directly via GitHub API.
-- **DDT Announcements** (`ddtAnnouncements`)  Integrated update modal connecting to community Discord & GitHub.
-- **DDT Dynamic Island** (`ddtDynamicIsland`)  Fluid floating status bar with spring physics.
-- **DDT Message Logger** (`ddtMessageLogger`)  High-precision local message log retention & search.
-- **DDT Quest Automator** (`ddtQuestAutomator`)  Automated discord quest tracking and rewards.
-- **DDT Tutorial** (`ddtTutorial`)  Interactive step-by-step feature onboarding.
-- **DDT Mutual Scanner** (`mutualScanner`)  Scan mutual servers & shared friends.
-- **DDT Presence Lab** (`presenceLab`)  Local activity & presence session sandbox.
-- **DDT Send Trail** (`sendTrail`)  Sent message tracking, rapid actions, and purge controls.
-- **Music Visualizer** (`musicVisualizer`)  In-app streaming with real-time waveform HUD & lyrics.
-- **Account Switcher** (`accountSwitcher`)  Instant multi-account switching with encrypted storage.
-- **DDT Theme Manager** (`developerTheme`)  112+ curated themes with instant switching.
+```powershell
+python deploy.py
+```
 
----
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-##  Complete DDT User Plugin Directory
+## Curated Themes Suite
 
-> **Note:** Every user plugin in this client is part of the DDT ecosystem. Browse the full A-Z directory below using collapsible dropdowns.
+DDT includes **112 pre-tested custom themes** located in the [`Themes/`](Themes/) directory:
 
-### Complete DDT User Plugin Directory (288 Plugins)
+- **Minimalist & Clean:** `MinimalCord`, `simplify`, `System24`, `Fluent`, `Discord11`, `Neobrutal`
+- **Dark & AMOLED:** `amoled-cord`, `roundmoledV2`, `DarkMatter`, `DarkNeon`, `discorddark`, `nocturnal`
+- **Glassmorphic:** `FrostedGlass`, `Translucence`, `discord-mica`, `Glass Wave`
+- **Gaming & Sci-Fi:** `cyberpunk2077`, `Fallout4Terminal`, `GGO_Kirito`, `NewAkameGaKill`, `NewRemTheme`, `NieR-Light-Source`
+- **Tailored Palettes:** `tokyo-night`, `GruvboxSharp`, `Nord`, `Azurite`, `amethyst`, `Material-Discord`
 
-> Explore the full catalog of built-in DDT user plugins below. Click any section to toggle.
+### Applying Themes
+
+1. Open Discord Settings (`Ctrl + ,`).
+2. Navigate to the **Themes** tab in the DDT / Vencord section.
+3. Click **Open Themes Folder** and paste `.theme.css` files from the [`Themes/`](Themes/) directory.
+4. Enable your chosen theme via toggle switches.
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Highlighted Plugins
+
+DDT packs **290+ dedicated user plugins**. Below is an in-depth breakdown of standout modules across primary domains:
+
+### Security, Privacy & OPSEC
+
+| Plugin | ID | Technical Functionality |
+| :--- | :--- | :--- |
+| **DDT Message Logger** | `ddtMessageLogger` | Retains deleted and edited messages in client memory/IndexedDB with date range query filters. |
+| **Message Logger Enhanced** | `messageLoggerEnhanced` | Adds inline indicator badges for edited messages and un-deletes ephemeral notifications. |
+| **Silent Delete & Edit** | `SilentDelete`, `SilentEdit` | Silently suppresses deletion notifications and eliminates visual trace jumps. |
+| **WebRTC Leak Prevent** | `webRtcLeakPrevent` | Enforces zero WebRTC IP routing outside proxy tunnels and protects against STUN leakage. |
+| **Discord Hardened** | `DiscordHardened` | Detects and flags dangerous file attachments, deceptive double extensions, and hidden Unicode symbols. |
+| **2FA Hider** | `2FA HIder` | Masks 2FA QR codes, backup recovery codes, and sensitive verification tokens from display. |
+| **Stream Proof** | `StreamProof` | Automatically blanks out private DM channels, token fields, and specified servers during screenshare. |
+| **Custom DNS** | `CustomDNS` | Routes client Discord API traffic through encrypted custom DNS resolvers (Cloudflare, Quad9, AdGuard). |
+| **AutoMod Bypass** | `AutoModBypass` | Transforms message encodings dynamically to navigate strict regex server filters without trigger alerts. |
+| **Zero-Width Sanitizer** | `ZeroWidthSanitizer` | Strips out invisible zero-width fingerprinting characters and tracking tags embedded in received text. |
+| **Staff & Mod Detector** | `StaffDetector` | Real-time surveillance detection for Discord Staff, system bots, and assigned admin roles. |
+| **Discord Lock** | `DiscordLock` | Adds client-level PIN / master password lockscreen to prevent physical session hijacking. |
+
+### Developer Tools & Protocol Inspection
+
+| Plugin | ID | Technical Functionality |
+| :--- | :--- | :--- |
+| **API Inspector** | `apiInspector` | Real-time payload debugger intercepting Discord REST endpoints, request headers, and responses. |
+| **Gateway Logger** | `gatewayLogger` | Live stream listener for raw WebSocket opcodes, heartbeat latencies, and dispatch events. |
+| **Event Logger** | `eventLogger` | Captures internal Flux dispatcher events and client-side lifecycle dispatches. |
+| **Network Inspector** | `networkInspector` | Granular HTTP network traffic monitor with status code filtering and duration tracing. |
+| **DevTools Panel** | `devToolsPanel` | Integrated developer utility panel with instant console shortcuts and DOM element inspectors. |
+| **Console Cleaner** | `ConsoleCleaner` | Configurable Discord log-level suppression filter in Chrome DevTools to eliminate log memory bloat. |
+| **Client Diagnostics** | `ClientDiagnostics` | Live performance profiler calculating CPU spikes, memory leaks, heap growth, and active handlers. |
+| **Element Highlighter** | `elementHighlighter.dev` | Interactive UI component boundary inspector with direct React fiber props inspection. |
+
+### Productivity, Interface & Workflow
+
+| Plugin | ID | Technical Functionality |
+| :--- | :--- | :--- |
+| **DDT Dynamic Island** | `ddtDynamicIsland` | Physics-driven floating status HUD pill for track updates, notifications, and call status. |
+| **Channel Tabs** | `channelTabs` | Web browser-style persistent tab system for multiple channels, servers, and DMs. |
+| **Account Switcher** | `accountSwitcher` | Multi-token encrypted credential switcher enabling instant 1-click Discord profile swapping. |
+| **Multi-Instance** | `MultiInstance` | Unlocks concurrent Discord client sessions side-by-side on the same workstation. |
+| **Platform Spoofer** | `platformSpoofer` | Customizes active device presence icon (e.g. Mobile, PlayStation, Xbox, Web, Desktop). |
+| **Better Screenshare** | `betterScreenshare.desktop` | Bypasses Nitro restrictions to unlock 1080p, 2K, 4K resolution at 60 FPS streaming. |
+| **Limitless Screenshare** | `limitlessScreenshare` | Advanced capture controls with custom bitrate and frame pacing parameters. |
+| **Command Palette** | `commandPalette` | Universal spotlight search shortcut (`Ctrl + Shift + P`) to trigger actions, jump channels, or toggle plugins. |
+| **Collapsible UI** | `collapsibleUi` | Flexible collapsible left sidebar, member lists, and channel panels for ultra-compact workspace. |
+| **DDT Quest Automator** | `ddtQuestAutomator` | Background watcher tracking active Discord quests, auto-completing criteria, and claiming badges. |
+| **Nitro Sniper** | `NitroSniper` | Ultra-low latency regex scraper instantly claiming Discord gift links before expiration. |
+
+### Audio, Media & Aesthetics
+
+| Plugin | ID | Technical Functionality |
+| :--- | :--- | :--- |
+| **Music Visualizer** | `musicVisualizer` | Real-time audio waveform visualizer HUD embedded behind chat or voice panels with synced lyrics. |
+| **Spatial Audio** | `SpatialAudio` | 3D binaural positional audio engine for voice calls with custom distance decay curves. |
+| **Stereo Microphone & Audio**| `stereoScreenshareAudio`, `betterMicrophone.desktop` | Forces pristine uncompressed stereo audio capture on microphone input and screenshare output. |
+| **SoundPad** | `SoundPad` | In-app hotkey soundboard routing custom audio clips directly into voice channels without virtual cables. |
+| **DDT Spotify Lyrics Status** | `ddtSpotifyLyricsStatus` | Synchronizes active Spotify track playback and live singing lyrics directly into your Discord status. |
+| **Fast GIF Picker** | `FastGifPicker` | Replaces heavy animated GIF previews with lightweight previews to eliminate lag spikes. |
+| **DDT Theme Manager** | `developerTheme` | Integrated quick-picker GUI to preview, activate, and hot-reload all 112+ local CSS themes. |
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Complete Plugin Directory
 
 <details>
-<summary><b>Section # (1 Plugins)</b></summary>
+<summary><b>Click to expand full directory of all 290+ built-in plugins</b></summary>
 
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| 2FA HIder |
+<br>
+
+#### Section # & A
+`2FA HIder` • `AnonLiDrop` • `AutoModBypass` • `accountSwitcher` • `advancedPermissions` • `altKrispSwitch` • `alwaysExpandProfiles` • `animalese` • `apiInspector` • `atSomeone` • `autoJumpToMessage` • `autoZipper`
+
+#### Section B
+`BadgesSelector` • `BoosterCount-main` • `bannersEverywhere` • `baseDecoder` • `betterActivities` • `betterAudioPlayer` • `betterBanReasons` • `betterBlockedUsers` • `betterCommands` • `betterForwards` • `betterImageEditor` • `betterInvites` • `betterMicrophone.desktop` • `betterPlusReacts` • `betterScreenshare.desktop` • `blockKeywords` • `blockKrisp` • `bypassPinPrompt` • `bypassStatus`
+
+#### Section C
+`ClientDiagnostics` • `ConsoleCleaner` • `CustomDNS` • `channelBadges` • `channelTabs` • `clanSwitcher` • `cleanChannelName` • `cleanerChannelGroups` • `clickableRoles` • `clientSideBlock` • `clipUpload.desktop` • `clipsEnhancements.discordDesktop` • `collapsibleUi` • `commandPalette` • `contentWarning` • `copyProfileColors` • `copyStatusUrls` • `copyUserMention` • `crashHandlerEnhanched` • `cursorBuddy` • `customFolderIcons` • `customSounds` • `customStatusTimeouts` • `customStream` • `customTimestamps` • `customUserColors` • `customWelcomer`
+
+#### Section D
+`DiscordHardened` • `DiscordLock` • `ddtAnnouncements` • `ddtChatStats` • `ddtDynamicIsland` • `ddtEasterEgg` • `ddtMessageLogger` • `ddtMessageScheduler` • `ddtQuestAutomator` • `ddtSpotifyLyricsStatus` • `ddtTutorial` • `ddtUpdater` • `declutter` • `detectBlock` • `devToolsPanel` • `developerTheme` • `disableAnimations` • `disableCameras` • `discordDevBanner` • `dontLimitMe` • `downloadAllAttachments` • `dragFavoriteEmotes` • `dragify`
+
+#### Section E
+`elementHighlighter.dev` • `embeddedURLs` • `equibopStreamFixes.equibop` • `equicordHelper` • `equicordToolbox` • `equissant` • `eventLogger` • `exitSounds` • `expandedWidgets` • `exportMessages`
+
+#### Section F
+`FakeMuteAndDeafen` • `FastGifPicker` • `FloeP2PService.desktop` • `FollowUser` • `fastDeleteChannels` • `favouriteAnything` • `fileUpload` • `findReply` • `fixFileExtensions` • `followVoiceUser` • `fontLoader` • `frequentQuickSwitcher` • `friendCodes` • `friendTags` • `friendshipRanks` • `fullVcPfp`
+
+#### Section G
+`GhostSelfbot` • `gatewayLogger` • `ghosted` • `gifCollections` • `gifMaker` • `githubRepos` • `globalBadges` • `googleThat` • `guildPickerDumper`
+
+#### Section H & I
+`Hisako's Optimizations` • `hideChatButtons` • `hideMessages` • `hideServers` • `homeTyping` • `hopOn` • `husk` • `IGP` • `iRememberYou` • `iconViewer` • `idleAutoRestart` • `ignoreCalls` • `inRole` • `ingtoninator` • `instantScreenshare` • `invisibleChat.desktop` • `inviteDefaults`
+
+#### Section J, K & L
+`jumpTo` • `keyboardNavigation` • `keyboardSounds` • `keywordNotify` • `LarpCord` • `lastActive` • `limitlessScreenshare` • `loginWithQR`
+
+#### Section M
+`MassMention` • `MultiInstance` • `markdownTables` • `mediaPlaybackSpeed` • `messageBurst` • `messageColors` • `messageFetchTimer` • `messageLinkTooltip` • `messageLoggerEnhanced` • `messageNotifier` • `messagePeek` • `messageTranslate` • `micLoopbackTester` • `middleClickTweaks` • `moreCommands` • `moreStickers` • `moreUserTags` • `moyai` • `musicControls` • `musicVisualizer` • `mutualScanner`
+
+#### Section N & O
+`NightcordPort` • `NightyNitroSniper` • `NitroSniper` • `NsfwGateBypass` • `networkInspector` • `neverPausePreviews` • `newPluginsManager` • `noNitroUpsell` • `noPushToTalk` • `noRPC.discordDesktop` • `noRoleHeaders` • `normalizeMessageLinks` • `notificationTitle.discordDesktop` • `OSINTToolkit` • `opSec` • `openOptimizer` • `orbolayBridge`
+
+#### Section P & Q
+`PluginStars` • `PrivateSearchEngine.desktop` • `partyMode` • `pendingFriendRequest` • `philsPluginLibrary` • `pinIcon` • `pingNotifications` • `platformSpoofer` • `polishWording` • `presenceLab` • `profileSets` • `questify` • `quickThemeSwitcher.discordDesktop` • `quoter`
+
+#### Section R
+`RamOptimizer.desktop` • `randomVoice` • `reactionTimestamps` • `recentDMSwitcher` • `remix` • `repeatMessages` • `replyPingControl` • `richMagnetLinks` • `richPresence` • `rpcEditor`
+
+#### Section S
+`ScreenShareAlert` • `SecureBookmarks` • `SecureZipper` • `Securecord` • `SecurecordOpossum` • `ServerBadges` • `SilentDelete` • `SilentEdit` • `Silentcall` • `SoundPad` • `SpatialAudio` • `StaffDetector` • `StreamProof` • `Surveillance` • `saveFavoriteGIFs` • `scamLinkDetector` • `scheduledMessages` • `screenRecorder.equibop` • `searchFix` • `sedEnhanced` • `sekaiStickers` • `sendTrail` • `serverCloner` • `serverSearch` • `shareClientConfig` • `showBadgesInChat` • `showMessageEmbeds` • `showResourceChannels` • `showRolesInChat` • `showSongName` • `sidebarChat` • `signature` • `silenceUsers` • `snowfall` • `songLink.desktop` • `songSpotlight.desktop` • `splitLargeMessages` • `stalker` • `statusCycler` • `statusPresets` • `statusWhileActive.desktop` • `steamStatusSync` • `stereoInstaller.desktop` • `stereoScreenshareAudio` • `stickerBlocker` • `stopAutoUnread` • `streaks` • `streamingCodecDisabler`
+
+#### Section T
+`talkInReverse` • `themeLibrary` • `tidalEmbeds` • `timezones` • `title` • `toastNotifications` • `toggleVideoBind` • `tokenManager` • `toneIndicators` • `translatePlus` • `triviaAI` • `typingFriends`
+
+#### Section U & V
+`unitConverter` • `universalMention` • `unlimitedAccounts` • `unreadBadgeCount` • `urlHighlighter` • `userpfp` • `userpluginInstaller.dev` • `vcPanelSettings` • `vencord-gpubinder-main` • `voiceButtons` • `voiceChannelLog` • `voiceChatUtils` • `voiceJoinMessages` • `voiceMessageTranscriber.desktop` • `voiceMessagesInBackground` • `voiceRejoin` • `voiceServerInfo` • `voiceStats`
+
+#### Section W, X, Y & Z
+`waitForSlot` • `webRtcLeakPrevent` • `webpackTarball` • `whitelistedEmojis` • `whosWatching` • `wigglyText` • `writeUpperCase` • `xploitFarm` • `yMusicSync.desktop` • `ZeroWidthSanitizer` • `zipPreview`
+
+</details>
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Troubleshooting & FAQ
+
+<details>
+<summary><b>Discord updated and DDT disappeared. How to restore?</b></summary>
+<br>
+
+When Discord updates, it spawns a new version directory (such as <code>app-1.0.XXXX</code>). Run:
+
+```powershell
+python deploy.py
+```
+This detects the new folder and links DDT automatically without rebuilding.
 </details>
 
 <details>
-<summary><b>Section A (11 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| AnonLiDrop | AutoModBypass | accountSwitcher |
-| advancedPermissions | altKrispSwitch | alwaysExpandProfiles |
-| animalese | apiInspector | atSomeone |
-| autoJumpToMessage | autoZipper |
+<summary><b>Can I run DDT on Discord PTB or Canary?</b></summary>
+<br>
+Yes. In <code>scripts/runInstaller.mjs</code> or during injection with <code>pnpm inject</code>, select your target release channel.
 </details>
 
 <details>
-<summary><b>Section B (19 Plugins)</b></summary>
+<summary><b>How do I uninstall DDT?</b></summary>
+<br>
 
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| BadgesSelector | BoosterCount-main | bannersEverywhere |
-| baseDecoder | betterActivities | betterAudioPlayer |
-| betterBanReasons | betterBlockedUsers | betterCommands |
-| betterForwards | betterImageEditor | betterInvites |
-| betterMicrophone.desktop | betterPlusReacts | betterScreenshare.desktop |
-| blockKeywords | blockKrisp | bypassPinPrompt |
-| bypassStatus |
+Run:
+```powershell
+pnpm uninject
+```
+If DDT-Asar was installed, restore the backup <code>_app.asar</code> file to <code>app.asar</code> inside your Discord <code>resources/</code> folder.
 </details>
 
 <details>
-<summary><b>Section C (27 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| ClientDiagnostics | ConsoleCleaner | CustomDNS |
-| channelBadges | channelTabs | clanSwitcher |
-| cleanChannelName | cleanerChannelGroups | clickableRoles |
-| clientSideBlock | clipUpload.desktop | clipsEnhancements.discordDesktop |
-| collapsibleUi | commandPalette | contentWarning |
-| copyProfileColors | copyStatusUrls | copyUserMention |
-| crashHandlerEnhanched | cursorBuddy | customFolderIcons |
-| customSounds | customStatusTimeouts | customStream |
-| customTimestamps | customUserColors | customWelcomer |
+<summary><b>Are credentials or tokens tracked or collected?</b></summary>
+<br>
+<b>No.</b> DDT enforces a strict zero-telemetry policy. All operations execute strictly on your local machine with no external logging.
 </details>
 
-<details>
-<summary><b>Section D (20 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| DiscordHardened | DiscordLock | ddtAnnouncements |
-| ddtDynamicIsland | ddtEasterEgg | ddtMessageLogger |
-| ddtQuestAutomator | ddtTutorial | ddtUpdater |
-| declutter | detectBlock | devToolsPanel |
-| developerTheme | disableAnimations | disableCameras |
-| discordDevBanner | dontLimitMe | downloadAllAttachments |
-| dragFavoriteEmotes | dragify |
-</details>
-
-<details>
-<summary><b>Section E (10 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| elementHighlighter.dev | embeddedURLs | equibopStreamFixes.equibop |
-| equicordHelper | equicordToolbox | equissant |
-| eventLogger | exitSounds | expandedWidgets |
-| exportMessages |
-</details>
-
-<details>
-<summary><b>Section F (16 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| FakeMuteAndDeafen | FastGifPicker | FloeP2PService.desktop |
-| FollowUser | fastDeleteChannels | favouriteAnything |
-| fileUpload | findReply | fixFileExtensions |
-| followVoiceUser | fontLoader | frequentQuickSwitcher |
-| friendCodes | friendTags | friendshipRanks |
-| fullVcPfp |
-</details>
-
-<details>
-<summary><b>Section G (9 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| GhostSelfbot | gatewayLogger | ghosted |
-| gifCollections | gifMaker | githubRepos |
-| globalBadges | googleThat | guildPickerDumper |
-</details>
-
-<details>
-<summary><b>Section H (7 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| Hisako's Optimizations | hideChatButtons | hideMessages |
-| hideServers | homeTyping | hopOn |
-| husk |
-</details>
-
-<details>
-<summary><b>Section I (10 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| IGP | iRememberYou | iconViewer |
-| idleAutoRestart | ignoreCalls | inRole |
-| ingtoninator | instantScreenshare | invisibleChat.desktop |
-| inviteDefaults |
-</details>
-
-<details>
-<summary><b>Section J (1 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| jumpTo |
-</details>
-
-<details>
-<summary><b>Section K (3 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| keyboardNavigation | keyboardSounds | keywordNotify |
-</details>
-
-<details>
-<summary><b>Section L (4 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| LarpCord | lastActive | limitlessScreenshare |
-| loginWithQR |
-</details>
-
-<details>
-<summary><b>Section M (21 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| MassMention | MultiInstance | markdownTables |
-| mediaPlaybackSpeed | messageBurst | messageColors |
-| messageFetchTimer | messageLinkTooltip | messageLoggerEnhanced |
-| messageNotifier | messagePeek | messageTranslate |
-| micLoopbackTester | middleClickTweaks | moreCommands |
-| moreStickers | moreUserTags | moyai |
-| musicControls | musicVisualizer | mutualScanner |
-</details>
-
-<details>
-<summary><b>Section N (13 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| NightcordPort | NightyNitroSniper | NitroSniper |
-| NsfwGateBypass | networkInspector | neverPausePreviews |
-| newPluginsManager | noNitroUpsell | noPushToTalk |
-| noRPC.discordDesktop | noRoleHeaders | normalizeMessageLinks |
-| notificationTitle.discordDesktop |
-</details>
-
-<details>
-<summary><b>Section O (4 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| OSINTToolkit | opSec | openOptimizer |
-| orbolayBridge |
-</details>
-
-<details>
-<summary><b>Section P (11 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| PluginStars | PrivateSearchEngine.desktop | partyMode |
-| pendingFriendRequest | philsPluginLibrary | pinIcon |
-| pingNotifications | platformSpoofer | polishWording |
-| presenceLab | profileSets |
-</details>
-
-<details>
-<summary><b>Section Q (3 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| questify | quickThemeSwitcher.discordDesktop | quoter |
-</details>
-
-<details>
-<summary><b>Section R (10 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| RamOptimizer.desktop | randomVoice | reactionTimestamps |
-| recentDMSwitcher | remix | repeatMessages |
-| replyPingControl | richMagnetLinks | richPresence |
-| rpcEditor |
-</details>
-
-<details>
-<summary><b>Section S (48 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| ScreenShareAlert | SecureBookmarks | SecureZipper |
-| Securecord | SecurecordOpossum | ServerBadges |
-| SilentDelete | SilentEdit | Silentcall |
-| SoundPad | SpatialAudio | StaffDetector |
-| StreamProof | Surveillance | saveFavoriteGIFs |
-| scamLinkDetector | scheduledMessages | screenRecorder.equibop |
-| searchFix | sedEnhanced | sekaiStickers |
-| sendTrail | serverCloner | serverSearch |
-| shareClientConfig | showBadgesInChat | showMessageEmbeds |
-| showResourceChannels | showRolesInChat | showSongName |
-| sidebarChat | signature | silenceUsers |
-| snowfall | songLink.desktop | songSpotlight.desktop |
-| splitLargeMessages | stalker | statusCycler |
-| statusPresets | statusWhileActive.desktop | steamStatusSync |
-| stereoInstaller.desktop | stereoScreenshareAudio | stickerBlocker |
-| stopAutoUnread | streaks | streamingCodecDisabler |
-</details>
-
-<details>
-<summary><b>Section T (12 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| talkInReverse | themeLibrary | tidalEmbeds |
-| timezones | title | toastNotifications |
-| toggleVideoBind | tokenManager | toneIndicators |
-| translatePlus | triviaAI | typingFriends |
-</details>
-
-<details>
-<summary><b>Section U (7 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| unitConverter | universalMention | unlimitedAccounts |
-| unreadBadgeCount | urlHighlighter | userpfp |
-| userpluginInstaller.dev |
-</details>
-
-<details>
-<summary><b>Section V (11 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| vcPanelSettings | vencord-gpubinder-main | voiceButtons |
-| voiceChannelLog | voiceChatUtils | voiceJoinMessages |
-| voiceMessageTranscriber.desktop | voiceMessagesInBackground | voiceRejoin |
-| voiceServerInfo | voiceStats |
-</details>
-
-<details>
-<summary><b>Section W (7 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| waitForSlot | webRtcLeakPrevent | webpackTarball |
-| whitelistedEmojis | whosWatching | wigglyText |
-| writeUpperCase |
-</details>
-
-<details>
-<summary><b>Section Y (1 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| yMusicSync.desktop |
-</details>
-
-<details>
-<summary><b>Section Z (2 Plugins)</b></summary>
-
-| Plugin Name | Plugin Name | Plugin Name |
-| :--- | :--- | :--- |
-| ZeroWidthSanitizer | zipPreview |
-</details>
----
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
 ## Community & Support
 
-Join our official community for support, updates, discussions, and plugin requests:
+- **Discord Community:** [discord.gg/AVFfV8fXAN](https://discord.gg/AVFfV8fXAN)
+- **Issue Tracker:** [GitHub Issues](https://github.com/asrarkhann116-ops/DDT-Custom-Client/issues)
+- **Source Repository:** [DDT GitHub Repo](https://github.com/asrarkhann116-ops/DDT-Custom-Client)
 
--  **Discord Server:** [discord.gg/AVFfV8fXAN](https://discord.gg/AVFfV8fXAN)
--  **Issue Tracker:** [GitHub Issues](https://github.com/asrarkhann116-ops/DDT-Custom-Client/issues)
--  **Source Code:** [DDT GitHub Repo](https://github.com/asrarkhann116-ops/DDT-Custom-Client)
+## License & Attribution
 
----
+This software is released under the **GNU General Public License v3.0 (GPL-3.0)**.
 
-## License & Credits
+- **Developer:** [Asrar Khan](https://github.com/asrarkhann116-ops) (DDT Development Team)
+- **Upstream Foundations:** Built on [Vencord](https://github.com/Vendicated/Vencord) and [OpenAsar](https://github.com/GooseMod/OpenAsar).
+- **Attribution Notice:** Complete breakdown of copyright, derivative work licensing, and plugin attribution is documented in the official [LICENSE](LICENSE) file.
 
-- Licensed under **GPL-3.0**.
-- Developed with passion by [asrarkhann116-ops](https://github.com/asrarkhann116-ops) & contributors.
-- Based on [Vencord](https://github.com/Vendicated/Vencord).
+<p align="center">
+  <img src="assets/footer.svg" alt="DDT: Build, Customize, Explore" width="100%" />
+</p>

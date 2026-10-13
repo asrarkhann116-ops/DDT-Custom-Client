@@ -1,38 +1,54 @@
-# DDT Custom Client
-
 <p align="center">
-  <img src="./DDT%20CLIENT.png" alt="DDT Client Banner" width="100%" />
+  <img src="assets/hero.svg" alt="DDT Custom Client: Build, Customize, Explore" width="100%" />
 </p>
 
 <p align="center">
-  <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community_Server-5865F2?style=for-the-badge" alt="Discord Server" /></a>
-  <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge" alt="GitHub Repo" /></a>
-  <img src="https://img.shields.io/badge/Plugins-288+_Builtin-00D26A?style=for-the-badge" alt="Plugins" />
-  <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="License" />
+  <img src="assets/typing.svg" alt="288+ built-in plugins. Zero telemetry. 110+ themes. 2-4x faster startup with DDT-Asar." width="760" />
 </p>
 
----
+<p align="center">
+  <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Server" /></a>
+  <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repo" /></a>
+  <img src="https://img.shields.io/badge/Plugins-288+_Built--in-2F81FF?style=for-the-badge" alt="288+ built-in plugins" />
+  <img src="https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 22 or newer" />
+  <img src="https://img.shields.io/badge/License-GPL--3.0-2F81FF?style=for-the-badge" alt="GPL-3.0 License" />
+</p>
 
-##  What is DDT?
+<p align="center">
+  <a href="#what-is-ddt"><b>Overview</b></a> &nbsp;/&nbsp;
+  <a href="#quick-install"><b>Quick Install</b></a> &nbsp;/&nbsp;
+  <a href="#ddt-asar-performance-boost"><b>DDT-Asar</b></a> &nbsp;/&nbsp;
+  <a href="#manual-installation"><b>Manual Install</b></a> &nbsp;/&nbsp;
+  <a href="#highlighted-plugins"><b>Highlights</b></a> &nbsp;/&nbsp;
+  <a href="#complete-ddt-user-plugin-directory"><b>All Plugins</b></a> &nbsp;/&nbsp;
+  <a href="#community--support"><b>Community</b></a>
+</p>
 
-**DDT (Discord Developer Tools)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). DDT supercharges your Discord experience with an enormous catalog of **323+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, theme loaders, and an active titlebar status indicator.
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
----
+## What is DDT?
 
-## Live Project Stats
+**DDT (Discord Developer Tool)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). It supercharges your Discord experience with an enormous catalog of **288+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, theme loaders, and an active titlebar status indicator.
 
-| Metric | Details |
-| :--- | :--- |
-| **Total DDT Plugins** | **323+ Custom Plugins** (Full built-in catalog) |
-| **Core Framework Plugins** | **170 Built-in System Plugins** |
-| **Curated Themes** | **114+ Themes** available via Theme Manager |
-| **Source Lines** | **216,000+ Lines** of TypeScript/React |
-| **Bundle Size** | **~1.1 MB** ultra-optimized renderer bundle |
-| **Telemetry & Tracking** | **0% (Zero Telemetry, 100% Local)** |
+<p align="center">
+  <img src="assets/stats.svg" alt="DDT at a glance: 288+ user plugins, 170+ core plugins, 110+ themes, 230K+ lines of code, 0% telemetry" width="100%" />
+</p>
 
----
+- **Lean:** ~1.1 MB optimized renderer bundle
+- **Private:** zero telemetry, everything stays local
+- **Modern:** built for Node.js 22+ and pnpm
 
-##  Quick Install (Recommended)
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
+
+## Quick Install
+
+Run the installer and watch DDT build itself, inject into Discord, and (optionally) drop in DDT-Asar:
+
+<p align="center">
+  <img src="assets/terminal.svg" alt="Animated terminal: python install.py checks Node.js and pnpm, installs dependencies, builds DDT, injects it into Discord and installs DDT-Asar" width="100%" />
+</p>
+
+> **Requirements:** Windows, Python 3 and Node.js 22+. The installer checks Node.js and installs pnpm for you.
 
 ### Windows Automated One-Liner (PowerShell)
 
@@ -48,38 +64,49 @@ cd "$env:USERPROFILE\Downloads\DDT-Custom-Client"
 python install.py
 ```
 
----
+After the installer finishes, fully close Discord (check the system tray) and restart it.
 
-##  DDT-Asar Performance Boost (Optional)
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-During installation, you'll be prompted to install **DDT-Asar** - an optional performance enhancement:
+## DDT-Asar Performance Boost
+
+During installation you'll be asked whether to install **DDT-Asar**, an optional performance enhancement:
+
+<p align="center">
+  <img src="assets/speed.svg" alt="DDT-Asar starts Discord about 4x faster than the stock asar (about 1.5 s vs 6 s) and is 99% smaller (about 47 KB vs 9 MB)" width="100%" />
+</p>
 
 ### What is DDT-Asar?
-- **2-4x faster Discord startup** (typically 6 seconds → 1.5 seconds)
+
+- **2-4x faster Discord startup** (typically 6 seconds down to 1.5 seconds)
 - **Custom DDT-branded purple splash screen** with smooth animations
-- **99% smaller file size** (51 KB vs 9 MB original Discord asar)
-- **Zero tracking or telemetry** (unlike original Discord asar)
+- **99% smaller file size** (~47 KB vs ~9 MB for the original Discord asar)
+- **Zero tracking or telemetry**, unlike the original Discord asar
 - **100% compatible** with DDT Client injection
 
 ### How it works
+
 DDT-Asar is a custom-branded fork of OpenAsar that replaces Discord's bloated `app.asar` with an optimized version:
-- ✅ DDT plugins continue working perfectly (injection is separate)
-- ✅ Automatic backup created before installation
-- ✅ Completely optional - DDT works great without it
-- ✅ Pre-built and bundled (no build tools needed)
+
+- DDT plugins keep working perfectly, because injection is separate
+- An automatic backup is created before installation
+- Completely optional: DDT works great without it
+- Pre-built and bundled, so no build tools are needed
 
 ### Installation
+
 The installer (`install.py`) will automatically:
-1. Detect if DDT is already injected
+
+1. Detect whether DDT is already injected
 2. Prompt: **"Install DDT-Asar? (y/n)"**
 3. If yes: safely replace Discord's core with DDT-Asar
-4. If no: skip and continue with standard setup
+4. If no: skip it and continue with the standard setup
 
-**Recommended:** Say **yes** for best performance! 🚀
+**Recommended:** answer **y** for the best performance.
 
----
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-##  Manual Installation
+## Manual Installation
 
 ```powershell
 # 1. Clone repository
@@ -97,33 +124,30 @@ pnpm build
 pnpm inject
 ```
 
----
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-## Highlighted DDT Plugins
+## Highlighted Plugins
 
-### Native DDT Suites
-- **DDT Auto Updater** (`ddtUpdater`)  Real-time updates directly via GitHub API.
-- **DDT Announcements** (`ddtAnnouncements`)  Integrated update modal connecting to community Discord & GitHub.
-- **DDT Dynamic Island** (`ddtDynamicIsland`)  Fluid floating status bar with spring physics.
-- **DDT Message Logger** (`ddtMessageLogger`)  High-precision local message log retention & search.
-- **DDT Quest Automator** (`ddtQuestAutomator`)  Automated discord quest tracking and rewards.
-- **DDT Tutorial** (`ddtTutorial`)  Interactive step-by-step feature onboarding.
-- **DDT Mutual Scanner** (`mutualScanner`)  Scan mutual servers & shared friends.
-- **DDT Presence Lab** (`presenceLab`)  Local activity & presence session sandbox.
-- **DDT Send Trail** (`sendTrail`)  Sent message tracking, rapid actions, and purge controls.
-- **Music Visualizer** (`musicVisualizer`)  In-app streaming with real-time waveform HUD & lyrics.
-- **Account Switcher** (`accountSwitcher`)  Instant multi-account switching with encrypted storage.
-- **DDT Theme Manager** (`developerTheme`)  114+ curated themes with instant switching.
+| Plugin | ID | What it does |
+| :--- | :--- | :--- |
+| **DDT Auto Updater** | `ddtUpdater` | Real-time updates directly via the GitHub API |
+| **DDT Announcements** | `ddtAnnouncements` | Integrated update modal connecting to the community Discord and GitHub |
+| **DDT Dynamic Island** | `ddtDynamicIsland` | Fluid floating status bar with spring physics |
+| **DDT Message Logger** | `ddtMessageLogger` | High-precision local message log retention and search |
+| **DDT Quest Automator** | `ddtQuestAutomator` | Automated Discord quest tracking and rewards |
+| **DDT Tutorial** | `ddtTutorial` | Interactive step-by-step feature onboarding |
+| **DDT Mutual Scanner** | `mutualScanner` | Scan mutual servers and shared friends |
+| **DDT Presence Lab** | `presenceLab` | Local activity and presence session sandbox |
+| **DDT Send Trail** | `sendTrail` | Sent message tracking, rapid actions, and purge controls |
+| **Music Visualizer** | `musicVisualizer` | In-app streaming with a real-time waveform HUD and lyrics |
+| **Account Switcher** | `accountSwitcher` | Instant multi-account switching with encrypted storage |
+| **DDT Theme Manager** | `developerTheme` | 110+ curated themes with instant switching |
 
----
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
-##  Complete DDT User Plugin Directory
+## Complete DDT User Plugin Directory
 
-> **Note:** Every user plugin in this client is part of the DDT ecosystem. Browse the full A-Z directory below using collapsible dropdowns.
-
-### Complete DDT User Plugin Directory (323 Plugins)
-
-> Explore the full catalog of built-in DDT user plugins below. Click any section to toggle.
+> Every user plugin in this client is part of the DDT ecosystem. Browse the full A-Z catalog of **288 built-in user plugins** below. Click any section to expand it.
 
 <details>
 <summary><b>Section # (1 Plugins)</b></summary>
@@ -413,20 +437,23 @@ pnpm inject
 | :--- | :--- | :--- |
 | ZeroWidthSanitizer | zipPreview |
 </details>
----
+
+<p align="center"><img src="assets/divider.svg" alt="" width="100%" /></p>
 
 ## Community & Support
 
 Join our official community for support, updates, discussions, and plugin requests:
 
--  **Discord Server:** [discord.gg/AVFfV8fXAN](https://discord.gg/AVFfV8fXAN)
--  **Issue Tracker:** [GitHub Issues](https://github.com/asrarkhann116-ops/DDT-Custom-Client/issues)
--  **Source Code:** [DDT GitHub Repo](https://github.com/asrarkhann116-ops/DDT-Custom-Client)
-
----
+- **Discord Server:** [discord.gg/AVFfV8fXAN](https://discord.gg/AVFfV8fXAN)
+- **Issue Tracker:** [GitHub Issues](https://github.com/asrarkhann116-ops/DDT-Custom-Client/issues)
+- **Source Code:** [DDT GitHub Repo](https://github.com/asrarkhann116-ops/DDT-Custom-Client)
 
 ## License & Credits
 
 - Licensed under **GPL-3.0**.
 - Developed with passion by [asrarkhann116-ops](https://github.com/asrarkhann116-ops) & contributors.
 - Based on [Vencord](https://github.com/Vendicated/Vencord).
+
+<p align="center">
+  <img src="assets/footer.svg" alt="DDT: Build, Customize, Explore" width="100%" />
+</p>

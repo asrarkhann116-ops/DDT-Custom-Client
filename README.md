@@ -5,14 +5,6 @@
 </p>
 
 <p align="center">
-  <img src="./ddt%20cleint%20icon.png" alt="DDT Icon" width="90" height="90" />
-  <br/>
-  <b>Discord Developer Tools Client</b>
-  <br/>
-  <i>Engineered for Developers, Power Users, and Enthusiasts.</i>
-</p>
-
-<p align="center">
   <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community_Server-5865F2?style=for-the-badge" alt="Discord Server" /></a>
   <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge" alt="GitHub Repo" /></a>
   <img src="https://img.shields.io/badge/Plugins-288+_Builtin-00D26A?style=for-the-badge" alt="Plugins" />
@@ -23,7 +15,7 @@
 
 ##  What is DDT?
 
-**DDT (Discord Developer Tools)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). DDT supercharges your Discord experience with an enormous catalog of **288+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, theme loaders, and an active titlebar status indicator.
+**DDT (Discord Developer Tools)** is an advanced, ultra-high-performance Discord client modification built on top of [Vencord](https://github.com/Vendicated/Vencord). DDT supercharges your Discord experience with an enormous catalog of **323+ built-in custom user plugins**, specialized developer inspection utilities, audio visualizers, theme loaders, and an active titlebar status indicator.
 
 ---
 
@@ -31,11 +23,11 @@
 
 | Metric | Details |
 | :--- | :--- |
-| **Total DDT Plugins** | **288+ Custom Plugins** (Full built-in catalog) |
-| **Core Framework Plugins** | **171 Built-in System Plugins** |
-| **Curated Themes** | **112+ Themes** available via Theme Manager |
-| **Source Lines** | **206,000+ Lines** of TypeScript/React |
-| **Bundle Size** | **~1.0 MB** ultra-optimized renderer bundle |
+| **Total DDT Plugins** | **323+ Custom Plugins** (Full built-in catalog) |
+| **Core Framework Plugins** | **170 Built-in System Plugins** |
+| **Curated Themes** | **114+ Themes** available via Theme Manager |
+| **Source Lines** | **216,000+ Lines** of TypeScript/React |
+| **Bundle Size** | **~1.1 MB** ultra-optimized renderer bundle |
 | **Telemetry & Tracking** | **0% (Zero Telemetry, 100% Local)** |
 
 ---
@@ -65,7 +57,7 @@ During installation, you'll be prompted to install **DDT-Asar** - an optional pe
 ### What is DDT-Asar?
 - **2-4x faster Discord startup** (typically 6 seconds → 1.5 seconds)
 - **Custom DDT-branded purple splash screen** with smooth animations
-- **99% smaller file size** (58 KB vs 9 MB original Discord asar)
+- **99% smaller file size** (51 KB vs 9 MB original Discord asar)
 - **Zero tracking or telemetry** (unlike original Discord asar)
 - **100% compatible** with DDT Client injection
 
@@ -121,7 +113,7 @@ pnpm inject
 - **DDT Send Trail** (`sendTrail`)  Sent message tracking, rapid actions, and purge controls.
 - **Music Visualizer** (`musicVisualizer`)  In-app streaming with real-time waveform HUD & lyrics.
 - **Account Switcher** (`accountSwitcher`)  Instant multi-account switching with encrypted storage.
-- **DDT Theme Manager** (`developerTheme`)  112+ curated themes with instant switching.
+- **DDT Theme Manager** (`developerTheme`)  114+ curated themes with instant switching.
 
 ---
 
@@ -129,7 +121,7 @@ pnpm inject
 
 > **Note:** Every user plugin in this client is part of the DDT ecosystem. Browse the full A-Z directory below using collapsible dropdowns.
 
-### Complete DDT User Plugin Directory (288 Plugins)
+### Complete DDT User Plugin Directory (323 Plugins)
 
 > Explore the full catalog of built-in DDT user plugins below. Click any section to toggle.
 

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="290" viewBox="0 0 1200 290" role="img" aria-labelledby="t d">
+<title id="t">DDT Core Architecture Pipeline</title>
+<desc id="d">Minimalist, luxury technical architecture visualization showing Discord Client runtime, DDT Injection layer, and Asar Core.</desc>
+<defs>
+<linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0b1222"/><stop offset="100%" stop-color="#060a14"/></linearGradient>
+<linearGradient id="glowB" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2f81ff"/><stop offset="100%" stop-color="#38d5ff"/></linearGradient>
+<linearGradient id="cardG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#111c33"/><stop offset="100%" stop-color="#0c1322"/></linearGradient>
+<linearGradient id="greenG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+<linearGradient id="purpleG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient>
+
+<pattern id="gridSub" width="30" height="30" patternUnits="userSpaceOnUse">
+  <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#2f81ff" stroke-opacity="0.04" stroke-width="1"/>
+</pattern>
+
+<style>
+text{font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif}
+.mono{font-family:'JetBrains Mono','Fira Code',Consolas,monospace}
+.pulse-line{stroke-dasharray:8 12;animation:dash 20s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-1000}}
+.glow-box{transition:all .3s ease;animation:cardPulse 4s ease-in-out infinite alternate}
+@keyframes cardPulse{from{filter:drop-shadow(0 4px 16px rgba(47,129,255,0.08))}to{filter:drop-shadow(0 6px 24px rgba(47,129,255,0.22))}}
+</style>
+</defs>
+
+<rect width="1200" height="290" rx="16" fill="url(#bgG)" stroke="#1a2744" stroke-width="1.2"/>
+<rect width="1200" height="290" rx="16" fill="url(#gridSub)"/>
+
+<!-- Header -->
+<g transform="translate(48, 38)">
+  <circle cx="6" cy="6" r="4" fill="#38d5ff"/>
+  <text x="22" y="10" font-size="11" font-weight="700" letter-spacing="3" fill="#6ba3ff" class="mono">SYSTEM ARCHITECTURE // RUNTIME PIPELINE</text>
+  <text x="22" y="32" font-size="18" font-weight="700" fill="#ffffff">Isolated Zero-Hook Modular Execution</text>
+</g>
+
+<!-- Connection Bus Line -->
+<line x1="100" y1="175" x2="1100" y2="175" stroke="#1c2c4c" stroke-width="2"/>
+<line class="pulse-line" x1="100" y1="175" x2="1100" y2="175" stroke="#2f81ff" stroke-opacity="0.7" stroke-width="2"/>
+
+<!-- Node 1: Stock Electron -->
+<g transform="translate(60, 105)" class="glow-box">
+  <rect width="230" height="135" rx="12" fill="url(#cardG)" stroke="#1c2c4c" stroke-width="1.5"/>
+  <rect x="0" y="0" width="230" height="3" rx="1.5" fill="#475569"/>
+  <circle cx="28" cy="30" r="12" fill="#1e293b"/>
+  <path d="M22 30 L34 30 M28 24 L28 36" stroke="#94a3b8" stroke-width="1.8"/>
+  <text x="52" y="34" font-size="13" font-weight="700" fill="#ffffff">Host Electron</text>
+  <text x="28" y="72" font-size="11" fill="#8da2c8">Discord Base Layer</text>
+  <text x="28" y="94" font-size="10.5" fill="#64748b" class="mono">`app-1.0.XXXX`</text>
+  <rect x="28" y="108" width="92" height="18" rx="4" fill="#1e293b"/>
+  <text x="74" y="120" font-size="9" font-weight="600" fill="#94a3b8" text-anchor="middle">UPSTREAM</text>
+</g>
+
+<!-- Arrow 1 -->
+<path d="M 305 175 L 340 175" stroke="#38d5ff" stroke-width="2" stroke-linecap="round"/>
+<polygon points="345,175 337,171 337,179" fill="#38d5ff"/>
+
+<!-- Node 2: DDT-Asar Core -->
+<g transform="translate(360, 105)" class="glow-box">
+  <rect width="230" height="135" rx="12" fill="url(#cardG)" stroke="#2f81ff" stroke-width="1.5" stroke-opacity="0.6"/>
+  <rect x="0" y="0" width="230" height="3" rx="1.5" fill="url(#glowB)"/>
+  <circle cx="28" cy="30" r="12" fill="#0f264d"/>
+  <polygon points="28,23 34,34 22,34" fill="#38d5ff"/>
+  <text x="52" y="34" font-size="13" font-weight="700" fill="#ffffff">DDT-Asar Core</text>
+  <text x="28" y="72" font-size="11" fill="#8da2c8">Stripped OpenAsar Engine</text>
+  <text x="28" y="94" font-size="10.5" fill="#38d5ff" class="mono">47.5 KB // 1.5s Boot</text>
+  <rect x="28" y="108" width="112" height="18" rx="4" fill="#0f264d"/>
+  <text x="84" y="120" font-size="9" font-weight="600" fill="#38d5ff" text-anchor="middle">ZERO TELEMETRY</text>
+</g>
+
+<!-- Arrow 2 -->
+<path d="M 605 175 L 640 175" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+<polygon points="645,175 637,171 637,179" fill="#818cf8"/>
+
+<!-- Node 3: DDT Injection Engine -->
+<g transform="translate(660, 105)" class="glow-box">
+  <rect width="230" height="135" rx="12" fill="url(#cardG)" stroke="#6366f1" stroke-width="1.5" stroke-opacity="0.6"/>
+  <rect x="0" y="0" width="230" height="3" rx="1.5" fill="url(#purpleG)"/>
+  <circle cx="28" cy="30" r="12" fill="#1e1b4b"/>
+  <rect x="23" y="25" width="10" height="10" rx="2" fill="#818cf8"/>
+  <text x="52" y="34" font-size="13" font-weight="700" fill="#ffffff">DDT Runtime</text>
+  <text x="28" y="72" font-size="11" fill="#8da2c8">Webpack &amp; React Bridge</text>
+  <text x="28" y="94" font-size="10.5" fill="#a5b4fc" class="mono">Titlebar HUD + Dispatcher</text>
+  <rect x="28" y="108" width="98" height="18" rx="4" fill="#1e1b4b"/>
+  <text x="77" y="120" font-size="9" font-weight="600" fill="#a5b4fc" text-anchor="middle">LOCAL INJECTION</text>
+</g>
+
+<!-- Arrow 3 -->
+<path d="M 905 175 L 940 175" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+<polygon points="945,175 937,171 937,179" fill="#34d399"/>
+
+<!-- Node 4: 290+ Plugins & 112+ Themes -->
+<g transform="translate(950, 105)" class="glow-box">
+  <rect width="190" height="135" rx="12" fill="url(#cardG)" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.6"/>
+  <rect x="0" y="0" width="190" height="3" rx="1.5" fill="url(#greenG)"/>
+  <circle cx="28" cy="30" r="12" fill="#064e3b"/>
+  <circle cx="28" cy="30" r="4" fill="#34d399"/>
+  <text x="50" y="34" font-size="13" font-weight="700" fill="#ffffff">Modular Suite</text>
+  <text x="24" y="72" font-size="11" fill="#8da2c8">290+ Custom Plugins</text>
+  <text x="24" y="94" font-size="10.5" fill="#34d399" class="mono">112+ CSS Themes</text>
+  <rect x="24" y="108" width="98" height="18" rx="4" fill="#064e3b"/>
+  <text x="73" y="120" font-size="9" font-weight="600" fill="#34d399" text-anchor="middle">ACTIVE PLUGINS</text>
+</g>
+
+</svg>

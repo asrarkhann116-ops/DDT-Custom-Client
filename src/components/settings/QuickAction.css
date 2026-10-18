@@ -1,0 +1,83 @@
+.vc-settings-quickActions-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75em;
+    padding: 0.85em;
+    margin-bottom: 1.2em;
+    background: rgba(14, 16, 22, 0.65) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(88, 101, 242, 0.22) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (width <= 1040px) {
+    .vc-settings-quickActions-card {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.vc-settings-quickActions-pill {
+    all: unset;
+    cursor: pointer;
+    background: rgba(22, 25, 35, 0.75);
+    color: #f0f2f5;
+    display: flex;
+    align-items: center;
+    gap: 0.65em;
+    padding: 10px 14px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    font-weight: 550;
+    letter-spacing: 0.01em;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.vc-settings-quickActions-pill::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 101, 242, 0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.vc-settings-quickActions-pill:hover {
+    background: rgba(35, 39, 56, 0.85);
+    border-color: rgba(88, 101, 242, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(88, 101, 242, 0.25);
+    color: #ffffff;
+}
+
+.vc-settings-quickActions-pill:hover::before {
+    opacity: 1;
+}
+
+.vc-settings-quickActions-pill:active {
+    transform: translateY(0px) scale(0.98);
+}
+
+.vc-settings-quickActions-pill:focus-visible {
+    outline: 2px solid #5865F2;
+    outline-offset: 2px;
+}
+
+.vc-settings-quickActions-img {
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.2s ease;
+}
+
+.vc-settings-quickActions-pill:hover .vc-settings-quickActions-img {
+    transform: scale(1.1);
+}

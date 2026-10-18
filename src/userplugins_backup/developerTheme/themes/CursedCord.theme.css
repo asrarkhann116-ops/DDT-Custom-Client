@@ -1,0 +1,71 @@
+/**
+ * @name CursedCord
+ * @author CursedElectric
+ * @description A sharp theme that removes nitro features and buttons, and rounded edges, and adds lots of color customization
+ * @version 1.0
+ */
+
+
+
+
+@import url(https://cursedelectric.github.io/CursedCord---Discord-theme/CursedCordData.theme.css);
+
+/*reverts discord icons to old style. remove this link to change to default icons -- some icons don't work!! i recommend keeping this off
+@import url(https://davart154.github.io/Themes/Icon%20Revert%202023/2023%20Icon%20Revert.css);  */
+
+
+:root,
+.theme-dark, .theme-light { 
+  --cursedcord-primary-color: rgb(53, 128, 96)!important; /* main  color. used for server bar and many buttons*/
+
+  /*the backgrounds for this theme use bg1 and bg2, with bg1 mostly replacing the brigther backgrounds in vanilla discord and bg2 replacing the darker ones*/
+  --cursedcord-bg1: rgb(80, 80, 80)!important; 
+  --cursedcord-bg2:rgb(8, 8, 8)!important;
+  --cursedcord-border:rgba(255, 255, 255, 0.418)!important; /*border color*/
+
+  --cursedcord-primary-text-color:rgb(218, 218, 218)!important; /*main text color and icons color (settings button, call button, screen share, etc etc.*/
+  --cursedcord-secondary-text-color:rgba(204, 204, 204, 0.048)!important; /*color text and icons fades into (usually should be darker/less prominent than primary text color)*/
+
+  --cursedcord-hover-color:rgba(53, 128, 96, 0.247)!important; /*color of hightlighting. when you mouse over a message and it lightens/darkens a little. thats this color. keep alpha low (0.2ish) for best results*/
+
+  --cursedcord-linkcolor:rgb(37, 126, 92)!important; /*color of links */
+  --cursedcord-mention-color: rgb(29, 97, 71)!important; /*color of pinged messages you get - this also includes replying to messages*/
+
+  --cursedcord-notifcolor: rgb(255, 255, 255)!important; /*color for all vanilla discord red notif icons -- "x new messages" popups*/
+  --cursedcord-notiftext: rgb(0, 0, 0)!important; /*text color for notif icons -- "x new messages" popups*/
+
+  --cursedcord-home-icon: url(https://cursedelectric.neocities.org/fucking%20images/Cursedcord%20icon%20lazy.png)!important; /*icon used at the top left where discord symbol was. change to anything you like! supports gifs and images. unsure of videos*/
+  
+
+  /*ALL TOGGLES - leave var blank to show, and "none" to hide*/
+  /*server tags*/
+  --cursedcord-guildtags: !important;  
+  /* name, pfp background, avatar banners etc */
+  --cursedcord-decorations:none!important;
+  /*shop button */
+  --cursedcord-shoptoggle:none!important;
+  /*quests button */
+  --cursedcord-questtoggle:none!important;
+  /*nitro + gift button */
+  --cursedcord-nitrotoggle:none!important;
+  /*app launcher on message bar*/
+  --cursedcord-appbutton:none!important;
+  /*sticker button on message bar*/
+  --cursedcord-stickerbutton: !important;
+}
+
+
+/* custom font. use any hosted font for results */
+/*use https://fonts.google.com/ for a list of fonts*/
+@import url(https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap);
+*,
+*:before,
+*:after {
+  /*add your font here! -- be sure to mark all variables as !important*/
+  font-family: "Noto Sans", sans-serif!important;
+  font-optical-sizing: auto!important;
+  font-weight: 100!important;
+  font-style: normal!important;
+  font-variation-settings:
+    "wdth" 100!important;
+} 

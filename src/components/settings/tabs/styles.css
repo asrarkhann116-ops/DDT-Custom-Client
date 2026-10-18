@@ -1,0 +1,176 @@
+.vc-settings-tab-bar {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.vc-settings-tab-bar-item {
+    margin-right: 32px;
+    padding-bottom: 16px;
+    margin-bottom: -2px;
+}
+
+.vc-settings-donate {
+    display: flex;
+    flex-direction: row;
+}
+
+.vc-settings-theme-links {
+    /* Needed to fix bad themes that hide certain textarea elements for whatever eldritch reason */
+    display: inline-block !important;
+    color: var(--text-default) !important;
+    padding: 0.5em 1em;
+    border: 1px solid var(--input-border-default);
+    max-height: unset;
+    background-color: transparent;
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
+    font-size: 1em;
+    line-height: 2em;
+    white-space: nowrap;
+}
+
+.vc-settings-theme-links::placeholder {
+    color: var(--text-muted) !important;
+}
+
+.vc-settings-theme-links:focus {
+    background-color: var(--background-base-lowest);
+}
+
+.vc-cloud-settings-sync-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1em;
+    margin-top: 16px;
+}
+
+.vc-cloud-erase-data-danger-btn {
+    color: var(--control-critical-primary-text-default);
+    background-color: var(--control-critical-primary-background-default);
+}
+
+.vc-cloud-icon-with-button {
+    display: flex;
+    gap: 0.5em;
+    padding-inline: 0.5em 1em;
+}
+
+.vc-cloud-button-icon {
+    height: 1.25em;
+}
+
+.vc-settings-switches {
+    display: grid;
+    gap: 8px;
+    background: rgba(16, 18, 26, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 12px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* DDT Remastered Cyber Pedestal & HUD Accents */
+.ddt-remastered-hero {
+    position: relative;
+    background: radial-gradient(circle at 50% 100%, rgba(88, 101, 242, 0.22), rgba(10, 11, 16, 0.8) 70%);
+    border: 1px solid rgba(88, 101, 242, 0.35);
+    border-radius: 16px;
+    padding: 16px 20px 0 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.ddt-remastered-hero::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(88, 101, 242, 0.7), rgba(0, 255, 136, 0.5), transparent);
+}
+
+.ddt-hud-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid rgba(0, 255, 136, 0.35);
+    color: #00ff88;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.ddt-hud-badge-purple {
+    background: rgba(88, 101, 242, 0.15);
+    border-color: rgba(88, 101, 242, 0.4);
+    color: #a0aeff;
+    text-shadow: 0 0 8px rgba(88, 101, 242, 0.4);
+}
+
+.ddt-pedestal-waifu {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+    will-change: transform, filter;
+}
+
+.ddt-pedestal-waifu:hover {
+    transform: translateY(-4px) scale(1.02);
+    filter: drop-shadow(0 12px 30px rgba(88, 101, 242, 0.6)) !important;
+}
+
+/* Retro CRT / Scanline Micro-Detail (Ultra-subtle) */
+.ddt-scanlines {
+    position: relative;
+}
+
+.ddt-scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.15;
+    border-radius: inherit;
+}
+
+/* Retro Arcade Pixel Digital Readout */
+.ddt-pixel-counter {
+    font-family: ui-monospace, SFMono-Regular, "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    color: #00ff88;
+    background: rgba(0, 20, 10, 0.7);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 6px rgba(0, 255, 136, 0.2);
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ddt-pixel-counter::before {
+    content: "■";
+    font-size: 8px;
+    color: #00ff88;
+    animation: ddt-pulse-dot 1.5s infinite;
+}
+
+@keyframes ddt-pulse-dot {
+    0%, 100% { opacity: 1; text-shadow: 0 0 6px #00ff88; }
+    50% { opacity: 0.3; text-shadow: none; }
+}

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" role="img" aria-labelledby="t d">
+<title id="t">DDT Privacy &amp; Security Matrix</title>
+<desc id="d">Minimalist, luxury telemetry and security matrix comparing standard Discord against DDT Client.</desc>
+<defs>
+<linearGradient id="pbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0c1220"/><stop offset="100%" stop-color="#070c16"/></linearGradient>
+<linearGradient id="shieldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+<linearGradient id="redG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#991b1b"/></linearGradient>
+<linearGradient id="cardSec" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#121b30"/><stop offset="100%" stop-color="#0c1322"/></linearGradient>
+
+<style>
+text{font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif}
+.mono{font-family:'JetBrains Mono','Fira Code',Consolas,monospace}
+.tag-pass{fill:#064e3b;stroke:#059669;stroke-width:1}
+.tag-fail{fill:#450a0a;stroke:#991b1b;stroke-width:1}
+</style>
+</defs>
+
+<rect width="1200" height="240" rx="16" fill="url(#pbg)" stroke="#1a2744" stroke-width="1.2"/>
+
+<!-- Col 1: Header / Intro -->
+<g transform="translate(48, 45)">
+  <rect x="0" y="0" width="34" height="34" rx="8" fill="#064e3b" stroke="#059669" stroke-width="1.2"/>
+  <path d="M17 9 L26 13 V19 C26 24 22 28 17 30 C12 28 8 24 8 19 V13 Z" fill="none" stroke="#34d399" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M13 19 L16 22 L22 16" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+  
+  <text x="48" y="16" font-size="11" font-weight="700" letter-spacing="3" fill="#34d399" class="mono">SECURITY SPECS</text>
+  <text x="48" y="34" font-size="19" font-weight="700" fill="#ffffff">Zero-Telemetry &amp; OPSEC Shield</text>
+  <text x="0" y="80" font-size="12" fill="#8da2c8" width="280">DDT intercepts Discord analytics, kills background beacons, strips hidden tracking strings, and protects WebRTC IP routing.</text>
+  <text x="0" y="118" font-size="11" fill="#38d5ff" class="mono">STATUS: 100% AIRTIGHT // VERIFIED</text>
+</g>
+
+<!-- Divider Vertical -->
+<line x1="420" y1="30" x2="420" y2="210" stroke="#1c2c4c" stroke-width="1.2"/>
+
+<!-- Card 1: Discord Sentry & Crash Telemetry -->
+<g transform="translate(450, 36)">
+  <rect width="330" height="168" rx="12" fill="url(#cardSec)" stroke="#1e2c4c" stroke-width="1.2"/>
+  <text x="24" y="32" font-size="13" font-weight="700" fill="#ffffff">Telemetry &amp; Crash Trackers</text>
+  
+  <text x="24" y="68" font-size="11" fill="#8da2c8">Default Discord Client</text>
+  <rect x="230" y="54" width="76" height="20" rx="4" class="tag-fail"/>
+  <text x="268" y="68" font-size="9" font-weight="700" fill="#f87171" text-anchor="middle">ACTIVE</text>
+  
+  <line x1="24" y1="92" x2="306" y2="92" stroke="#18243c" stroke-width="1"/>
+  
+  <text x="24" y="124" font-size="11" fill="#8da2c8">DDT Hardened Client</text>
+  <rect x="216" y="110" width="90" height="20" rx="4" class="tag-pass"/>
+  <text x="261" y="124" font-size="9" font-weight="700" fill="#34d399" text-anchor="middle">100% BLOCKED</text>
+  
+  <text x="24" y="152" font-size="10" fill="#64748b" class="mono">Sentry.io, Google Analytics &amp; Beacons dropped</text>
+</g>
+
+<!-- Card 2: WebRTC & IP Protection -->
+<g transform="translate(810, 36)">
+  <rect width="340" height="168" rx="12" fill="url(#cardSec)" stroke="#1e2c4c" stroke-width="1.2"/>
+  <text x="24" y="32" font-size="13" font-weight="700" fill="#ffffff">WebRTC &amp; Fingerprint Defense</text>
+  
+  <text x="24" y="68" font-size="11" fill="#8da2c8">IP Address Exposure</text>
+  <rect x="226" y="54" width="90" height="20" rx="4" class="tag-pass"/>
+  <text x="271" y="68" font-size="9" font-weight="700" fill="#34d399" text-anchor="middle">PROTECTED</text>
+  
+  <line x1="24" y1="92" x2="316" y2="92" stroke="#18243c" stroke-width="1"/>
+  
+  <text x="24" y="124" font-size="11" fill="#8da2c8">Zero-Width Tracking Tags</text>
+  <rect x="226" y="110" width="90" height="20" rx="4" class="tag-pass"/>
+  <text x="271" y="124" font-size="9" font-weight="700" fill="#34d399" text-anchor="middle">SANITIZED</text>
+  
+  <text x="24" y="152" font-size="10" fill="#64748b" class="mono">webRtcLeakPrevent + ZeroWidthSanitizer active</text>
+</g>
+
+</svg>

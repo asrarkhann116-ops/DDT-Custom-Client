@@ -1,84 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="210" viewBox="0 0 1200 210" role="img" aria-labelledby="t d">
-<title id="t">DDT Audio &amp; Media Visualizer Engine</title>
-<desc id="d">Minimalist luxury HUD showcasing DDT audio visualizer, waveform analyzer, and 3D spatial sound processing.</desc>
-<defs>
-<linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#091120"/><stop offset="100%" stop-color="#050912"/></linearGradient>
-<linearGradient id="waveG" x1="0" y1="0" x2="1" y2="0">
-  <stop offset="0%" stop-color="#2f81ff"/>
-  <stop offset="35%" stop-color="#38d5ff"/>
-  <stop offset="70%" stop-color="#818cf8"/>
-  <stop offset="100%" stop-color="#ec4899"/>
-</linearGradient>
-<linearGradient id="barG" x1="0" y1="1" x2="0" y2="0">
-  <stop offset="0%" stop-color="#1e3a8a"/>
-  <stop offset="60%" stop-color="#3b82f6"/>
-  <stop offset="100%" stop-color="#60a5fa"/>
-</linearGradient>
-
-<style>
-text{font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif}
-.mono{font-family:'JetBrains Mono','Fira Code',Consolas,monospace}
-.vbar{animation:jump 1.6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:bottom}
-@keyframes jump{0%{transform:scaleY(0.25)}50%{transform:scaleY(1)}100%{transform:scaleY(0.4)}}
-</style>
-</defs>
-
-<rect width="1200" height="210" rx="16" fill="url(#abg)" stroke="#1a2744" stroke-width="1.2"/>
-
-<!-- Left Details -->
-<g transform="translate(48, 40)">
-  <rect x="0" y="0" width="34" height="34" rx="8" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2"/>
-  <path d="M12 24 V14 M17 26 V10 M22 24 V16" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round"/>
-  
-  <text x="48" y="16" font-size="11" font-weight="700" letter-spacing="3" fill="#818cf8" class="mono">ACOUSTIC SUITE</text>
-  <text x="48" y="34" font-size="18" font-weight="700" fill="#ffffff">Hi-Fi Waveform HUD &amp; 3D Audio</text>
-  
-  <text x="0" y="80" font-size="11.5" fill="#8da2c8">Real-time stereo spectrum analyzer, lossless microphone capture, custom hotkey soundboard, and synchronized lyrics status engine.</text>
-  <text x="0" y="112" font-size="10.5" fill="#38d5ff" class="mono">OUTPUT: 32-BIT FLOAT // 48kHz STEREO PASSTHROUGH</text>
-</g>
-
-<!-- Right Side Waveform Visualizer Bars -->
-<g transform="translate(560, 50)">
-  <!-- Backdrop glass card -->
-  <rect x="0" y="0" width="590" height="110" rx="10" fill="#0c1527" stroke="#1c2c4c" stroke-width="1.2"/>
-  
-  <!-- Frequency Spectrum Bars (Animated) -->
-  <g transform="translate(30, 90)">
-    <!-- 32 spectrum bars with stepped delays -->
-    <rect class="vbar" x="0" y="-55" width="8" height="55" rx="3" fill="url(#barG)" style="animation-delay:0.1s"/>
-    <rect class="vbar" x="16" y="-70" width="8" height="70" rx="3" fill="url(#barG)" style="animation-delay:0.35s"/>
-    <rect class="vbar" x="32" y="-45" width="8" height="45" rx="3" fill="url(#barG)" style="animation-delay:0.05s"/>
-    <rect class="vbar" x="48" y="-60" width="8" height="60" rx="3" fill="url(#barG)" style="animation-delay:0.5s"/>
-    <rect class="vbar" x="64" y="-80" width="8" height="80" rx="3" fill="url(#barG)" style="animation-delay:0.2s"/>
-    <rect class="vbar" x="80" y="-75" width="8" height="75" rx="3" fill="url(#barG)" style="animation-delay:0.6s"/>
-    <rect class="vbar" x="96" y="-50" width="8" height="50" rx="3" fill="url(#barG)" style="animation-delay:0.15s"/>
-    <rect class="vbar" x="112" y="-65" width="8" height="65" rx="3" fill="url(#barG)" style="animation-delay:0.4s"/>
-    <rect class="vbar" x="128" y="-85" width="8" height="85" rx="3" fill="url(#barG)" style="animation-delay:0.25s"/>
-    <rect class="vbar" x="144" y="-55" width="8" height="55" rx="3" fill="url(#barG)" style="animation-delay:0.7s"/>
-    <rect class="vbar" x="160" y="-70" width="8" height="70" rx="3" fill="url(#barG)" style="animation-delay:0.3s"/>
-    <rect class="vbar" x="176" y="-80" width="8" height="80" rx="3" fill="url(#barG)" style="animation-delay:0.55s"/>
-    <rect class="vbar" x="192" y="-60" width="8" height="60" rx="3" fill="url(#barG)" style="animation-delay:0.1s"/>
-    <rect class="vbar" x="208" y="-75" width="8" height="75" rx="3" fill="url(#barG)" style="animation-delay:0.45s"/>
-    <rect class="vbar" x="224" y="-50" width="8" height="50" rx="3" fill="url(#barG)" style="animation-delay:0.65s"/>
-    <rect class="vbar" x="240" y="-85" width="8" height="85" rx="3" fill="url(#barG)" style="animation-delay:0.2s"/>
-    <rect class="vbar" x="256" y="-65" width="8" height="65" rx="3" fill="url(#barG)" style="animation-delay:0.35s"/>
-    <rect class="vbar" x="272" y="-55" width="8" height="55" rx="3" fill="url(#barG)" style="animation-delay:0.5s"/>
-    <rect class="vbar" x="288" y="-75" width="8" height="75" rx="3" fill="url(#barG)" style="animation-delay:0.15s"/>
-    <rect class="vbar" x="304" y="-80" width="8" height="80" rx="3" fill="url(#barG)" style="animation-delay:0.6s"/>
-    <rect class="vbar" x="320" y="-60" width="8" height="60" rx="3" fill="url(#barG)" style="animation-delay:0.3s"/>
-    <rect class="vbar" x="336" y="-70" width="8" height="70" rx="3" fill="url(#barG)" style="animation-delay:0.45s"/>
-    <rect class="vbar" x="352" y="-85" width="8" height="85" rx="3" fill="url(#barG)" style="animation-delay:0.25s"/>
-    <rect class="vbar" x="368" y="-50" width="8" height="50" rx="3" fill="url(#barG)" style="animation-delay:0.7s"/>
-    <rect class="vbar" x="384" y="-65" width="8" height="65" rx="3" fill="url(#barG)" style="animation-delay:0.1s"/>
-    <rect class="vbar" x="400" y="-75" width="8" height="75" rx="3" fill="url(#barG)" style="animation-delay:0.55s"/>
-    <rect class="vbar" x="416" y="-55" width="8" height="55" rx="3" fill="url(#barG)" style="animation-delay:0.2s"/>
-    <rect class="vbar" x="432" y="-70" width="8" height="70" rx="3" fill="url(#barG)" style="animation-delay:0.4s"/>
-    <rect class="vbar" x="448" y="-80" width="8" height="80" rx="3" fill="url(#barG)" style="animation-delay:0.65s"/>
-    <rect class="vbar" x="464" y="-60" width="8" height="60" rx="3" fill="url(#barG)" style="animation-delay:0.3s"/>
-    <rect class="vbar" x="480" y="-50" width="8" height="50" rx="3" fill="url(#barG)" style="animation-delay:0.15s"/>
-    <rect class="vbar" x="496" y="-40" width="8" height="40" rx="3" fill="url(#barG)" style="animation-delay:0.5s"/>
-    <rect class="vbar" x="512" y="-30" width="8" height="30" rx="3" fill="url(#barG)" style="animation-delay:0.25s"/>
-  </g>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 220" width="1000" height="220" role="img">
+<defs><linearGradient id="vb" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5865F2"/><stop offset="1" stop-color="#3ddbb8"/></linearGradient></defs>
+<rect x="0.5" y="0.5" width="999" height="219" rx="16" fill="#0d0f13" stroke="#1c212b"/>
+<rect x="34" y="150" width="10" height="36" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="36;41;58;37;36" dur="1.31s" repeatCount="indefinite"/><animate attributeName="y" values="150;145;128;149;150" dur="1.31s" repeatCount="indefinite"/></rect>
+<rect x="52" y="138" width="10" height="48" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="48;26;44;51;48" dur="1.53s" repeatCount="indefinite"/><animate attributeName="y" values="138;160;142;135;138" dur="1.53s" repeatCount="indefinite"/></rect>
+<rect x="70" y="164" width="10" height="22" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="22;36;22;69;22" dur="1.45s" repeatCount="indefinite"/><animate attributeName="y" values="164;150;164;117;164" dur="1.45s" repeatCount="indefinite"/></rect>
+<rect x="88" y="166" width="10" height="20" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="20;89;88;65;20" dur="1.39s" repeatCount="indefinite"/><animate attributeName="y" values="166;97;98;121;166" dur="1.39s" repeatCount="indefinite"/></rect>
+<rect x="106" y="155" width="10" height="31" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="31;19;61;23;31" dur="1.05s" repeatCount="indefinite"/><animate attributeName="y" values="155;167;125;163;155" dur="1.05s" repeatCount="indefinite"/></rect>
+<rect x="124" y="146" width="10" height="40" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="40;21;60;58;40" dur="1.57s" repeatCount="indefinite"/><animate attributeName="y" values="146;165;126;128;146" dur="1.57s" repeatCount="indefinite"/></rect>
+<rect x="142" y="116" width="10" height="70" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="70;81;68;84;70" dur="1.27s" repeatCount="indefinite"/><animate attributeName="y" values="116;105;118;102;116" dur="1.27s" repeatCount="indefinite"/></rect>
+<rect x="160" y="137" width="10" height="49" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="49;124;123;107;49" dur="1.47s" repeatCount="indefinite"/><animate attributeName="y" values="137;62;63;79;137" dur="1.47s" repeatCount="indefinite"/></rect>
+<rect x="178" y="130" width="10" height="56" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="56;46;53;29;56" dur="1.51s" repeatCount="indefinite"/><animate attributeName="y" values="130;140;133;157;130" dur="1.51s" repeatCount="indefinite"/></rect>
+<rect x="196" y="118" width="10" height="68" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="68;120;66;133;68" dur="1.58s" repeatCount="indefinite"/><animate attributeName="y" values="118;66;120;53;118" dur="1.58s" repeatCount="indefinite"/></rect>
+<rect x="214" y="164" width="10" height="22" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="22;47;132;79;22" dur="1.68s" repeatCount="indefinite"/><animate attributeName="y" values="164;139;54;107;164" dur="1.68s" repeatCount="indefinite"/></rect>
+<rect x="232" y="114" width="10" height="72" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="72;32;101;120;72" dur="1.12s" repeatCount="indefinite"/><animate attributeName="y" values="114;154;85;66;114" dur="1.12s" repeatCount="indefinite"/></rect>
+<rect x="250" y="152" width="10" height="34" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="34;66;147;121;34" dur="0.99s" repeatCount="indefinite"/><animate attributeName="y" values="152;120;39;65;152" dur="0.99s" repeatCount="indefinite"/></rect>
+<rect x="268" y="130" width="10" height="56" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="56;36;31;128;56" dur="1.04s" repeatCount="indefinite"/><animate attributeName="y" values="130;150;155;58;130" dur="1.04s" repeatCount="indefinite"/></rect>
+<rect x="286" y="88" width="10" height="98" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="98;83;49;122;98" dur="1.0s" repeatCount="indefinite"/><animate attributeName="y" values="88;103;137;64;88" dur="1.0s" repeatCount="indefinite"/></rect>
+<rect x="304" y="75" width="10" height="111" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="111;39;80;52;111" dur="1.12s" repeatCount="indefinite"/><animate attributeName="y" values="75;147;106;134;75" dur="1.12s" repeatCount="indefinite"/></rect>
+<rect x="322" y="30" width="10" height="156" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="156;133;65;144;156" dur="1.07s" repeatCount="indefinite"/><animate attributeName="y" values="30;53;121;42;30" dur="1.07s" repeatCount="indefinite"/></rect>
+<rect x="340" y="109" width="10" height="77" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="77;139;110;37;77" dur="1.69s" repeatCount="indefinite"/><animate attributeName="y" values="109;47;76;149;109" dur="1.69s" repeatCount="indefinite"/></rect>
+<rect x="358" y="134" width="10" height="52" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="52;58;127;68;52" dur="1.14s" repeatCount="indefinite"/><animate attributeName="y" values="134;128;59;118;134" dur="1.14s" repeatCount="indefinite"/></rect>
+<rect x="376" y="153" width="10" height="33" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="33;35;100;55;33" dur="1.38s" repeatCount="indefinite"/><animate attributeName="y" values="153;151;86;131;153" dur="1.38s" repeatCount="indefinite"/></rect>
+<rect x="394" y="115" width="10" height="71" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="71;81;147;85;71" dur="1.36s" repeatCount="indefinite"/><animate attributeName="y" values="115;105;39;101;115" dur="1.36s" repeatCount="indefinite"/></rect>
+<rect x="412" y="55" width="10" height="131" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="131;45;42;136;131" dur="1.55s" repeatCount="indefinite"/><animate attributeName="y" values="55;141;144;50;55" dur="1.55s" repeatCount="indefinite"/></rect>
+<rect x="430" y="134" width="10" height="52" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="52;45;112;136;52" dur="1.06s" repeatCount="indefinite"/><animate attributeName="y" values="134;141;74;50;134" dur="1.06s" repeatCount="indefinite"/></rect>
+<rect x="448" y="54" width="10" height="132" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="132;124;91;70;132" dur="0.98s" repeatCount="indefinite"/><animate attributeName="y" values="54;62;95;116;54" dur="0.98s" repeatCount="indefinite"/></rect>
+<rect x="466" y="161" width="10" height="25" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="25;127;47;98;25" dur="1.11s" repeatCount="indefinite"/><animate attributeName="y" values="161;59;139;88;161" dur="1.11s" repeatCount="indefinite"/></rect>
+<rect x="484" y="80" width="10" height="106" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="106;82;51;38;106" dur="1.48s" repeatCount="indefinite"/><animate attributeName="y" values="80;104;135;148;80" dur="1.48s" repeatCount="indefinite"/></rect>
+<rect x="502" y="160" width="10" height="26" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="26;42;74;102;26" dur="1.39s" repeatCount="indefinite"/><animate attributeName="y" values="160;144;112;84;160" dur="1.39s" repeatCount="indefinite"/></rect>
+<rect x="520" y="142" width="10" height="44" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="44;101;37;20;44" dur="1.12s" repeatCount="indefinite"/><animate attributeName="y" values="142;85;149;166;142" dur="1.12s" repeatCount="indefinite"/></rect>
+<rect x="538" y="132" width="10" height="54" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="54;23;32;48;54" dur="1.36s" repeatCount="indefinite"/><animate attributeName="y" values="132;163;154;138;132" dur="1.36s" repeatCount="indefinite"/></rect>
+<rect x="556" y="159" width="10" height="27" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="27;44;82;89;27" dur="1.43s" repeatCount="indefinite"/><animate attributeName="y" values="159;142;104;97;159" dur="1.43s" repeatCount="indefinite"/></rect>
+<rect x="574" y="125" width="10" height="61" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="61;54;25;18;61" dur="0.91s" repeatCount="indefinite"/><animate attributeName="y" values="125;132;161;168;125" dur="0.91s" repeatCount="indefinite"/></rect>
+<rect x="592" y="119" width="10" height="67" rx="3" fill="url(#vb)" opacity=".9"><animate attributeName="height" values="67;55;69;16;67" dur="1.41s" repeatCount="indefinite"/><animate attributeName="y" values="119;131;117;170;119" dur="1.41s" repeatCount="indefinite"/></rect>
+<rect x="34" y="192" width="570" height="1" fill="#1c212b"/>
+<rect x="660" y="46" width="3" height="36" rx="1.5" fill="#5865F2"/><text x="680" y="62" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="700" fill="#eef0f5">32-band analyzer</text><text x="680" y="82" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#7d8697">Reacts to voice chat and media.</text>
+<rect x="660" y="102" width="3" height="36" rx="1.5" fill="#5865F2"/><text x="680" y="118" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="700" fill="#eef0f5">Spatial 3D audio</text><text x="680" y="138" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#7d8697">Binaural positional voice modeling.</text>
+<rect x="660" y="158" width="3" height="36" rx="1.5" fill="#5865F2"/><text x="680" y="174" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="700" fill="#eef0f5">Lossless mic stream</text><text x="680" y="194" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#7d8697">Uncompressed 48 kHz stereo capture.</text>
 
 </svg>

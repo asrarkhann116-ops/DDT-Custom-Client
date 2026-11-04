@@ -50,6 +50,10 @@
 
 DDT Remastered refreshes the look of Discord with **hardware-accelerated micro-animations** across the interface:
 
+<p align="center">
+  <img src="assets/remastered.svg" alt="DDT Remastered micro-animations: guilds, voice, reactions, modals" width="100%">
+</p>
+
 | Area | Behavior | Acceleration |
 |:--|:--|:--|
 | **Guilds & Servers** | Elastic squircle scale on hover (`cubic-bezier(0.34, 1.56, 0.64, 1)`), press feedback, soft blurple pill glow | GPU-backed |
@@ -188,6 +192,10 @@ python deploy.py
 
 DDT bundles a curated set of ready-to-use themes:
 
+<p align="center">
+  <img src="assets/themes.svg" alt="Theme previews: Nord, Tokyo Night, Gruvbox, AMOLED, Glass, Cyberpunk, Azurite, Fluent" width="100%">
+</p>
+
 - **Minimal & clean:** `MinimalCord`, `simplify`, `System24`, `Fluent`, `Discord11`, `Neobrutal`
 - **Dark & AMOLED:** `amoled-cord`, `roundmoledV2`, `DarkMatter`, `DarkNeon`, `discorddark`, `nocturnal`
 - **Glass:** `FrostedGlass`, `Translucence`, `discord-mica`, `Glass Wave`
@@ -206,6 +214,10 @@ DDT bundles a curated set of ready-to-use themes:
 ## Highlighted Plugins
 
 DDT ships **290+ user plugins**. Here are standout modules by area.
+
+<p align="center">
+  <img src="assets/plugins.svg" alt="Plugin areas: security, dev tools, workflow, audio" width="100%">
+</p>
 
 ### Security, Privacy and Protection
 

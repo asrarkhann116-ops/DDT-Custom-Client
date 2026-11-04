@@ -49,4 +49,16 @@
 <circle cx="988" cy="53" r="4" fill="#3ddbb8"/>
 <text x="1002" y="57" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12" fill="#c6cddb">Plugins loaded</text>
 </g>
+<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="4s" begin="0.0s" repeatCount="indefinite"/>
+<rect x="560" y="262" width="145" height="30" rx="15" fill="#0f1218" stroke="#2a3142"/>
+<circle cx="578" cy="277" r="4" fill="#5865F2"/>
+<text x="590" y="281.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12" fill="#c6cddb">apiInspector</text></g>
+<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="5s" begin="0.7s" repeatCount="indefinite"/>
+<rect x="1012" y="332" width="170" height="30" rx="15" fill="#0f1218" stroke="#2a3142"/>
+<circle cx="1030" cy="347" r="4" fill="#3ddbb8"/>
+<text x="1042" y="351.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12" fill="#c6cddb">musicVisualizer</text></g>
+<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="6s" begin="1.4s" repeatCount="indefinite"/>
+<rect x="548" y="112" width="178" height="30" rx="15" fill="#0f1218" stroke="#2a3142"/>
+<circle cx="566" cy="127" r="4" fill="#7aa2f7"/>
+<text x="578" y="131.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="12" fill="#c6cddb">ddtDynamicIsland</text></g>
 </svg>

@@ -29,5 +29,5 @@
 <g opacity="1"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.6889;0.7009;0.95;1" dur="18.0s" repeatCount="indefinite"/>
 <text x="36" y="294" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="15" font-weight="700" fill="#3ddbb8">OK</text>
 <text x="74" y="294" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="15" fill="#3ddbb8">Done. Fully close Discord and restart it.</text></g>
-<rect x="36" y="318" width="9" height="3" fill="#5865F2"><animate attributeName="opacity" values="1;0;1" dur="1.1s" repeatCount="indefinite"/></rect>
+
 </svg>

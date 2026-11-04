@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 0 1012 196" width="1012" height="196" role="img">
+<defs></defs>
+<g><rect x="0" y="6" width="110" height="150" rx="12" fill="#2e3440" stroke="#262c38"/>
+<rect x="0" y="6" width="26" height="150" rx="12" fill="#3b4252"/><rect x="14" y="6" width="12" height="150" fill="#3b4252"/>
+<circle cx="13" cy="26" r="6" fill="#88c0d0"/><circle cx="13" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="13" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="36" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="36" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="36" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="36" y="72" width="40" height="6" rx="3" fill="#88c0d0"/><rect x="36" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="36" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="34" y="128" width="68" height="16" rx="6" fill="#3b4252"/></g>
+<text x="55" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">NORD</text>
+<g><rect x="125" y="6" width="110" height="150" rx="12" fill="#1a1b26" stroke="#262c38"/>
+<rect x="125" y="6" width="26" height="150" rx="12" fill="#24283b"/><rect x="139" y="6" width="12" height="150" fill="#24283b"/>
+<circle cx="138" cy="26" r="6" fill="#7aa2f7"/><circle cx="138" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="138" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="161" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="161" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="161" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="161" y="72" width="40" height="6" rx="3" fill="#7aa2f7"/><rect x="161" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="161" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="159" y="128" width="68" height="16" rx="6" fill="#24283b"/></g>
+<text x="180" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">TOKYO NIGHT</text>
+<g><rect x="250" y="6" width="110" height="150" rx="12" fill="#282828" stroke="#262c38"/>
+<rect x="250" y="6" width="26" height="150" rx="12" fill="#3c3836"/><rect x="264" y="6" width="12" height="150" fill="#3c3836"/>
+<circle cx="263" cy="26" r="6" fill="#fabd2f"/><circle cx="263" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="263" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="286" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="286" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="286" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="286" y="72" width="40" height="6" rx="3" fill="#fabd2f"/><rect x="286" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="286" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="284" y="128" width="68" height="16" rx="6" fill="#3c3836"/></g>
+<text x="305" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">GRUVBOX</text>
+<g><rect x="375" y="6" width="110" height="150" rx="12" fill="#000000" stroke="#262c38"/>
+<rect x="375" y="6" width="26" height="150" rx="12" fill="#0c0c0c"/><rect x="389" y="6" width="12" height="150" fill="#0c0c0c"/>
+<circle cx="388" cy="26" r="6" fill="#5865F2"/><circle cx="388" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="388" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="411" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="411" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="411" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="411" y="72" width="40" height="6" rx="3" fill="#5865F2"/><rect x="411" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="411" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="409" y="128" width="68" height="16" rx="6" fill="#0c0c0c"/></g>
+<text x="430" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">AMOLED</text>
+<g><rect x="500" y="6" width="110" height="150" rx="12" fill="#0e1624" stroke="#262c38"/>
+<rect x="500" y="6" width="26" height="150" rx="12" fill="#16233a"/><rect x="514" y="6" width="12" height="150" fill="#16233a"/>
+<circle cx="513" cy="26" r="6" fill="#6ea8ff"/><circle cx="513" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="513" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="536" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="536" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="536" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="536" y="72" width="40" height="6" rx="3" fill="#6ea8ff"/><rect x="536" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="536" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="534" y="128" width="68" height="16" rx="6" fill="#16233a"/></g>
+<text x="555" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">GLASS</text>
+<g><rect x="625" y="6" width="110" height="150" rx="12" fill="#0b0b10" stroke="#262c38"/>
+<rect x="625" y="6" width="26" height="150" rx="12" fill="#16161f"/><rect x="639" y="6" width="12" height="150" fill="#16161f"/>
+<circle cx="638" cy="26" r="6" fill="#fcee09"/><circle cx="638" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="638" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="661" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="661" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="661" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="661" y="72" width="40" height="6" rx="3" fill="#fcee09"/><rect x="661" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="661" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="659" y="128" width="68" height="16" rx="6" fill="#16161f"/></g>
+<text x="680" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">CYBERPUNK</text>
+<g><rect x="750" y="6" width="110" height="150" rx="12" fill="#0b1a2e" stroke="#262c38"/>
+<rect x="750" y="6" width="26" height="150" rx="12" fill="#12263f"/><rect x="764" y="6" width="12" height="150" fill="#12263f"/>
+<circle cx="763" cy="26" r="6" fill="#3b82f6"/><circle cx="763" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="763" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="786" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="786" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="786" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="786" y="72" width="40" height="6" rx="3" fill="#3b82f6"/><rect x="786" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="786" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="784" y="128" width="68" height="16" rx="6" fill="#12263f"/></g>
+<text x="805" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">AZURITE</text>
+<g><rect x="875" y="6" width="110" height="150" rx="12" fill="#202020" stroke="#262c38"/>
+<rect x="875" y="6" width="26" height="150" rx="12" fill="#2b2b2b"/><rect x="889" y="6" width="12" height="150" fill="#2b2b2b"/>
+<circle cx="888" cy="26" r="6" fill="#60cdff"/><circle cx="888" cy="48" r="6" fill="#ffffff" opacity=".12"/><circle cx="888" cy="70" r="6" fill="#ffffff" opacity=".12"/>
+<rect x="911" y="22" width="52" height="6" rx="3" fill="#ffffff" opacity=".35"/><rect x="911" y="38" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="911" y="52" width="46" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="911" y="72" width="40" height="6" rx="3" fill="#60cdff"/><rect x="911" y="90" width="64" height="5" rx="2.5" fill="#ffffff" opacity=".14"/><rect x="911" y="104" width="54" height="5" rx="2.5" fill="#ffffff" opacity=".14"/>
+<rect x="909" y="128" width="68" height="16" rx="6" fill="#2b2b2b"/></g>
+<text x="930" y="180" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" font-size="11" letter-spacing="1" fill="#9aa3b5">FLUENT</text>
+<rect x="-3" y="3" width="116" height="156" rx="14" fill="none" stroke="#5865F2" stroke-width="2"><animate attributeName="x" values="-3;122;247;372;497;622;747;872;-3" keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1" calcMode="discrete" dur="12s" repeatCount="indefinite"/></rect>
+</svg>

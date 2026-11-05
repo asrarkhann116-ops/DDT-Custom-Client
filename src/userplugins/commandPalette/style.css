@@ -823,3 +823,316 @@
         animation: none;
     }
 }
+
+/* ==========================================================================
+   DDT REMASTERED: COMMAND PALETTE (bouncy, low-end friendly)
+   Everything above is the original stylesheet, untouched.
+   Static styling comes first; all motion sits inside `no-preference`, so the
+   original reduced-motion rule above still wins when the OS asks for it.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-accent: 88, 101, 242;
+}
+
+/* ---- LOW-END PERFORMANCE: a full-viewport backdrop blur re-blurs the whole
+   screen every frame on integrated GPUs. Swapped for a darker solid scrim that
+   reads almost the same. Delete this rule to bring the blur back. ---- */
+.vc-cmdpal-backdrop {
+    background: rgb(0 0 0 / 62%);
+    backdrop-filter: none;
+}
+
+/* ---- Static polish ---- */
+
+/* Soft accent halo around the palette (static, never animated) */
+.vc-cmdpal-root {
+    box-shadow:
+        0 0 0 1px rgba(var(--ddt-accent), 0.14),
+        0 20px 60px rgb(0 0 0 / 50%),
+        0 4px 16px rgb(0 0 0 / 35%),
+        0 0 48px rgba(var(--ddt-accent), 0.1);
+}
+
+/* Accent hairline along the top edge */
+.vc-cmdpal-root::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(var(--ddt-accent), 0.75), rgba(255, 255, 255, 0.5), rgba(var(--ddt-accent), 0.75), transparent);
+}
+
+/* Keycap look */
+.vc-cmdpal-key {
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 35%);
+}
+
+/* Focus rings: accent instead of plain white */
+.vc-cmdpal-field-input:focus,
+.vc-cmdpal-field-textarea:focus,
+.vc-cmdpal-picker-input-focused {
+    border-color: rgba(var(--ddt-accent), 0.6);
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.45), 0 0 16px rgba(var(--ddt-accent), 0.16);
+}
+
+/* Selected result row: rail + faint inner glow */
+.vc-cmdpal-row {
+    position: relative;
+}
+
+.vc-cmdpal-row::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 9px;
+    bottom: 9px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #ffffff, #5865f2);
+    opacity: 0;
+    transform: scaleY(0);
+    pointer-events: none;
+}
+
+.vc-cmdpal-row-selected::before {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+.vc-cmdpal-row-selected {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 5%), 0 0 18px rgba(var(--ddt-accent), 0.08);
+}
+
+/* Header: accent underline that draws in while the input is focused */
+.vc-cmdpal-header {
+    position: relative;
+}
+
+.vc-cmdpal-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(var(--ddt-accent), 0.9), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+}
+
+.vc-cmdpal-header:focus-within::after {
+    transform: scaleX(1);
+}
+
+.vc-cmdpal-header:focus-within .vc-cmdpal-search-icon {
+    color: var(--cmdpal-text-bright);
+}
+
+/* ==========================================================================
+   [MOTION]
+   ========================================================================== */
+@keyframes ddt-cp-in {
+    0%   { opacity: 0; transform: translate3d(0, -14px, 0) scale(0.94); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ddt-cp-panel-in {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.92); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ddt-cp-rise {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ddt-cp-chip-pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+@keyframes ddt-cp-shake {
+    0%   { opacity: 0; transform: translate3d(0, 0, 0); }
+    20%  { opacity: 1; transform: translate3d(-5px, 0, 0); }
+    45%  { transform: translate3d(4px, 0, 0); }
+    70%  { transform: translate3d(-2px, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+    /* 1. Palette: drops in from above with a dampened overshoot */
+    .vc-cmdpal-root {
+        animation: ddt-cp-in 280ms var(--ddt-pop);
+    }
+
+    .vc-cmdpal-panel,
+    .vc-cmdpal-picker-list {
+        animation: ddt-cp-panel-in 220ms var(--ddt-pop);
+        transform-origin: bottom right;
+    }
+
+    /* 2. Results: selection rail springs in, row swells slightly, icon tilts */
+    .vc-cmdpal-row {
+        transition: background-color 120ms var(--ddt-fluid), box-shadow 240ms var(--ddt-fluid), transform 240ms var(--ddt-squish);
+    }
+
+    .vc-cmdpal-row::before {
+        transition: transform 280ms var(--ddt-squish), opacity 160ms var(--ddt-fluid);
+    }
+
+    .vc-cmdpal-row:hover:not(.vc-cmdpal-row-selected) {
+        background: var(--cmdpal-raised);
+    }
+
+    .vc-cmdpal-row:active {
+        transform: scale(0.985);
+        transition: transform 70ms var(--ddt-squish);
+    }
+
+    .vc-cmdpal-row-icon {
+        transition: transform 300ms var(--ddt-squish), color 160ms var(--ddt-fluid);
+    }
+
+    .vc-cmdpal-row-selected .vc-cmdpal-row-icon {
+        transform: scale(1.2) rotate(-6deg);
+    }
+
+    .vc-cmdpal-row-label {
+        transition: transform 280ms var(--ddt-snap), color 160ms var(--ddt-fluid);
+    }
+
+    .vc-cmdpal-row-selected .vc-cmdpal-row-label {
+        transform: translate3d(3px, 0, 0);
+    }
+
+    /* 3. Search: icon swell + underline draw while focused */
+    .vc-cmdpal-search-icon {
+        transition: transform 320ms var(--ddt-squish), color 160ms var(--ddt-fluid);
+    }
+
+    .vc-cmdpal-header:focus-within .vc-cmdpal-search-icon {
+        transform: scale(1.12);
+    }
+
+    .vc-cmdpal-header::after {
+        transition: transform 420ms var(--ddt-snap);
+    }
+
+    /* 4. Back button: bouncy */
+    .vc-cmdpal-back {
+        transition: transform 300ms var(--ddt-squish), color 100ms ease, background 100ms ease;
+    }
+
+    .vc-cmdpal-back:hover {
+        transform: translate3d(-2px, 0, 0) scale(1.08);
+    }
+
+    .vc-cmdpal-back:active {
+        transform: scale(0.92);
+        transition: transform 70ms var(--ddt-squish);
+    }
+
+    /* 5. Chips: lift, press, and a one-shot pop when selected */
+    .vc-cmdpal-chip {
+        transition: border-color 100ms ease, background 100ms ease, color 100ms ease, transform 300ms var(--ddt-squish);
+    }
+
+    .vc-cmdpal-chip:hover {
+        transform: translate3d(0, -1px, 0);
+    }
+
+    .vc-cmdpal-chip:active {
+        transform: scale(0.95);
+        transition: transform 70ms var(--ddt-squish);
+    }
+
+    .vc-cmdpal-chip-selected {
+        animation: ddt-cp-chip-pop 320ms var(--ddt-pop);
+    }
+
+    /* 6. Fields and pickers: smooth focus bloom */
+    .vc-cmdpal-field-input,
+    .vc-cmdpal-field-textarea {
+        transition: border-color 160ms ease, background 160ms ease, box-shadow 260ms var(--ddt-fluid);
+    }
+
+    .vc-cmdpal-picker-input {
+        transition: border-color 160ms ease, background 160ms ease, box-shadow 260ms var(--ddt-fluid);
+    }
+
+    /* 7. Picker and side-panel items: glide when highlighted */
+    .vc-cmdpal-picker-item,
+    .vc-cmdpal-panel-row {
+        transition: background-color 120ms var(--ddt-fluid), transform 260ms var(--ddt-snap);
+    }
+
+    .vc-cmdpal-picker-item-selected,
+    .vc-cmdpal-panel-row-selected {
+        transform: translate3d(3px, 0, 0);
+    }
+
+    /* 8. Footer hints: key caps lift on hover */
+    .vc-cmdpal-key {
+        transition: transform 280ms var(--ddt-squish);
+    }
+
+    .vc-cmdpal-footer-action:hover .vc-cmdpal-key {
+        transform: translate3d(0, -2px, 0);
+    }
+
+    /* 9. Forms and detail views: contents cascade in when the view opens */
+    .vc-cmdpal-form > :nth-child(-n+8),
+    .vc-cmdpal-detail > :nth-child(-n+6) {
+        animation: ddt-cp-rise 300ms var(--ddt-snap) backwards;
+    }
+
+    .vc-cmdpal-form > :nth-child(1),
+    .vc-cmdpal-detail > :nth-child(1) { animation-delay: 40ms; }
+    .vc-cmdpal-form > :nth-child(2),
+    .vc-cmdpal-detail > :nth-child(2) { animation-delay: 80ms; }
+    .vc-cmdpal-form > :nth-child(3),
+    .vc-cmdpal-detail > :nth-child(3) { animation-delay: 120ms; }
+    .vc-cmdpal-form > :nth-child(4),
+    .vc-cmdpal-detail > :nth-child(4) { animation-delay: 160ms; }
+    .vc-cmdpal-form > :nth-child(5),
+    .vc-cmdpal-detail > :nth-child(5) { animation-delay: 200ms; }
+    .vc-cmdpal-form > :nth-child(6),
+    .vc-cmdpal-detail > :nth-child(6) { animation-delay: 240ms; }
+    .vc-cmdpal-form > :nth-child(7) { animation-delay: 280ms; }
+    .vc-cmdpal-form > :nth-child(8) { animation-delay: 320ms; }
+
+    /* 10. Attachments: lift on hover, pop in when added */
+    .vc-cmdpal-attachments-label {
+        transition: transform 300ms var(--ddt-squish), background 160ms ease;
+    }
+
+    .vc-cmdpal-attachments-label:hover {
+        transform: translate3d(0, -1px, 0);
+        background: var(--cmdpal-soft);
+    }
+
+    .vc-cmdpal-attachments-item {
+        animation: ddt-cp-chip-pop 300ms var(--ddt-pop);
+    }
+
+    /* 11. Form error: slides in with a short shake */
+    .vc-cmdpal-form-error {
+        animation: ddt-cp-shake 380ms var(--ddt-fluid);
+    }
+
+    /* 12. Empty state: gentle fade-rise */
+    .vc-cmdpal-empty {
+        animation: ddt-cp-rise 260ms var(--ddt-snap) backwards;
+    }
+}

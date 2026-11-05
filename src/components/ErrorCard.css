@@ -1,11 +1,102 @@
+/* ============================================================
+   DDT · ErrorCard.css
+   Pop entry from the bottom-right (Pop curve carries the overshoot),
+   one-shot red pulse, hover elevation, and the shared sheen sweep.
+   Palette follows the engine's red token (no pink tint).
+   ============================================================ */
+
+:where(.vc-error-card) {
+    --vc-snap: var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1));
+    --vc-pop: var(--ddt-pop, cubic-bezier(0.175, 0.885, 0.32, 1.275));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-red: var(--ddt-red, 237, 66, 69);
+}
+
+:where(.vc-error-card) {
+    position: relative;
+}
+
+@keyframes vc-error-enter {
+    0%   { opacity: 0; transform: translate3d(24px, 16px, 0) scale(0.92); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes vc-error-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(var(--vc-red), 0.45); }
+    100% { box-shadow: 0 0 0 14px rgba(var(--vc-red), 0); }
+}
+
 .vc-error-card {
     padding: 2em;
-    background-color: #e7828430;
-    border: 1px solid #e78284;
+    background-color: rgba(var(--vc-red), 0.19);
+    border: 1px solid rgb(var(--vc-red));
     border-radius: 5px;
     color: var(--text-default, white);
+    overflow: hidden;
+    overflow: clip;
 
-    & a:hover {
-        text-decoration: underline;
+    animation:
+        vc-error-enter 360ms var(--vc-pop) backwards,
+        vc-error-pulse 1100ms var(--vc-fluid) 250ms 1 backwards;
+    transition:
+        transform 420ms var(--vc-snap),
+        box-shadow 320ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
+}
+
+.vc-error-card:hover {
+    transform: translate3d(0, -1px, 0);
+    box-shadow:
+        0 8px 24px rgba(var(--vc-red), 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ---- Sheen engine ---- */
+.vc-error-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.08) 44%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.08) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+}
+
+.vc-error-card:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 950ms var(--vc-snap);
+}
+
+.vc-error-card a {
+    transition: opacity 200ms var(--vc-fluid);
+}
+
+.vc-error-card a:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-error-card {
+        animation: none;
+        transition-duration: 0.01ms;
+    }
+
+    .vc-error-card::after {
+        display: none;
+    }
+
+    .vc-error-card:hover {
+        transform: none;
     }
 }

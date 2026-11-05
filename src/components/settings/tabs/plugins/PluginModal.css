@@ -25,3 +25,65 @@
     padding: 6px 12px;
     color: var(--text-default);
 }
+
+/* ==========================================================================
+   DDT REMASTERED: PLUGIN MODAL (bouncy, low-end friendly)
+   Original rules above are untouched; everything below is additive and uses
+   transform / opacity only. Tokens match the main DDT CSS.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-accent: 88, 101, 242;
+}
+
+@keyframes ddt-pm-rise {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ddt-pm-tag {
+    0%   { opacity: 0; transform: scale(0.6) translate3d(0, 6px, 0); }
+    100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
+}
+
+/* 1. Header and info block rise in one after the other */
+.vc-plugin-modal-header {
+    animation: ddt-pm-rise 320ms var(--ddt-snap) backwards;
+}
+
+.vc-plugin-modal-info {
+    animation: ddt-pm-rise 320ms var(--ddt-snap) 70ms backwards;
+}
+
+/* 2. Tags: staggered bouncy pop-in */
+.vc-plugin-modal-tag {
+    animation: ddt-pm-tag 380ms var(--ddt-pop) backwards;
+    transition:
+        transform 300ms var(--ddt-squish),
+        border-color 200ms var(--ddt-fluid),
+        background-color 200ms var(--ddt-fluid),
+        box-shadow 260ms var(--ddt-fluid);
+}
+.vc-plugin-modal-tag:nth-child(1) { animation-delay: 120ms; }
+.vc-plugin-modal-tag:nth-child(2) { animation-delay: 160ms; }
+.vc-plugin-modal-tag:nth-child(3) { animation-delay: 200ms; }
+.vc-plugin-modal-tag:nth-child(4) { animation-delay: 240ms; }
+.vc-plugin-modal-tag:nth-child(5) { animation-delay: 280ms; }
+.vc-plugin-modal-tag:nth-child(6) { animation-delay: 320ms; }
+.vc-plugin-modal-tag:nth-child(n+7) { animation-delay: 360ms; }
+
+/* 3. Tag hover: lift, accent border and glow */
+.vc-plugin-modal-tag:hover {
+    transform: translate3d(0, -2px, 0) scale(1.06);
+    border-color: rgba(var(--ddt-accent), 0.7);
+    background-color: rgba(var(--ddt-accent), 0.14);
+    box-shadow: 0 4px 12px rgba(var(--ddt-accent), 0.3);
+}
+
+.vc-plugin-modal-tag:active {
+    transform: scale(0.94);
+    transition: transform 70ms var(--ddt-squish);
+}

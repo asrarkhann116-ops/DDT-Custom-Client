@@ -81,3 +81,103 @@
 .vc-settings-quickActions-pill:hover .vc-settings-quickActions-img {
     transform: scale(1.1);
 }
+
+/* ==========================================================================
+   DDT REMASTERED: QUICK ACTIONS (bouncy, low-end friendly)
+   Original rules above are untouched; everything below is additive.
+   Tokens match the main DDT CSS.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-accent: 88, 101, 242;
+}
+
+@keyframes ddt-qa-card-in {
+    0%   { opacity: 0; transform: translate3d(0, 12px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes ddt-qa-pill-in {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.9); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* 1. Card: rise-in */
+.vc-settings-quickActions-card {
+    animation: ddt-qa-card-in 360ms var(--ddt-snap) backwards;
+}
+
+/* 2. Pills: staggered pop-in; `transition: all` replaced with an explicit list
+      so only the properties that actually change are animated */
+.vc-settings-quickActions-pill {
+    animation: ddt-qa-pill-in 380ms var(--ddt-pop) backwards;
+    transition:
+        transform 320ms var(--ddt-squish),
+        background-color 200ms var(--ddt-fluid),
+        border-color 200ms var(--ddt-fluid),
+        box-shadow 260ms var(--ddt-fluid),
+        color 200ms var(--ddt-fluid);
+}
+.vc-settings-quickActions-pill:nth-child(1) { animation-delay: 60ms; }
+.vc-settings-quickActions-pill:nth-child(2) { animation-delay: 100ms; }
+.vc-settings-quickActions-pill:nth-child(3) { animation-delay: 140ms; }
+.vc-settings-quickActions-pill:nth-child(4) { animation-delay: 180ms; }
+.vc-settings-quickActions-pill:nth-child(5) { animation-delay: 220ms; }
+.vc-settings-quickActions-pill:nth-child(n+6) { animation-delay: 260ms; }
+
+/* 3. Pill hover: springy lift; press: hard squash */
+.vc-settings-quickActions-pill:hover {
+    transform: translate3d(0, -3px, 0) scale(1.03);
+}
+
+.vc-settings-quickActions-pill:active {
+    transform: translate3d(0, 0, 0) scale(0.96);
+    transition: transform 70ms var(--ddt-squish);
+}
+
+/* 4. Icon: tilt-swell */
+.vc-settings-quickActions-img {
+    transition: transform 340ms var(--ddt-squish);
+}
+
+.vc-settings-quickActions-pill:hover .vc-settings-quickActions-img {
+    transform: scale(1.2) rotate(-8deg);
+}
+
+/* 5. Sheen sweep across the pill on hover */
+.vc-settings-quickActions-pill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.06) 44%,
+        rgba(255, 255, 255, 0.16) 50%,
+        rgba(255, 255, 255, 0.06) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+}
+
+.vc-settings-quickActions-pill:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 800ms var(--ddt-snap);
+}
+
+/* ---- LOW-END PERFORMANCE: backdrop blur is one of the costliest effects on
+   integrated GPUs, because it re-blurs everything behind it. Swapped for a
+   near-opaque panel that looks almost the same. Delete this rule to bring the
+   blur back. ---- */
+.vc-settings-quickActions-card {
+    background: rgba(14, 16, 22, 0.92) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}

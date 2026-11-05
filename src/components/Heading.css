@@ -1,3 +1,25 @@
+/* ============================================================
+   DDT · Heading.css
+   Sizes, weights and margins untouched. Adds a short Snap rise-in
+   (transform + opacity only) so section titles land cleanly, and a
+   Fluid colour morph on theme change.
+   ============================================================ */
+
+@keyframes vc-heading-enter {
+    0%   { opacity: 0; transform: translate3d(0, 8px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.vc-h1,
+.vc-h2,
+.vc-h3,
+.vc-h4,
+.vc-h5 {
+    -webkit-font-smoothing: antialiased;
+    animation: vc-heading-enter 320ms var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
+    transition: color 200ms var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+
 .vc-h1,
 .vc-h2 {
     color: var(--text-strong);
@@ -12,32 +34,32 @@
 
 .vc-h1 {
     font-size: 20px;
-    line-height: 24px
+    line-height: 24px;
 }
 
 .vc-h2 {
     font-size: 16px;
-    line-height: 20px
+    line-height: 20px;
 }
 
 .vc-h3 {
     font-weight: 500;
-    line-height: 24px
+    line-height: 24px;
 }
 
 .vc-h3,
 .vc-h4 {
-    font-size: 16px
+    font-size: 16px;
 }
 
 .vc-h4 {
     font-weight: 600;
-    letter-spacing: .3px
+    letter-spacing: .3px;
 }
 
 .vc-h4,
 .vc-h5 {
-    line-height: 20px
+    line-height: 20px;
 }
 
 .vc-h5 {
@@ -45,12 +67,12 @@
     font-size: 16px;
     font-weight: 500;
     margin-bottom: 8px;
-    text-transform: unset
+    text-transform: unset;
 }
 
 .vc-h1-defaultMargin,
 .vc-h2-defaultMargin {
-    margin-bottom: 20px
+    margin-bottom: 20px;
 }
 
 /* This is copied from Discord, don't ask me why 0 margin */
@@ -61,5 +83,15 @@
 
 .vc-h3-defaultMargin,
 .vc-h5-defaultMargin {
-    margin-bottom: 8px
+    margin-bottom: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-h1,
+    .vc-h2,
+    .vc-h3,
+    .vc-h4,
+    .vc-h5 {
+        animation: none;
+    }
 }

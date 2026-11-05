@@ -1,5 +1,23 @@
+/* ============================================================
+   DDT · Button.css
+   Core Engine physics: Squish hover/press (scale 1.04 / 0.95),
+   Fluid colour + glow, and the shared sheen sweep
+   (115deg band, -130% -> 130%, 950ms Snap).
+   ============================================================ */
+
+:where(.vc-btn-base, .vc-text-btn-base) {
+    --vc-snap: var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1));
+    --vc-squish: var(--ddt-squish, cubic-bezier(0.34, 1.56, 0.64, 1));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-accent: var(--ddt-accent, 88, 101, 242);
+    --vc-green: var(--ddt-green, 87, 242, 135);
+    --vc-red: var(--ddt-red, 237, 66, 69);
+}
+
 .vc-btn-base {
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,28 +26,97 @@
     border-radius: var(--radius-sm, 8px);
     font-family: var(--font-primary);
     text-align: start;
-    transition: 50ms ease-in;
-    transition-property: background-color, color, border-color, opacity;
     background: var(--control-secondary-background-default);
     color: var(--text-default);
     white-space: nowrap;
 
-    &:hover {
-        transition: .15s ease-out;
-    }
+    --vc-btn-glow: rgba(var(--vc-accent), 0.4);
 
-    &:disabled {
-        opacity: .5;
-        pointer-events: none;
-        cursor: not-allowed;
-    }
-
-    &:focus-visible {
-        /* stylelint-disable-next-line custom-property-pattern */
-        box-shadow: 0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4));
-    }
+    transition:
+        transform 300ms var(--vc-squish),
+        background-color 200ms var(--vc-fluid),
+        color 200ms var(--vc-fluid),
+        border-color 200ms var(--vc-fluid),
+        box-shadow 260ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
 }
 
+.vc-btn-base:hover {
+    transform: translate3d(0, -1px, 0) scale(1.04);
+    box-shadow:
+        0 8px 20px var(--vc-btn-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.vc-btn-base:focus-visible {
+    /* stylelint-disable-next-line custom-property-pattern */
+    box-shadow: 0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4));
+}
+
+.vc-btn-base:hover:focus-visible {
+    /* stylelint-disable-next-line custom-property-pattern */
+    box-shadow:
+        0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4)),
+        0 8px 20px var(--vc-btn-glow);
+}
+
+/* Hard press: fast squish, glow collapses */
+.vc-btn-base:active:not(:disabled) {
+    transform: translate3d(0, 0, 0) scale(0.95);
+    box-shadow:
+        0 2px 8px var(--vc-btn-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition-duration: 80ms, 120ms, 120ms, 120ms, 120ms, 200ms;
+}
+
+.vc-btn-base:active:not(:disabled):focus-visible {
+    /* stylelint-disable-next-line custom-property-pattern */
+    box-shadow:
+        0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4)),
+        0 2px 8px var(--vc-btn-glow);
+}
+
+.vc-btn-base:disabled {
+    opacity: .5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* ---- Sheen engine (one ::after, compositor-only) ---- */
+.vc-btn-base::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.08) 44%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.08) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    /* reset position only after the fade-out finishes */
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+}
+
+.vc-btn-base:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 950ms var(--vc-snap);
+}
+
+/* Ghost-style buttons get lift + glow, no sweep */
+.vc-btn-iconOnly::after,
+.vc-btn-none::after {
+    display: none;
+}
+
+/* ---- Sizes ---- */
 .vc-btn-min,
 .vc-btn-xs {
     padding: 3px 7px;
@@ -62,6 +149,7 @@
     line-height: 1.25;
 }
 
+/* ---- Icon-only: big elastic swell ---- */
 .vc-btn-iconOnly {
     width: 32px;
     height: 32px;
@@ -70,28 +158,36 @@
     padding: 0;
     background-color: transparent;
     border-color: transparent;
-
-    &:hover {
-        background-color: var(--control-icon-only-background-hover);
-        border-color: var(--control-icon-only-border-hover);
-    }
-
-    &:active {
-        background-color: var(--control-icon-only-background-active);
-        border-color: var(--control-icon-only-border-active);
-    }
+    --vc-btn-glow: rgba(255, 255, 255, 0.12);
 }
 
+.vc-btn-iconOnly:hover {
+    background-color: var(--control-icon-only-background-hover);
+    border-color: var(--control-icon-only-border-hover);
+    transform: translate3d(0, 0, 0) scale(1.18);
+}
+
+.vc-btn-iconOnly:active {
+    background-color: var(--control-icon-only-background-active);
+    border-color: var(--control-icon-only-border-active);
+}
+
+.vc-btn-iconOnly:active:not(:disabled) {
+    transform: translate3d(0, 0, 0) scale(0.94);
+}
+
+/* ---- Variants ---- */
 .vc-btn-primary {
     background-color: var(--control-primary-background-default);
     border-color: var(--control-primary-border-default);
     color: var(--control-primary-text-default);
+    --vc-btn-glow: rgba(var(--vc-accent), 0.55);
+}
 
-    &:hover {
-        background-color: var(--control-primary-background-hover);
-        border-color: var(--control-primary-border-hover);
-        color: var(--control-primary-text-hover);
-    }
+.vc-btn-primary:hover {
+    background-color: var(--control-primary-background-hover);
+    border-color: var(--control-primary-border-hover);
+    color: var(--control-primary-text-hover);
 }
 
 .vc-btn-secondary,
@@ -99,79 +195,95 @@
     background-color: var(--control-secondary-background-default);
     border-color: var(--control-secondary-border-default);
     color: var(--control-secondary-text-default);
+    --vc-btn-glow: rgba(var(--vc-accent), 0.32);
+}
 
-    &:hover {
-        background-color: var(--control-secondary-background-hover);
-        border-color: var(--control-secondary-border-hover);
-        color: var(--control-secondary-text-hover);
-    }
+.vc-btn-secondary:hover,
+.vc-btn-link:hover {
+    background-color: var(--control-secondary-background-hover);
+    border-color: var(--control-secondary-border-hover);
+    color: var(--control-secondary-text-hover);
 }
 
 .vc-btn-dangerPrimary {
     background-color: var(--control-critical-primary-background-default);
     border-color: var(--control-critical-primary-border-default);
     color: var(--control-critical-primary-text-default);
+    --vc-btn-glow: rgba(var(--vc-red), 0.55);
+}
 
-    &:hover {
-        background-color: var(--control-critical-primary-background-hover);
-        border-color: var(--control-critical-primary-border-hover);
-        color: var(--control-critical-primary-text-hover);
-    }
+.vc-btn-dangerPrimary:hover {
+    background-color: var(--control-critical-primary-background-hover);
+    border-color: var(--control-critical-primary-border-hover);
+    color: var(--control-critical-primary-text-hover);
 }
 
 .vc-btn-dangerSecondary {
     background-color: var(--control-critical-secondary-background-default);
     border-color: var(--control-critical-secondary-border-default);
     color: var(--control-critical-secondary-text-default);
+    --vc-btn-glow: rgba(var(--vc-red), 0.35);
+}
 
-    &:hover {
-        background-color: var(--control-critical-secondary-background-hover);
-        border-color: var(--control-critical-secondary-border-hover);
-        color: var(--control-critical-secondary-text-hover);
-    }
+.vc-btn-dangerSecondary:hover {
+    background-color: var(--control-critical-secondary-background-hover);
+    border-color: var(--control-critical-secondary-border-hover);
+    color: var(--control-critical-secondary-text-hover);
 }
 
 .vc-btn-overlayPrimary {
     background-color: var(--control-overlay-primary-background-default);
     border-color: var(--control-overlay-primary-border-default);
     color: var(--control-overlay-primary-text-default);
+    --vc-btn-glow: rgba(255, 255, 255, 0.2);
+}
 
-    &:hover {
-        background-color: var(--control-overlay-primary-background-hover);
-        border-color: var(--control-overlay-primary-border-hover);
-        color: var(--control-overlay-primary-text-hover);
-    }
+.vc-btn-overlayPrimary:hover {
+    background-color: var(--control-overlay-primary-background-hover);
+    border-color: var(--control-overlay-primary-border-hover);
+    color: var(--control-overlay-primary-text-hover);
 }
 
 .vc-btn-positive {
     background-color: var(--control-connected-background-default, var(--green-430));
     color: var(--white);
+    --vc-btn-glow: rgba(var(--vc-green), 0.5);
+}
 
-    &:hover {
-        background-color: var(--control-connected-background-hover, var(--green-460));
-    }
+.vc-btn-positive:hover {
+    background-color: var(--control-connected-background-hover, var(--green-460));
 }
 
 .vc-btn-none {
     background-color: transparent;
     border-color: transparent;
     color: var(--control-icon-only-icon-default);
-
-    &:hover {
-        background-color: var(--control-icon-only-background-hover);
-        border-color: var(--control-icon-only-border-hover);
-        color: var(--control-icon-only-icon-hover);
-    }
+    --vc-btn-glow: rgba(255, 255, 255, 0.12);
 }
 
+.vc-btn-none:hover {
+    background-color: var(--control-icon-only-background-hover);
+    border-color: var(--control-icon-only-border-hover);
+    color: var(--control-icon-only-icon-hover);
+}
+
+/* ---- Link icon: nudges up-right on hover ---- */
 .vc-btn-link-icon {
     width: 0.875em;
     height: 0.875em;
     margin-left: 8px;
     flex-shrink: 0;
+    transition: transform 300ms var(--vc-squish);
 }
 
+.vc-btn-base:hover .vc-btn-link-icon,
+.vc-text-btn-base:hover .vc-btn-link-icon {
+    transform: translate3d(2px, -2px, 0);
+}
+
+/* ---- Text buttons: underline draws in/out ---- */
 .vc-text-btn-base {
+    position: relative;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -187,18 +299,59 @@
     max-width: 100%;
     white-space: nowrap;
 
-    &:disabled {
-        opacity: 0.5;
-    }
+    transition:
+        transform 300ms var(--vc-squish),
+        color 200ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
+}
 
-    &:hover {
-        text-decoration: underline;
-    }
+.vc-text-btn-base:disabled {
+    opacity: 0.5;
+}
 
-    &:focus-visible {
-        /* stylelint-disable-next-line custom-property-pattern */
-        box-shadow: 0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4));
-    }
+.vc-text-btn-base:hover {
+    /* underline is drawn by ::after below */
+    text-decoration: none;
+    transform: translate3d(0, -1px, 0);
+}
+
+.vc-text-btn-base:active:not(:disabled) {
+    transform: translate3d(0, 0, 0) scale(0.95);
+    opacity: 0.8;
+    transition-duration: 80ms, 120ms, 120ms;
+}
+
+.vc-text-btn-base:disabled:hover {
+    transform: translate3d(0, 0, 0);
+}
+
+.vc-text-btn-base:focus-visible {
+    /* stylelint-disable-next-line custom-property-pattern */
+    box-shadow: 0 0 0 4px var(--__adaptive-focus-ring-color, var(--border-focus, #00b0f4));
+}
+
+.vc-text-btn-base::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: currentColor;
+    border-radius: 1px;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 500ms var(--vc-snap);
+}
+
+.vc-text-btn-base:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+}
+
+.vc-text-btn-base:disabled:hover::after {
+    transform: scaleX(0);
 }
 
 .vc-text-btn-primary {
@@ -215,4 +368,24 @@
 
 .vc-text-btn-link {
     color: var(--text-link);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-btn-base,
+    .vc-btn-link-icon,
+    .vc-text-btn-base,
+    .vc-text-btn-base::after {
+        transition-duration: 0.01ms !important;
+    }
+
+    .vc-btn-base::after {
+        display: none;
+    }
+
+    .vc-btn-base:hover,
+    .vc-btn-base:active:not(:disabled),
+    .vc-text-btn-base:hover,
+    .vc-text-btn-base:active:not(:disabled) {
+        transform: none;
+    }
 }

@@ -1,6 +1,35 @@
+/* ============================================================
+   DDT · Divider.css
+   Line draws itself in from the left on mount (Snap curve,
+   transform + opacity only, no lingering layer).
+   ============================================================ */
+
+@keyframes vc-divider-draw {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    40% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
 .vc-divider {
     height: 1px;
     width: 100%;
     border: none;
     border-top: 1px solid var(--border-subtle);
+
+    transform-origin: 0 50%;
+    animation: vc-divider-draw 420ms var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-divider {
+        animation: none;
+    }
 }

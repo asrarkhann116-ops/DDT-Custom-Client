@@ -95,3 +95,91 @@
     overflow: visible;
     animation: vc-addon-title var(--duration) linear infinite;
 }
+
+/* ==========================================================================
+   DDT REMASTERED: ADDON CARD (bouncy, low-end friendly)
+   Everything above is the original stylesheet, untouched. Everything below is
+   additive. Motion is transform / opacity only. Tokens match the main DDT CSS.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-accent: 88, 101, 242;
+}
+
+/* 1. Card: springy lift, accent border, layered glow (replaces the 0.1s snap) */
+.vc-addon-card {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 340ms var(--ddt-snap),
+        box-shadow 300ms var(--ddt-fluid),
+        background-color 200ms var(--ddt-fluid),
+        border-color 240ms var(--ddt-fluid),
+        opacity 240ms var(--ddt-fluid);
+}
+
+.vc-addon-card:hover {
+    transform: translate3d(0, -4px, 0);
+    border-color: rgba(var(--ddt-accent), 0.45);
+    box-shadow: var(--elevation-high), 0 0 22px rgba(var(--ddt-accent), 0.18);
+}
+
+/* 2. Press: hard squash */
+.vc-addon-card:active {
+    transform: translate3d(0, -1px, 0) scale(0.985);
+    transition: transform 80ms var(--ddt-squish);
+}
+
+/* 3. Disabled cards wake up a little on hover */
+.vc-addon-card-disabled:hover {
+    opacity: 0.85;
+}
+
+/* 4. Accent line grows across the top edge on hover */
+.vc-addon-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, #5865f2, #ffffff, #5865f2, transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 420ms var(--ddt-snap);
+}
+
+.vc-addon-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* 5. Sheen sweep (compositor only) */
+.vc-addon-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.06) 44%,
+        rgba(255, 255, 255, 0.16) 50%,
+        rgba(255, 255, 255, 0.06) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+}
+
+.vc-addon-card:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 950ms var(--ddt-snap);
+}

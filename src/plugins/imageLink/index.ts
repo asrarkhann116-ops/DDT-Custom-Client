@@ -15,8 +15,8 @@ export default definePlugin({
 
     patches: [
         {
-            find: "unknownUserMentionPlaceholder:",
-            noWarn: true,
+            // small util file
+            find: "linkCount:0,onlyLinks:!1",
             replacement: {
                 // SimpleEmbedTypes.has(embed.type) && isEmbedInline(embed)
                 match: /\i\.has\(\i\.type\)&&\(0,\i\.\i\)\(\i\)/,

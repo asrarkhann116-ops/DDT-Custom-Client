@@ -1,3 +1,22 @@
+/* ============================================================
+   DDT · FormSwitch.css
+   Explicit curves instead of `transition: all`. Rise-in with a 25ms
+   stagger, embed-style hover elevation (rim light + blurple bloom),
+   a Squish press, focus ring, and a label glide on hover.
+   ============================================================ */
+
+:where(.vc-form-switch-wrapper) {
+    --vc-snap: var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1));
+    --vc-squish: var(--ddt-squish, cubic-bezier(0.34, 1.56, 0.64, 1));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-accent: var(--ddt-accent, 88, 101, 242);
+}
+
+@keyframes vc-form-switch-enter {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
 .vc-form-switch-wrapper {
     margin-bottom: 8px;
     cursor: pointer;
@@ -5,33 +24,64 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     padding: 12px 14px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     display: block;
     box-sizing: border-box;
+
+    transition:
+        transform 420ms var(--vc-snap),
+        box-shadow 320ms var(--vc-fluid),
+        background-color 200ms var(--vc-fluid),
+        border-color 200ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
+    animation: vc-form-switch-enter 320ms var(--vc-snap) backwards;
 }
+
+.vc-form-switch-wrapper:nth-child(2) { animation-delay: 25ms; }
+.vc-form-switch-wrapper:nth-child(3) { animation-delay: 50ms; }
+.vc-form-switch-wrapper:nth-child(4) { animation-delay: 75ms; }
+.vc-form-switch-wrapper:nth-child(5) { animation-delay: 100ms; }
+.vc-form-switch-wrapper:nth-child(6) { animation-delay: 125ms; }
+.vc-form-switch-wrapper:nth-child(7) { animation-delay: 150ms; }
+.vc-form-switch-wrapper:nth-child(n+8) { animation-delay: 175ms; }
 
 .vc-form-switch-wrapper:hover {
     background: rgba(28, 32, 48, 0.65);
-    border-color: rgba(88, 101, 242, 0.35);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border-color: rgba(var(--vc-accent), 0.4);
+    transform: translate3d(0, -1px, 0);
+    box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.25),
+        0 8px 20px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(var(--vc-accent), 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.vc-form-switch-wrapper:active {
+    transform: translate3d(0, 0, 0) scale(0.99);
+    transition-duration: 90ms, 200ms, 200ms, 200ms, 200ms;
+    transition-timing-function: var(--vc-squish), var(--vc-fluid), var(--vc-fluid), var(--vc-fluid), var(--vc-fluid);
+}
+
+.vc-form-switch-wrapper:focus-within {
+    border-color: rgba(var(--vc-accent), 0.6);
+    box-shadow: 0 0 0 3px rgba(var(--vc-accent), 0.22);
 }
 
 .vc-form-switch {
     display: flex;
     align-items: center;
     width: 100%;
+}
 
-    > :last-child {
-        margin-left: auto;
-        flex-shrink: 0;
-    }
+.vc-form-switch > :last-child {
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .vc-form-switch-disabled {
     opacity: 0.5;
     pointer-events: none;
     cursor: not-allowed;
+    transition: opacity 200ms var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
 }
 
 .vc-form-switch-text {
@@ -40,6 +90,12 @@
     justify-content: center;
     gap: 4px;
     padding-right: 16px;
+
+    transition: transform 240ms var(--vc-snap);
+}
+
+.vc-form-switch-wrapper:hover .vc-form-switch-text {
+    transform: translate3d(4px, 0, 0);
 }
 
 .vc-form-switch-border {
@@ -50,4 +106,26 @@
     color: #949ba4;
     font-size: 12px;
     line-height: 1.4;
+    transition: color 200ms var(--vc-fluid);
+}
+
+.vc-form-switch-wrapper:hover .vc-form-switch-description {
+    color: #b5bac1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-form-switch-wrapper {
+        animation: none;
+        transition-duration: 0.01ms;
+    }
+
+    .vc-form-switch-text {
+        transition-duration: 0.01ms;
+    }
+
+    .vc-form-switch-wrapper:hover,
+    .vc-form-switch-wrapper:active,
+    .vc-form-switch-wrapper:hover .vc-form-switch-text {
+        transform: none;
+    }
 }

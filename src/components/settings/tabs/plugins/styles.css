@@ -91,3 +91,131 @@
     flex-direction: column;
     gap: 1.25em;
 }
+
+/* ==========================================================================
+   DDT REMASTERED: PLUGINS TAB (bouncy, low-end friendly)
+   Original rules above are untouched; everything below is additive and uses
+   transform / opacity only. Only the first 18 grid items animate on mount, so
+   a 100+ plugin list never kicks off 100 animations at once on a weak GPU.
+   Tokens match the main DDT CSS.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-accent: 88, 101, 242;
+}
+
+@keyframes ddt-pt-rise {
+    0%   { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.97); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes ddt-pt-nudge {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+}
+
+/* 1. Plugin grid: cascading entrance (first 18 only) */
+.vc-plugins-grid > :nth-child(-n+18) {
+    animation: ddt-pt-rise 340ms var(--ddt-snap) backwards;
+}
+.vc-plugins-grid > :nth-child(2)  { animation-delay: 25ms; }
+.vc-plugins-grid > :nth-child(3)  { animation-delay: 50ms; }
+.vc-plugins-grid > :nth-child(4)  { animation-delay: 75ms; }
+.vc-plugins-grid > :nth-child(5)  { animation-delay: 100ms; }
+.vc-plugins-grid > :nth-child(6)  { animation-delay: 125ms; }
+.vc-plugins-grid > :nth-child(7)  { animation-delay: 150ms; }
+.vc-plugins-grid > :nth-child(8)  { animation-delay: 175ms; }
+.vc-plugins-grid > :nth-child(9)  { animation-delay: 200ms; }
+.vc-plugins-grid > :nth-child(10) { animation-delay: 225ms; }
+.vc-plugins-grid > :nth-child(11) { animation-delay: 250ms; }
+.vc-plugins-grid > :nth-child(12) { animation-delay: 275ms; }
+.vc-plugins-grid > :nth-child(n+13):nth-child(-n+18) { animation-delay: 300ms; }
+
+/* 2. Info button: spin-pop (box transforms need a non-inline box, buttons are fine) */
+.vc-plugins-info-button {
+    transition: background-color 200ms ease, color 200ms var(--ddt-fluid), transform 320ms var(--ddt-squish);
+}
+
+.vc-plugins-info-button:hover {
+    transform: scale(1.2) rotate(12deg);
+}
+
+.vc-plugins-info-button:active {
+    transform: scale(0.9);
+    transition: transform 70ms var(--ddt-squish);
+}
+
+/* 3. Settings gear: half-turn on hover */
+.vc-plugins-settings-button {
+    transition: color 200ms var(--ddt-fluid), transform 420ms var(--ddt-squish);
+}
+
+.vc-plugins-settings-button:hover {
+    transform: rotate(60deg) scale(1.15);
+}
+
+.vc-plugins-settings-button:active {
+    transform: rotate(60deg) scale(0.9);
+    transition: transform 70ms var(--ddt-squish);
+}
+
+/* 4. Info icon: tint transition + pop */
+.vc-plugins-info-icon {
+    transition: color 200ms var(--ddt-fluid), transform 300ms var(--ddt-squish);
+}
+
+.vc-plugins-info-icon:hover {
+    transform: scale(1.15);
+}
+
+/* 5. Filter controls: focus bloom */
+.vc-plugins-filter-control {
+    transition: box-shadow 280ms var(--ddt-fluid);
+    border-radius: 8px;
+}
+
+.vc-plugins-filter-control:focus-within {
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.6), 0 0 18px rgba(var(--ddt-accent), 0.22);
+}
+
+/* 6. Badge: bouncy hover */
+.vc-addon-badge {
+    transition: transform 280ms var(--ddt-squish);
+}
+
+.vc-addon-badge:hover {
+    transform: scale(1.12);
+}
+
+/* 7. Info cards: rise-in + lift */
+.vc-plugins-info-card {
+    animation: ddt-pt-rise 340ms var(--ddt-snap) backwards;
+    transition: transform 320ms var(--ddt-snap), box-shadow 280ms var(--ddt-fluid);
+}
+
+.vc-plugins-info-card:hover {
+    transform: translate3d(0, -3px, 0);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(var(--ddt-accent), 0.18);
+}
+
+/* 8. Restart button: gentle attention nudge (transform only), paused while hovered */
+.vc-plugins-restart-button {
+    animation: ddt-pt-nudge 2.2s ease-in-out infinite;
+}
+
+.vc-plugins-restart-button:hover {
+    animation-play-state: paused;
+}
+
+/* 9. Plugin settings stack: cascade in (first 10) */
+.vc-plugins-settings > :nth-child(-n+10) {
+    animation: ddt-pt-rise 320ms var(--ddt-snap) backwards;
+}
+.vc-plugins-settings > :nth-child(2)  { animation-delay: 30ms; }
+.vc-plugins-settings > :nth-child(3)  { animation-delay: 60ms; }
+.vc-plugins-settings > :nth-child(4)  { animation-delay: 90ms; }
+.vc-plugins-settings > :nth-child(5)  { animation-delay: 120ms; }
+.vc-plugins-settings > :nth-child(n+6):nth-child(-n+10) { animation-delay: 150ms; }

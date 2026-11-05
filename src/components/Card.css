@@ -1,32 +1,137 @@
+/* ============================================================
+   DDT · Card.css
+   Rise-in on the Snap curve (transform + opacity only), embed-style
+   hover elevation with a rim light, and the shared sheen sweep.
+   Variant glows follow the feedback colour hooks.
+   ============================================================ */
+
+:where(.vc-card-base) {
+    --vc-snap: var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-accent: var(--ddt-accent, 88, 101, 242);
+    --vc-green: var(--ddt-green, 87, 242, 135);
+    --vc-red: var(--ddt-red, 237, 66, 69);
+    --vc-gold: var(--ddt-gold, 250, 166, 26);
+}
+
+/* zero specificity: only positions the card when nothing else already has */
+:where(.vc-card-base) {
+    position: relative;
+}
+
+@keyframes vc-card-enter {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
 .vc-card-base {
     background: var(--card-background-default);
     border-radius: var(--radius-sm, 8px);
+    overflow: hidden;
+    overflow: clip;
+
+    --vc-card-glow: rgba(var(--vc-accent), 0.25);
+
+    /* "backwards" so no transform lingers (or keeps a layer) after the entry */
+    animation: vc-card-enter 320ms var(--vc-snap) backwards;
+    transition:
+        transform 420ms var(--vc-snap),
+        box-shadow 320ms var(--vc-fluid),
+        border-color 320ms var(--vc-fluid),
+        background-color 320ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
+}
+
+.vc-card-base:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.25),
+        0 12px 28px -12px rgba(0, 0, 0, 0.5),
+        0 0 26px var(--vc-card-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ---- Sheen engine ---- */
+.vc-card-base::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.08) 44%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.08) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+}
+
+.vc-card-base:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 950ms var(--vc-snap);
 }
 
 .vc-card-normal {
     border: 1px solid var(--border-subtle);
 }
 
+.vc-card-normal:hover {
+    border-color: rgba(var(--vc-accent), 0.45);
+}
+
 .vc-card-warning {
     background-color: var(--background-feedback-warning);
     border: 1px solid var(--icon-feedback-warning);
+    --vc-card-glow: rgba(var(--vc-gold), 0.3);
 }
 
 .vc-card-danger {
     background-color: var(--background-feedback-critical);
     border: 1px solid var(--icon-feedback-critical);
+    --vc-card-glow: rgba(var(--vc-red), 0.3);
 }
 
 .vc-card-success {
     background-color: var(--background-feedback-positive);
     border: 1px solid var(--icon-feedback-positive);
+    --vc-card-glow: rgba(var(--vc-green), 0.3);
 }
 
 .vc-card-info {
     background: var(--background-feedback-info);
     border: 1px solid var(--icon-feedback-info);
+    --vc-card-glow: rgba(var(--vc-accent), 0.3);
+}
+
+/* Glow follows the theme's own feedback colours when the engine supports it */
+@supports (color: color-mix(in srgb, red, blue)) {
+    .vc-card-warning { --vc-card-glow: color-mix(in srgb, var(--icon-feedback-warning) 32%, transparent); }
+    .vc-card-danger  { --vc-card-glow: color-mix(in srgb, var(--icon-feedback-critical) 32%, transparent); }
+    .vc-card-success { --vc-card-glow: color-mix(in srgb, var(--icon-feedback-positive) 32%, transparent); }
+    .vc-card-info    { --vc-card-glow: color-mix(in srgb, var(--icon-feedback-info) 32%, transparent); }
 }
 
 .vc-card-defaultPadding {
     padding: 1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-card-base {
+        animation: none;
+        transition-duration: 0.01ms;
+    }
+
+    .vc-card-base::after {
+        display: none;
+    }
+
+    .vc-card-base:hover {
+        transform: none;
+    }
 }

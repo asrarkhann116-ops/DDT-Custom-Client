@@ -1,11 +1,31 @@
+/* ============================================================
+   DDT · BaseText.css
+   Crisp type + Fluid colour morphs on theme change.
+   Uses the Core Engine curves (falls back to the same values
+   when the reference stylesheet is not loaded).
+   ============================================================ */
+
 .vc-text-base {
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+
     font-family: var(--font-primary);
     line-height: normal;
 
     /* Discord puts an insane default margin on p tags, so reset that here */
     margin: 0;
+
+    -webkit-font-smoothing: antialiased;
+    transition:
+        color 200ms var(--vc-fluid),
+        opacity 200ms var(--vc-fluid);
 }
 
 .vc-text-defaultColor {
     color: var(--text-default);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-text-base {
+        transition: none;
+    }
 }

@@ -1,10 +1,27 @@
 /* ==========================================================================
-   DDT REMASTERED — 60FPS GRAPHICS & ANIMATION ENGINE (DARK SOULS LEAP)
-   50+ COMPLEX HARDWARE-ACCELERATED MICRO-ANIMATIONS & ZERO-GLITCH POLISH
+   DDT REMASTERED — KINETIC GRAPHICS ENGINE  (v3 · HIGH-OCTANE)
+   79 hardware-accelerated micro-interactions + a low-end performance pass.
+   Same selectors, same !important hooks, same variable hooks. Built around
+   four physics curves; motion uses transform / opacity so it stays on the GPU.
    ========================================================================== */
 
 /* ==========================================================================
-   [GLOBAL]: Hardware Acceleration & Font Smoothing
+   [TOKENS]: Motion physics + palette (no pink, no glitch)
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);          /* Snap: fast launch, long settle        */
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Pop: entry with dampened overshoot    */
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);       /* Squish: tactile press / elastic       */
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);          /* Fluid: silky colour + glow propagation */
+
+    --ddt-accent: 88, 101, 242;
+    --ddt-green:  87, 242, 135;
+    --ddt-red:    237, 66, 69;
+    --ddt-gold:   250, 166, 26;
+}
+
+/* ==========================================================================
+   [GLOBAL]: Font smoothing
    ========================================================================== */
 * {
     -webkit-font-smoothing: antialiased;
@@ -12,1166 +29,1137 @@
 }
 
 /* ==========================================================================
+   [SHEEN ENGINE]: Light sweep across cards + floating bars on hover.
+   One shared ::after that travels on the compositor (translate3d only).
+   `:where()` gives position:relative at zero specificity, so it only applies
+   when Discord has not already positioned the element.
+   ========================================================================== */
+:where(
+    [class*="embedFull_"],
+    [class*="card_"][class*="clickable_"],
+    [class*="eventCard_"],
+    [class*="guildEventItem_"],
+    [class*="cardPrimary_"],
+    [class*="cardPrimaryEditable_"],
+    [class*="newMessagesBar_"],
+    [class*="jumpToPresentBar_"]
+) {
+    position: relative;
+}
+
+[class*="embedFull_"],
+[class*="card_"][class*="clickable_"],
+[class*="eventCard_"],
+[class*="guildEventItem_"],
+[class*="cardPrimary_"],
+[class*="cardPrimaryEditable_"],
+[class*="newMessagesBar_"],
+[class*="jumpToPresentBar_"] {
+    overflow: hidden;
+}
+
+[class*="embedFull_"]::after,
+[class*="card_"][class*="clickable_"]::after,
+[class*="eventCard_"]::after,
+[class*="guildEventItem_"]::after,
+[class*="cardPrimary_"]::after,
+[class*="cardPrimaryEditable_"]::after,
+[class*="newMessagesBar_"]::after,
+[class*="jumpToPresentBar_"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.08) 44%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.08) 56%,
+        transparent 70%
+    );
+    opacity: 0;
+    transform: translate3d(-130%, 0, 0);
+    /* reset position only after the fade-out finishes */
+    transition: opacity 220ms linear, transform 0s linear 220ms;
+    will-change: transform, opacity;
+}
+
+[class*="embedFull_"]:hover::after,
+[class*="card_"][class*="clickable_"]:hover::after,
+[class*="eventCard_"]:hover::after,
+[class*="guildEventItem_"]:hover::after,
+[class*="cardPrimary_"]:hover::after,
+[class*="cardPrimaryEditable_"]:hover::after,
+[class*="newMessagesBar_"]:hover::after,
+[class*="jumpToPresentBar_"]:hover::after {
+    opacity: 1;
+    transform: translate3d(130%, 0, 0);
+    transition: opacity 120ms linear, transform 950ms var(--ddt-snap);
+}
+
+/* ==========================================================================
    GROUP 1: GUILDS & SERVER NAVIGATION (ANIMATIONS 1 - 5)
    ========================================================================== */
 
-/* 1. Guild Icon Gentle Scale & Squircle Morph (FIXED: No SVG Mask Break / No Square Bug) */
+/* 1. Guild Icon: big elastic swell + glow diffusion (mask stays intact: transform/filter only) */
 [class*="guilds_"] [class*="listItem_"] > [class*="wrapper_"] {
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transition: transform 380ms var(--ddt-squish), filter 300ms var(--ddt-fluid) !important;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
+    will-change: transform;
 }
 
 [class*="guilds_"] [class*="listItem_"] > [class*="wrapper_"]:hover {
-    transform: scale(1.08) translate3d(0, 0, 0) !important;
+    transform: scale(1.14) translate3d(0, 0, 0) !important;
+    filter: drop-shadow(0 6px 14px rgba(var(--ddt-accent), 0.55)) brightness(1.08) !important;
 }
 
-/* 2. Guild Icon Active Press Feel (Haptic squish without mask unclip) */
+/* 2. Guild Icon Active Press: hard haptic compression */
 [class*="guilds_"] [class*="listItem_"] > [class*="wrapper_"]:active {
-    transform: scale(0.95) translate3d(0, 0, 0) !important;
-    transition: transform 80ms ease !important;
+    transform: scale(0.94) translate3d(0, 0, 0) !important;
+    filter: drop-shadow(0 2px 6px rgba(var(--ddt-accent), 0.4)) brightness(0.95) !important;
+    transition: transform 90ms var(--ddt-squish), filter 90ms var(--ddt-fluid) !important;
 }
 
-/* 3. Guild Pill Smooth Height Expand & Velvet Blurple Glow (Clean, No Harsh Cyan) */
+/* 3. Guild Pill: spring height (structural: Discord sets height inline) + grow-in + velvet glow */
+@keyframes ddt-pill-grow {
+    0%   { transform: scaleY(0.25); opacity: 0; }
+    100% { transform: scaleY(1);    opacity: 1; }
+}
+
 [class*="item_"][style*="height"] {
-    transition: height 180ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 180ms ease, box-shadow 180ms ease !important;
+    transition: height 340ms var(--ddt-squish), background-color 220ms var(--ddt-fluid), box-shadow 220ms var(--ddt-fluid) !important;
+    animation: ddt-pill-grow 360ms var(--ddt-pop) backwards !important;
     background: linear-gradient(180deg, #ffffff 0%, #5865f2 100%) !important;
-    box-shadow: 0 0 10px rgba(88, 101, 242, 0.75), 0 0 20px rgba(88, 101, 242, 0.35) !important;
+    box-shadow: 0 0 10px rgba(var(--ddt-accent), 0.8), 0 0 24px rgba(var(--ddt-accent), 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
     border-radius: 4px !important;
 }
 
-/* 4. Server Folder Expand / Collapse Spring Animation */
+/* 4. Server Folder: elastic expand / collapse */
 [class*="folder_"],
 [class*="folderIconWrapper_"],
 [class*="expandedFolderBackground_"] {
-    transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 200ms ease !important;
+    transition: transform 360ms var(--ddt-squish), background-color 240ms var(--ddt-fluid), opacity 240ms var(--ddt-fluid) !important;
 }
 
 [class*="folderIconWrapper_"]:hover {
-    transform: scale(1.06) !important;
+    transform: scale(1.14) rotate(-2deg) !important;
 }
 
-/* 5. Guild Add / Explore Discover Button Bounce & Rotate */
+[class*="folderIconWrapper_"]:active {
+    transform: scale(0.94) !important;
+    transition: transform 90ms var(--ddt-squish) !important;
+}
+
+/* 5. Guild Add / Explore: spin-pop with glow bloom */
 [class*="circleIconButton_"] {
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 160ms ease, color 160ms ease !important;
+    transition: transform 360ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid), box-shadow 280ms var(--ddt-fluid) !important;
+    will-change: transform;
 }
 
 [class*="circleIconButton_"]:hover {
-    transform: scale(1.12) rotate(4deg) !important;
+    transform: scale(1.2) rotate(8deg) !important;
     color: #ffffff !important;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.35), 0 8px 22px rgba(var(--ddt-accent), 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 [class*="circleIconButton_"]:active {
-    transform: scale(0.92) !important;
+    transform: scale(0.94) rotate(-4deg) !important;
+    transition: transform 90ms var(--ddt-squish) !important;
 }
 
 /* ==========================================================================
    GROUP 2: CHANNELS & CATEGORY NAVIGATION (ANIMATIONS 6 - 10)
    ========================================================================== */
 
-/* 6. Text Channel Hover Slide & Accent Glow */
+/* 6. Text Channel: decisive slide + press recoil */
 [class*="containerDefault_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease !important;
+    transition: transform 320ms var(--ddt-snap), background-color 220ms var(--ddt-fluid) !important;
 }
 
 [class*="containerDefault_"]:hover {
-    transform: translateX(4px) !important;
+    transform: translate3d(6px, 0, 0) !important;
 }
 
-/* 7. Voice Channel Hover & Ambient Speaker Pre-light */
+[class*="containerDefault_"]:active {
+    transform: translate3d(6px, 0, 0) scale(0.96) !important;
+    transition: transform 90ms var(--ddt-squish) !important;
+}
+
+/* 7. Voice Channel: slide + ambient green pre-light */
 [class*="containerVoiceChannel_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease !important;
+    transition: transform 320ms var(--ddt-snap), background-color 220ms var(--ddt-fluid), filter 300ms var(--ddt-fluid) !important;
 }
 
 [class*="containerVoiceChannel_"]:hover {
-    transform: translateX(5px) !important;
+    transform: translate3d(7px, 0, 0) !important;
+    filter: drop-shadow(0 0 10px rgba(var(--ddt-green), 0.22)) !important;
 }
 
-/* 8. Category Header Arrow Smooth Rotation */
+[class*="containerVoiceChannel_"]:active {
+    transform: translate3d(7px, 0, 0) scale(0.96) !important;
+    transition: transform 90ms var(--ddt-squish) !important;
+}
+
+/* 8. Category Header Arrow: elastic rotation */
 [class*="categoryItem_"],
 [class*="wrapper_"][class*="container_"] > [class*="arrow_"] {
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transition: transform 360ms var(--ddt-squish) !important;
 }
 
-/* 9. Unread Channel Pill Pulse */
+/* 9. Unread Channel Pill: breathing swell + glow */
 @keyframes ddt-unread-pulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 6px rgba(88, 101, 242, 0.8)); }
-    100% { transform: scale(0.95); opacity: 0.8; }
+    0%, 100% { transform: scale(0.9);  opacity: 0.85; filter: drop-shadow(0 0 3px rgba(var(--ddt-accent), 0.6)); }
+    50%      { transform: scale(1.15); opacity: 1;    filter: drop-shadow(0 0 10px rgba(var(--ddt-accent), 0.95)); }
 }
 
 [class*="unreadPill_"] {
-    animation: ddt-unread-pulse 2.2s infinite ease-in-out !important;
+    animation: ddt-unread-pulse 2.2s infinite var(--ddt-fluid) !important;
     background: #5865f2 !important;
-    box-shadow: 0 0 12px rgba(88, 101, 242, 0.6) !important;
+    box-shadow: 0 0 12px rgba(var(--ddt-accent), 0.6) !important;
+    will-change: transform, opacity;
 }
 
-/* 10. Selected Channel Active Pill & Elevation */
+/* 10. Selected Channel: accent rail + inner luminance wash */
 [class*="containerDefault_"] [class*="modeSelected_"] {
-    box-shadow: inset 2px 0 0 #5865f2 !important;
-    transition: background-color 150ms ease, box-shadow 150ms ease !important;
+    box-shadow: inset 3px 0 0 #5865f2, inset 48px 0 48px -48px rgba(var(--ddt-accent), 0.35) !important;
+    transition: background-color 220ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
 }
 
 /* ==========================================================================
    GROUP 3: VOICE, AUDIO & VIDEO CONTROLS (ANIMATIONS 11 - 15)
    ========================================================================== */
 
-/* 11. Active Speaking Ring Halo Pulse (Ripple Aura) */
+/* 11. Active Speaking: expanding ripple ring (transform/opacity) + breathing halo (filter) */
 @keyframes ddt-speaking-ripple {
-    0% {
-        box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.7), 0 0 8px rgba(87, 242, 135, 0.5);
-    }
-    70% {
-        box-shadow: 0 0 0 8px rgba(87, 242, 135, 0), 0 0 14px rgba(87, 242, 135, 0.7);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(87, 242, 135, 0), 0 0 8px rgba(87, 242, 135, 0.5);
-    }
+    0%   { transform: scale(1);    opacity: 0.85; }
+    100% { transform: scale(1.55); opacity: 0; }
+}
+
+@keyframes ddt-speaking-halo {
+    0%, 100% { filter: drop-shadow(0 0 3px rgba(var(--ddt-green), 0.7)); }
+    50%      { filter: drop-shadow(0 0 11px rgba(var(--ddt-green), 1)); }
+}
+
+:where([class*="speaking_"]) {
+    position: relative;
 }
 
 [class*="speaking_"],
 [class*="border_"][class*="speaking_"] {
-    animation: ddt-speaking-ripple 1.5s infinite ease-out !important;
+    animation: ddt-speaking-halo 1.5s infinite var(--ddt-fluid) !important;
     border-color: #57f287 !important;
 }
 
-/* 12. User Voice Avatar Pulse When Talking */
-[class*="voiceUser_"] [class*="avatarSpeaking_"] {
-    transform: scale(1.04) !important;
-    transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+[class*="speaking_"]::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid rgba(var(--ddt-green), 0.8);
+    pointer-events: none;
+    animation: ddt-speaking-ripple 1.5s infinite var(--ddt-fluid);
+    will-change: transform, opacity;
 }
 
-/* 13. Mute / Deafen Button Interactive Wiggle & State Toggle */
+/* 12. Voice Avatar While Talking: confident swell */
+[class*="voiceUser_"] [class*="avatarSpeaking_"] {
+    transform: scale(1.08) !important;
+    filter: drop-shadow(0 0 8px rgba(var(--ddt-green), 0.6));
+    transition: transform 220ms var(--ddt-squish), filter 220ms var(--ddt-fluid) !important;
+}
+
+/* 13. Mute / Deafen: big wiggle, deep press, state-flip pop */
+@keyframes ddt-state-pop {
+    0%   { transform: scale(0.8) rotate(-12deg); }
+    55%  { transform: scale(1.22) rotate(6deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
 [class*="panels_"] [class*="button_"][aria-label*="Mute"],
 [class*="panels_"] [class*="button_"][aria-label*="Deafen"] {
-    transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease !important;
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+    will-change: transform;
 }
 
 [class*="panels_"] [class*="button_"][aria-label*="Mute"]:hover,
 [class*="panels_"] [class*="button_"][aria-label*="Deafen"]:hover {
-    transform: scale(1.14) rotate(-3deg) !important;
+    transform: scale(1.2) rotate(-6deg) !important;
+    box-shadow: 0 6px 18px rgba(var(--ddt-accent), 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 [class*="panels_"] [class*="button_"][aria-label*="Mute"]:active,
 [class*="panels_"] [class*="button_"][aria-label*="Deafen"]:active {
-    transform: scale(0.92) rotate(3deg) !important;
+    transform: scale(0.94) rotate(4deg) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-/* 14. Disconnect Button Danger Pop on Hover */
+[class*="panels_"] [class*="button_"][aria-checked="true"][aria-label*="Mute"],
+[class*="panels_"] [class*="button_"][aria-checked="true"][aria-label*="Deafen"] {
+    animation: ddt-state-pop 440ms var(--ddt-pop) !important;
+}
+
+/* 14. Disconnect: red detonation on hover */
+[class*="panels_"] [class*="button_"][aria-label*="Disconnect"] {
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+}
+
 [class*="panels_"] [class*="button_"][aria-label*="Disconnect"]:hover {
-    transform: scale(1.15) !important;
-    background-color: rgba(237, 66, 69, 0.25) !important;
+    transform: scale(1.22) !important;
+    background-color: rgba(var(--ddt-red), 0.28) !important;
     color: #ed4245 !important;
-    box-shadow: 0 0 12px rgba(237, 66, 69, 0.5) !important;
+    box-shadow: 0 0 1px rgba(var(--ddt-red), 0.9), 0 6px 20px rgba(var(--ddt-red), 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 15. Screen Share / Video Stream Tile Live Badge Float */
+[class*="panels_"] [class*="button_"][aria-label*="Disconnect"]:active {
+    transform: scale(0.94) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 15. Live Badge: hover-float + glow breathing */
 @keyframes ddt-live-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    0%, 100% { transform: translate3d(0, 0, 0);   filter: drop-shadow(0 0 4px rgba(var(--ddt-red), 0.5)); }
+    50%      { transform: translate3d(0, -4px, 0); filter: drop-shadow(0 0 10px rgba(var(--ddt-red), 0.9)); }
 }
 
 [class*="liveQualityIndicator_"],
 [class*="live_"][class*="textBadge_"] {
-    animation: ddt-live-float 2.5s infinite ease-in-out !important;
-    box-shadow: 0 0 10px rgba(237, 66, 69, 0.6) !important;
+    animation: ddt-live-float 2.5s infinite var(--ddt-fluid) !important;
+    box-shadow: 0 0 10px rgba(var(--ddt-red), 0.6) !important;
+    will-change: transform, filter;
 }
 
 /* ==========================================================================
    GROUP 4: CHAT MESSAGES & CONTENT STREAM (ANIMATIONS 16 - 21)
+   Messages are the densest surface in the app, so their motion is colour /
+   shadow only (no transforms): zero risk of clipping the hover toolbar.
    ========================================================================== */
 
-/* 16. Cozy Message Hover Elevate & Inset Blurple Marker */
+/* 16. Cozy Message: luminance wash + accent rail */
 [class*="message_"],
 [class*="cozyMessage_"] {
-    transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: background-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid), transform 200ms var(--ddt-snap) !important;
 }
 
 [class*="message_"]:hover,
 [class*="cozyMessage_"]:hover {
-    background: rgba(22, 25, 36, 0.45) !important;
-    box-shadow: inset 3px 0 0 #5865f2, inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    background: rgba(22, 25, 36, 0.5) !important;
+    box-shadow: inset 3px 0 0 #5865f2, inset 56px 0 56px -56px rgba(var(--ddt-accent), 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
-/* 17. Mention Highlight Radiant Flare (Warm Obsidian Blurple) */
+/* 17. Mention: one-shot radiant flare, then steady glow */
+@keyframes ddt-mention-flare {
+    0%   { box-shadow: inset 3px 0 0 #5865f2, 0 0 64px rgba(var(--ddt-accent), 0.55); }
+    100% { box-shadow: inset 3px 0 0 #5865f2, 0 0 24px rgba(var(--ddt-accent), 0.15); }
+}
+
 [class*="mentioned_"] {
-    background: rgba(88, 101, 242, 0.12) !important;
-    box-shadow: inset 3px 0 0 #5865f2, 0 0 24px rgba(88, 101, 242, 0.15) !important;
-    transition: background-color 200ms ease, box-shadow 200ms ease !important;
+    background: rgba(var(--ddt-accent), 0.12) !important;
+    box-shadow: inset 3px 0 0 #5865f2, 0 0 24px rgba(var(--ddt-accent), 0.15) !important;
+    animation: ddt-mention-flare 1400ms var(--ddt-fluid) 1 !important;
+    transition: background-color 220ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
 }
 
 [class*="mentioned_"]:hover {
-    background: rgba(88, 101, 242, 0.18) !important;
+    background: rgba(var(--ddt-accent), 0.2) !important;
 }
 
-/* 18. Reply Message Pointer Hook Slide */
+/* 18. Reply Preview: pointer hook slide */
 [class*="repliedMessage_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), opacity 160ms ease !important;
+    transition: transform 300ms var(--ddt-snap), opacity 200ms var(--ddt-fluid) !important;
 }
 
 [class*="repliedMessage_"]:hover {
-    transform: translateX(3px) !important;
+    transform: translate3d(5px, 0, 0) !important;
     opacity: 1 !important;
 }
 
-/* 19. Codeblock Copy Button Pop & Hover Lift */
+/* 19. Codeblock Copy: pop + lift */
 [class*="codeContainer_"] button,
 [class*="copyButton_"] {
-    transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease !important;
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
 }
 
 [class*="codeContainer_"] button:hover,
 [class*="copyButton_"]:hover {
-    transform: scale(1.1) translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    transform: scale(1.18) translate3d(0, -3px, 0) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(var(--ddt-accent), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 20. Spoiler Text Reveal Shimmer & Fade */
+[class*="codeContainer_"] button:active,
+[class*="copyButton_"]:active {
+    transform: scale(0.94) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 20. Spoiler: glow + settle */
 [class*="spoilerText_"] {
-    transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1), filter 220ms ease, background-color 220ms ease !important;
+    transition: opacity 260ms var(--ddt-snap), filter 260ms var(--ddt-fluid), background-color 260ms var(--ddt-fluid), transform 320ms var(--ddt-squish) !important;
 }
 
 [class*="spoilerText_"]:hover:not([class*="hidden_"]) {
-    filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.3));
+    filter: drop-shadow(0 0 10px rgba(var(--ddt-accent), 0.4));
+    transform: scale(1.03);
 }
 
-/* 21. Embed Card Hover Shadow Elevation */
+/* 21. Embed: 3D elevation, rim light, border luminance, sheen sweep (see engine) */
 [class*="embedFull_"] {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, border-color 200ms ease !important;
+    transition: transform 420ms var(--ddt-snap), box-shadow 320ms var(--ddt-fluid), border-color 320ms var(--ddt-fluid) !important;
     border-radius: 8px !important;
+    will-change: transform;
 }
 
 [class*="embedFull_"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 16px rgba(88, 101, 242, 0.15) !important;
+    transform: perspective(900px) translate3d(0, -4px, 0) rotateX(1.5deg) !important;
+    box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.25),
+        0 16px 36px rgba(0, 0, 0, 0.5),
+        0 0 26px rgba(var(--ddt-accent), 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+[class*="embedFull_"]:active {
+    transform: perspective(900px) translate3d(0, -1px, 0) scale(0.99) !important;
+    transition: transform 90ms var(--ddt-squish) !important;
 }
 
 /* ==========================================================================
    GROUP 5: MESSAGE ACTIONS & REACTIONS (ANIMATIONS 22 - 26)
    ========================================================================== */
 
-/* 22. Message Action Bar (Mini Hover Bar) Spring Slide-in */
+/* 22. Action Bar: spring slide-in with blur dissipation */
 [class*="buttons_"][class*="wrapper_"] {
-    animation: ddt-action-slide 180ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.15) !important;
+    animation: ddt-action-slide 300ms var(--ddt-pop) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
     border-radius: 8px !important;
+    transform-origin: bottom right;
 }
 
 @keyframes ddt-action-slide {
-    0% { transform: scale(0.9) translateY(4px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
+    0%   { transform: scale(0.82) translate3d(0, 8px, 0); opacity: 0; filter: blur(4px); }
+    100% { transform: scale(1) translate3d(0, 0, 0);       opacity: 1; filter: blur(0); }
 }
 
-/* 23. Reaction Bubble Hover Pop & 3D Elastic Zoom */
+/* 23. Reaction: elastic zoom + lift + glow */
 [class*="reaction_"] {
-    transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, border-color 140ms ease !important;
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), border-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
 }
 
 [class*="reaction_"]:hover {
-    transform: scale(1.12) !important;
-    box-shadow: 0 2px 10px rgba(88, 101, 242, 0.35) !important;
+    transform: scale(1.18) translate3d(0, -2px, 0) !important;
+    box-shadow: 0 6px 16px rgba(var(--ddt-accent), 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
-/* 24. Reaction Active Click Squash */
+/* 24. Reaction Click: hard squash */
 [class*="reaction_"]:active {
-    transform: scale(0.92) !important;
-    transition: transform 60ms ease !important;
+    transform: scale(0.94) !important;
+    transition: transform 70ms var(--ddt-squish) !important;
 }
 
-/* 25. Reaction Count Counter Tick Bounce */
+/* 25. Reaction Counter: tick bounce on mount / update */
 @keyframes ddt-count-tick {
-    0% { transform: translateY(-4px); opacity: 0.5; }
-    100% { transform: translateY(0); opacity: 1; }
+    0%   { transform: translate3d(0, -6px, 0) scale(0.8); opacity: 0.4; }
+    60%  { transform: translate3d(0, 1px, 0) scale(1.15); opacity: 1; }
+    100% { transform: translate3d(0, 0, 0) scale(1);      opacity: 1; }
 }
 
 [class*="reactionCount_"] {
-    transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    animation: ddt-count-tick 320ms var(--ddt-pop) backwards;
+    transition: transform 240ms var(--ddt-squish) !important;
 }
 
 [class*="reaction_"]:hover [class*="reactionCount_"] {
-    transform: scale(1.08) !important;
+    transform: scale(1.12) !important;
 }
 
-/* 26. Reaction "Me" Added Glowing Aura */
+/* 26. Reaction "Me": glowing aura */
 [class*="reactionMe_"] {
     border-color: #5865f2 !important;
-    background: rgba(88, 101, 242, 0.22) !important;
-    box-shadow: 0 0 10px rgba(88, 101, 242, 0.4) !important;
+    background: rgba(var(--ddt-accent), 0.24) !important;
+    box-shadow: 0 0 12px rgba(var(--ddt-accent), 0.5), inset 0 0 0 1px rgba(var(--ddt-accent), 0.35) !important;
 }
 
 /* ==========================================================================
    GROUP 6: INPUT BAR & TYPING EXPERIENCE (ANIMATIONS 27 - 31)
    ========================================================================== */
 
-/* 27. Typing Indicator 3-Dot Stagger Wave */
+/* 27. Typing Indicator: stagger wave with squash */
 @keyframes ddt-typing-wave {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-5px); opacity: 1; }
+    0%, 60%, 100% { transform: translate3d(0, 0, 0) scale(1);       opacity: 0.4; }
+    30%           { transform: translate3d(0, -6px, 0) scale(1.25); opacity: 1; }
 }
 
 [class*="typing_"] [class*="dots_"] span:nth-child(1) {
-    animation: ddt-typing-wave 1.2s infinite ease-in-out !important;
+    animation: ddt-typing-wave 1.2s infinite var(--ddt-fluid) !important;
 }
 [class*="typing_"] [class*="dots_"] span:nth-child(2) {
-    animation: ddt-typing-wave 1.2s infinite ease-in-out 0.2s !important;
+    animation: ddt-typing-wave 1.2s infinite var(--ddt-fluid) 0.2s !important;
 }
 [class*="typing_"] [class*="dots_"] span:nth-child(3) {
-    animation: ddt-typing-wave 1.2s infinite ease-in-out 0.4s !important;
+    animation: ddt-typing-wave 1.2s infinite var(--ddt-fluid) 0.4s !important;
 }
 
-/* 28. Chat Input Attachment Button Spin on Hover */
+/* 28. Attach Button: spin-open */
 [class*="attachButton_"] {
-    transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), color 160ms ease !important;
+    transition: transform 380ms var(--ddt-squish), color 200ms var(--ddt-fluid), filter 260ms var(--ddt-fluid) !important;
 }
 
 [class*="attachButton_"]:hover {
-    transform: scale(1.15) rotate(90deg) !important;
+    transform: scale(1.22) rotate(90deg) !important;
     color: #5865f2 !important;
+    filter: drop-shadow(0 0 8px rgba(var(--ddt-accent), 0.6));
 }
 
 [class*="attachButton_"]:active {
-    transform: scale(0.92) !important;
+    transform: scale(0.94) rotate(90deg) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-/* 29. Emoji / Sticker / Gift Button Micro-Jump */
+/* 29. Emoji / Sticker / Gift Buttons: jump */
 [class*="buttons_"] [class*="button_"]:not([class*="attachButton_"]) {
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), color 160ms ease !important;
+    transition: transform 320ms var(--ddt-squish), color 200ms var(--ddt-fluid), filter 260ms var(--ddt-fluid) !important;
 }
 
 [class*="buttons_"] [class*="button_"]:not([class*="attachButton_"]):hover {
-    transform: scale(1.18) translateY(-2px) !important;
+    transform: scale(1.25) translate3d(0, -3px, 0) !important;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
 }
 
 [class*="buttons_"] [class*="button_"]:not([class*="attachButton_"]):active {
     transform: scale(0.94) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-/* 30. Slowmode Pill Pulse */
+/* 30. Slowmode Pill: breathing */
 [class*="cooldownWrapper_"] {
-    animation: ddt-cooldown-pulse 2s infinite ease-in-out !important;
+    animation: ddt-cooldown-pulse 2s infinite var(--ddt-fluid) !important;
 }
 
 @keyframes ddt-cooldown-pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
+    0%, 100% { opacity: 0.65; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.04); }
 }
 
-/* 31. Send Message Button Flare on Input Active */
+/* 31. Input Focus: layered neon bloom */
+[class*="channelTextArea_"] {
+    transition: box-shadow 300ms var(--ddt-fluid) !important;
+}
+
 [class*="channelTextArea_"]:focus-within {
-    box-shadow: 0 0 0 1px rgba(88, 101, 242, 0.5), 0 0 20px rgba(88, 101, 242, 0.2) !important;
-    transition: box-shadow 200ms ease !important;
+    box-shadow:
+        0 0 0 1px rgba(var(--ddt-accent), 0.6),
+        0 0 22px rgba(var(--ddt-accent), 0.28),
+        0 0 60px rgba(var(--ddt-accent), 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 /* ==========================================================================
-   GROUP 7: EMOJI & STICKER PICKER (ANIMATIONS 32 - 36)
+   SHARED KEYFRAMES (v3): all transform + opacity only = compositor-friendly
    ========================================================================== */
-
-/* 32. Emoji Picker Item Hover Magnifier (Mac Dock Style Zoom) */
-[class*="emojiItem_"] {
-    transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 140ms ease !important;
-    will-change: transform;
+@keyframes ddt-rise {
+    0%   { opacity: 0; transform: translate3d(0, 10px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-[class*="emojiItem_"]:hover {
-    transform: scale(1.32) !important;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)) !important;
-    z-index: 10 !important;
+@keyframes ddt-drop-in {
+    0%   { opacity: 0; transform: translate3d(0, -100%, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* 33. Emoji Category Tab Slide Indicator */
-[class*="categoryItem_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), opacity 160ms ease !important;
+@keyframes ddt-pop-in {
+    0%   { opacity: 0; transform: scale(0.84) translate3d(0, 5px, 0); }
+    100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
 }
 
-[class*="categoryItem_"]:hover {
-    transform: translateY(-2px) !important;
-    opacity: 1 !important;
+@keyframes ddt-item-in {
+    0%   { opacity: 0; transform: translate3d(-8px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* 34. Sticker Item Interactive Float & Shadow Depth */
-[class*="sticker_"] {
-    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 180ms ease !important;
-}
-
-[class*="sticker_"]:hover {
-    transform: scale(1.15) translateY(-3px) !important;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4)) !important;
-}
-
-/* 35. Emoji Search Bar Focus Expansion */
-[class*="emojiPicker_"] [class*="searchBar_"] {
-    transition: box-shadow 180ms ease, border-color 180ms ease !important;
-}
-
-[class*="emojiPicker_"] [class*="searchBar_"]:focus-within {
-    box-shadow: 0 0 0 2px #5865f2, 0 0 16px rgba(88, 101, 242, 0.3) !important;
-}
-
-/* 36. Picker Container Spring Entry */
-[class*="animatorBottom_"] [class*="contentWrapper_"] {
-    animation: ddt-picker-spring 220ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-@keyframes ddt-picker-spring {
-    0% { transform: scale(0.94) translateY(12px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
+@keyframes ddt-breathe {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
 }
 
 /* ==========================================================================
-   GROUP 8: USER PROFILES & AVATARS (ANIMATIONS 37 - 40)
+   GROUP 7: MEMBER LIST & DIRECT MESSAGES (ANIMATIONS 32 - 37)
+   Transforms go on the inner layout node, so virtual-list positioning that
+   Discord applies to the row itself is never touched.
    ========================================================================== */
 
-/* 37. User Popout Card Cinematic Spring Entry & Frost Blur */
-[class*="userPopoutOuter_"] {
-    animation: ddt-popout-spring 240ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-    backdrop-filter: blur(28px) !important;
-    -webkit-backdrop-filter: blur(28px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 30px rgba(88, 101, 242, 0.3) !important;
+/* 32. Member Row: glide */
+[class*="member_"] [class*="layout_"] {
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid) !important;
 }
 
-@keyframes ddt-popout-spring {
-    0% { transform: scale(0.92) translateY(10px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
+[class*="member_"]:hover [class*="layout_"] {
+    transform: translate3d(5px, 0, 0) !important;
 }
 
-/* 38. User Avatar Hover Float & Halo */
-[class*="avatar_"] [class*="wrapper_"] {
-    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+[class*="member_"]:active [class*="layout_"] {
+    transform: translate3d(5px, 0, 0) scale(0.97) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-[class*="avatar_"] [class*="wrapper_"]:hover {
-    transform: scale(1.08) !important;
+/* 33. Member Avatar: swell on row hover */
+[class*="member_"] [class*="avatar_"] {
+    transition: transform 340ms var(--ddt-squish) !important;
 }
 
-/* 39. Status Dot Pulse (Online / DND Heartbeat) */
-@keyframes ddt-status-heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.15); filter: drop-shadow(0 0 4px currentColor); }
+[class*="member_"]:hover [class*="avatar_"] {
+    transform: scale(1.12) !important;
 }
 
-[class*="status_"][class*="online_"],
-rect[fill="#23a55a"],
-rect[fill="#f23f43"] {
-    transform-origin: center;
-    animation: ddt-status-heartbeat 3s infinite ease-in-out !important;
+/* 34. DM Row: glide */
+[class*="privateChannels_"] [class*="layout_"] {
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid) !important;
 }
 
-/* 40. Profile Badge Hover Shimmer */
-[class*="profileBadges_"] [class*="badgeList_"] > * {
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+[class*="privateChannels_"] [class*="interactive_"]:hover [class*="layout_"] {
+    transform: translate3d(6px, 0, 0) !important;
 }
 
-[class*="profileBadges_"] [class*="badgeList_"] > *:hover {
-    transform: scale(1.22) translateY(-2px) !important;
+[class*="privateChannels_"] [class*="interactive_"]:active [class*="layout_"] {
+    transform: translate3d(6px, 0, 0) scale(0.97) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-/* ==========================================================================
-   GROUP 9: MODALS, MENUS, TOOLTIPS & SETTINGS (ANIMATIONS 41 - 46)
-   ========================================================================== */
-
-/* 41. Modal Dialog Spring Bounce & Glass Backdrop */
-[class*="modal_"],
-[class*="root_"][class*="fullscreenOnMobile_"] {
-    animation: ddt-modal-spring 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.2) !important;
-}
-
-@keyframes ddt-modal-spring {
-    0% { opacity: 0; transform: scale(0.92) translateY(12px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* 42. Context Menu Staggered Slide-in & Border Glow */
-[class*="menu_"],
-[class*="contextMenu_"] {
-    background: rgba(14, 16, 24, 0.94) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(88, 101, 242, 0.3) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(88, 101, 242, 0.2) !important;
-    animation: ddt-menu-fade 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-@keyframes ddt-menu-fade {
-    0% { opacity: 0; transform: scale(0.95) translateY(-6px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* 43. Context Menu Item Hover Slide & Accent Bar */
-[class*="menu_"] [class*="item_"]:hover:not([class*="colorDanger_"]) {
-    background: rgba(88, 101, 242, 0.28) !important;
-    color: #ffffff !important;
-    box-shadow: inset 3px 0 0 #5865f2 !important;
-    transform: translateX(3px) !important;
-    transition: transform 120ms ease, background-color 120ms ease !important;
-}
-
-/* 44. Tooltip Bubble Micro-Elastic Fade & Rise */
-[class*="tooltip_"] {
-    animation: ddt-tooltip-pop 180ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 10px rgba(88, 101, 242, 0.25) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-@keyframes ddt-tooltip-pop {
-    0% { opacity: 0; transform: scale(0.88) translateY(4px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* 45. Settings HUD Tab Active Bar Slide & Elevation */
-[class*="sidebarRegion_"] [class*="item_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease, color 160ms ease !important;
-}
-
-[class*="sidebarRegion_"] [class*="item_"]:hover {
-    transform: translateX(4px) !important;
-}
-
-[class*="sidebarRegion_"] [class*="item_"][class*="selected_"] {
-    box-shadow: inset 3px 0 0 #5865f2 !important;
-    transform: translateX(4px) !important;
-}
-
-/* 46. Switch Toggle Slider Bouncy Spring Roll & Radio Pop */
-[class*="switch_"],
-[class*="slider_"] {
-    transition: background-color 220ms ease !important;
-}
-
-[class*="slider_"]::before,
-[class*="slider_"] rect,
-[class*="slider_"] path {
-    transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-[class*="switch_"]:hover,
-[class*="slider_"]:hover {
-    filter: drop-shadow(0 0 6px rgba(88, 101, 242, 0.4));
-}
-
-/* ==========================================================================
-   GROUP 10: SEARCH, QUICK SWITCHER & NOTIFICATIONS (ANIMATIONS 47 - 50)
-   ========================================================================== */
-
-/* 47. Quick Switcher Spotlight Slide-Down */
-[class*="quickswitcher_"] {
-    animation: ddt-quickswitch-drop 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(88, 101, 242, 0.3) !important;
-    border: 1px solid rgba(88, 101, 242, 0.3) !important;
-}
-
-@keyframes ddt-quickswitch-drop {
-    0% { opacity: 0; transform: scale(0.95) translateY(-20px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* 48. Search Results Item Staggered Fade-in */
-[class*="searchBar_"] [class*="searchBarComponent_"] {
-    transition: width 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, box-shadow 200ms ease !important;
-}
-
-[class*="searchBar_"]:focus-within [class*="searchBarComponent_"] {
-    box-shadow: 0 0 0 1px #5865f2, 0 0 12px rgba(88, 101, 242, 0.3) !important;
-}
-
-/* 49. Unread Number & Text Badges Bouncy Pop */
-@keyframes ddt-badge-pop {
-    0%   { transform: scale(0.4); opacity: 0; }
-    70%  { transform: scale(1.18); }
-    100% { transform: scale(1.0);  opacity: 1; }
-}
-
-[class*="numberBadge_"],
-[class*="textBadge_"] {
-    animation: ddt-badge-pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
-    box-shadow: 0 0 8px rgba(242, 63, 67, 0.6) !important;
-}
-
-/* 50. New Messages Bar Gradient Pulse & Hover Elevation */
-[class*="newMessagesBar_"],
-[class*="barBase_"] {
-    animation: ddt-new-msg-pulse 3s infinite ease-in-out !important;
-    background: linear-gradient(90deg, #5865f2 0%, #4752c4 100%) !important;
-    box-shadow: 0 4px 16px rgba(88, 101, 242, 0.45) !important;
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-[class*="newMessagesBar_"]:hover,
-[class*="barBase_"]:hover {
-    transform: translateY(-1px) scale(1.01) !important;
-}
-
-@keyframes ddt-new-msg-pulse {
-    0%, 100% { opacity: 0.95; }
-    50% { opacity: 1; box-shadow: 0 4px 22px rgba(88, 101, 242, 0.65); }
-}
-
-/* ==========================================================================
-   GROUP 11: DM & FRIENDS LIST (ANIMATIONS 51 - 55)
-   ========================================================================== */
-
-/* 51. DM List Item Hover Slide & Glow Strip */
-[class*="channel_"][class*="private_"],
-[class*="interactiveSelected_"],
-[class*="interactiveNormal_"] {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease, box-shadow 160ms ease !important;
-}
-
-[class*="channel_"][class*="private_"]:hover,
-[class*="interactiveNormal_"]:hover {
-    transform: translateX(5px) !important;
-    box-shadow: inset 3px 0 0 #5865f2, 0 0 16px rgba(88, 101, 242, 0.15) !important;
-}
-
-/* 52. Friends Tab Active Indicator Morph */
-[class*="tabBar_"] [class*="item_"] {
-    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), color 160ms ease, box-shadow 180ms ease !important;
-    position: relative;
-}
-
-[class*="tabBar_"] [class*="item_"]:hover {
-    transform: translateY(-2px) !important;
-}
-
-[class*="tabBar_"] [class*="item_"][class*="selected_"] {
-    box-shadow: 0 3px 0 #5865f2, 0 6px 16px rgba(88, 101, 242, 0.3) !important;
-}
-
-/* 53. Friend Row Hover Glow & Avatar Float */
-[class*="peopleListItem_"] {
-    transition: background-color 160ms ease, transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease !important;
-}
-
-[class*="peopleListItem_"]:hover {
-    transform: translateX(3px) !important;
-    box-shadow: inset 3px 0 0 #5865f2 !important;
-}
-
-[class*="peopleListItem_"]:hover [class*="avatar_"] {
-    filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.5));
-}
-
-/* 54. DM Close Button Danger Spin */
+/* 35. DM Close Button: spin-pop */
 [class*="closeButton_"] {
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), color 160ms ease, opacity 160ms ease !important;
+    transition: transform 320ms var(--ddt-squish), color 200ms var(--ddt-fluid) !important;
 }
 
 [class*="closeButton_"]:hover {
-    transform: rotate(90deg) scale(1.15) !important;
+    transform: scale(1.25) rotate(90deg) !important;
     color: #ed4245 !important;
-    filter: drop-shadow(0 0 6px rgba(237, 66, 69, 0.5));
 }
 
-/* 55. Add Friend Input Border Bloom */
-[class*="addFriend_"] [class*="inputWrapper_"] {
-    transition: box-shadow 200ms ease, border-color 200ms ease !important;
+[class*="closeButton_"]:active {
+    transform: scale(0.9) rotate(90deg) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-[class*="addFriend_"] [class*="inputWrapper_"]:focus-within {
-    box-shadow: 0 0 0 2px #5865f2, 0 0 24px rgba(88, 101, 242, 0.3), 0 0 60px rgba(88, 101, 242, 0.1) !important;
+/* 36. Friends / People Row: glide */
+[class*="peopleListItem_"] {
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid) !important;
 }
 
-/* ==========================================================================
-   GROUP 12: MEMBER LIST & ROLE PILLS (ANIMATIONS 56 - 61)
-   ========================================================================== */
-
-/* 56. Member List User Row Hover Slide & Depth */
-[class*="member_"] {
-    transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), background-color 140ms ease !important;
+[class*="peopleListItem_"]:hover {
+    transform: translate3d(4px, 0, 0) !important;
 }
 
-[class*="member_"]:hover {
-    transform: translateX(4px) !important;
+/* 37. Role Pill: lift */
+[class*="roles_"] [class*="role_"] {
+    transition: transform 300ms var(--ddt-squish), box-shadow 240ms var(--ddt-fluid) !important;
 }
 
-/* 57. Member List Role Header Shimmer */
-@keyframes ddt-role-shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-}
-
-[class*="membersGroup_"] {
-    background: linear-gradient(90deg, transparent 0%, rgba(88, 101, 242, 0.08) 50%, transparent 100%) !important;
-    background-size: 200% 100% !important;
-    transition: background-color 200ms ease !important;
-}
-
-[class*="membersGroup_"]:hover {
-    animation: ddt-role-shimmer 2s ease-in-out !important;
-}
-
-/* 58. Role Pill Badge Elastic Pop & Color Lift */
-[class*="role_"],
-[class*="rolePill_"] {
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, filter 160ms ease !important;
-}
-
-[class*="role_"]:hover,
-[class*="rolePill_"]:hover {
-    transform: scale(1.08) translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    filter: brightness(1.15) !important;
-}
-
-/* 59. Role Color Dot Heartbeat */
-@keyframes ddt-role-dot-beat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); filter: drop-shadow(0 0 4px currentColor); }
-}
-
-[class*="roleCircle_"],
-[class*="roleColor_"] {
-    animation: ddt-role-dot-beat 2.5s infinite ease-in-out !important;
-}
-
-/* 60. User Crown / Owner Icon Regal Float */
-@keyframes ddt-crown-float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-2px) rotate(-3deg); }
-    75% { transform: translateY(-1px) rotate(3deg); }
-}
-
-[class*="ownerIcon_"],
-[class*="icon_"][aria-label*="Server Owner"] {
-    animation: ddt-crown-float 3s infinite ease-in-out !important;
-    filter: drop-shadow(0 0 6px rgba(250, 166, 26, 0.5)) !important;
-}
-
-/* 61. Bot Tag Badge Neon Pulse */
-@keyframes ddt-bot-neon {
-    0%, 100% { box-shadow: 0 0 4px rgba(88, 101, 242, 0.5); }
-    50% { box-shadow: 0 0 10px rgba(88, 101, 242, 0.8), 0 0 20px rgba(88, 101, 242, 0.3); }
-}
-
-[class*="botTag_"] {
-    animation: ddt-bot-neon 2.5s infinite ease-in-out !important;
-    border-radius: 4px !important;
+[class*="roles_"] [class*="role_"]:hover {
+    transform: scale(1.08) translate3d(0, -1px, 0) !important;
+    box-shadow: 0 4px 12px rgba(var(--ddt-accent), 0.35) !important;
 }
 
 /* ==========================================================================
-   GROUP 13: THREADS & FORUM POSTS (ANIMATIONS 62 - 66)
+   GROUP 8: AVATARS, NAMES, LINKS, EMOJI, MENTIONS (ANIMATIONS 38 - 45)
    ========================================================================== */
 
-/* 62. Thread Sidebar Cinematic Slide Entry */
-@keyframes ddt-thread-slide {
-    0% { transform: translateX(100%); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
+/* 38. Chat Avatar: bouncy tilt-swell */
+[class*="avatar_"][class*="clickable_"] {
+    transition: transform 340ms var(--ddt-squish), filter 260ms var(--ddt-fluid) !important;
 }
 
-[class*="container_"][class*="chatLayerWrapper_"] {
-    animation: ddt-thread-slide 300ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+[class*="avatar_"][class*="clickable_"]:hover {
+    transform: scale(1.12) rotate(-4deg) !important;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
 }
 
-/* 63. Thread List Item Hover Depth & Marker */
-[class*="container_"][class*="focusable_"]:not([class*="message_"]) {
-    transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease !important;
+[class*="avatar_"][class*="clickable_"]:active {
+    transform: scale(0.93) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-[class*="container_"][class*="focusable_"]:not([class*="message_"]):hover {
-    transform: translateX(3px) !important;
-    box-shadow: inset 3px 0 0 #5865f2 !important;
+/* 39. Username: underline sweep (pseudo-element, so role-colour gradients stay intact) */
+[class*="username_"] {
+    position: relative;
 }
 
-/* 64. Forum Post Card Hover Elevation & Border Glow */
-[class*="card_"][class*="clickable_"] {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, border-color 200ms ease !important;
-    border-radius: 12px !important;
+[class*="username_"]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 320ms var(--ddt-snap);
 }
 
-[class*="card_"][class*="clickable_"]:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(88, 101, 242, 0.2) !important;
-    border-color: rgba(88, 101, 242, 0.4) !important;
+[class*="username_"]:hover::after {
+    transform: scaleX(1);
 }
 
-/* 65. Forum Tag Pill Hover Color Shift */
-[class*="tag_"],
-[class*="tagPill_"] {
-    transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, filter 140ms ease !important;
+/* 40. Links: soft glow */
+[class*="anchor_"] {
+    transition: text-shadow 240ms var(--ddt-fluid), color 200ms var(--ddt-fluid) !important;
 }
 
-[class*="tag_"]:hover,
-[class*="tagPill_"]:hover {
-    transform: scale(1.06) !important;
-    filter: brightness(1.2) saturate(1.2) !important;
+[class*="anchor_"]:hover {
+    text-shadow: 0 0 12px rgba(var(--ddt-accent), 0.5);
 }
 
-/* 66. Thread Notification Badge Bounce Entry */
-[class*="threadNotificationBadge_"],
-[class*="threadIcon_"] {
-    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+/* 41. Inline Emoji: bounce */
+img.emoji {
+    transition: transform 280ms var(--ddt-squish);
 }
 
-[class*="threadNotificationBadge_"]:hover,
-[class*="threadIcon_"]:hover {
-    transform: scale(1.15) rotate(-5deg) !important;
+img.emoji:hover {
+    transform: scale(1.35) rotate(-6deg);
+}
+
+/* 42. Jumbo Emoji: bigger bounce */
+img.emoji.jumboable {
+    transition: transform 360ms var(--ddt-squish);
+}
+
+img.emoji.jumboable:hover {
+    transform: scale(1.18) rotate(5deg);
+}
+
+/* 43. Mention Pill: glow lift (paint only, inline-safe) */
+.mention {
+    transition: background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+}
+
+.mention:hover {
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.55), 0 4px 14px rgba(var(--ddt-accent), 0.35) !important;
+}
+
+/* 44. Sticker: playful wiggle */
+[class*="stickerAsset_"],
+[class*="sticker_"] {
+    transition: transform 360ms var(--ddt-squish) !important;
+}
+
+[class*="stickerAsset_"]:hover,
+[class*="sticker_"]:hover {
+    transform: scale(1.1) rotate(-3deg) !important;
+}
+
+/* 45. Newest Message: rise-in (last item only, so scrolling history never re-animates) */
+li[class*="messageListItem_"]:last-of-type {
+    animation: ddt-rise 260ms var(--ddt-snap) backwards;
 }
 
 /* ==========================================================================
-   GROUP 14: TIMESTAMPS, DIVIDERS & SCROLLBAR (ANIMATIONS 67 - 72)
+   GROUP 9: MEDIA, ATTACHMENTS & BADGES (ANIMATIONS 46 - 50)
    ========================================================================== */
 
-/* 67. Message Timestamp Hover Reveal & Slide */
-[class*="timestamp_"] {
-    transition: opacity 180ms ease, transform 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms ease !important;
+/* 46. Image Attachment: slow zoom inside its frame */
+[class*="imageWrapper_"] {
+    overflow: hidden;
 }
 
-[class*="message_"]:hover [class*="timestamp_"] {
-    opacity: 1 !important;
-    transform: translateX(2px) !important;
-    color: #b5bac1 !important;
+[class*="imageWrapper_"] img {
+    transition: transform 520ms var(--ddt-snap);
 }
 
-/* 68. Date Divider Elegant Fade & Line Extend */
-[class*="divider_"][class*="hasContent_"] {
-    transition: opacity 300ms ease !important;
+[class*="imageWrapper_"]:hover img {
+    transform: scale(1.04);
 }
 
-[class*="divider_"][class*="hasContent_"] [class*="content_"] {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), letter-spacing 200ms ease !important;
-}
-
-[class*="divider_"][class*="hasContent_"]:hover [class*="content_"] {
-    transform: scale(1.05) !important;
-    letter-spacing: 0.5px !important;
-}
-
-/* 69. Custom Scrollbar Sleek Track & Neon Thumb */
-::-webkit-scrollbar {
-    width: 6px !important;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1) !important;
-    border-radius: 6px !important;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #5865f2 0%, #4752c4 100%) !important;
-    border-radius: 6px !important;
-    box-shadow: 0 0 6px rgba(88, 101, 242, 0.4) !important;
-    transition: background 200ms ease !important;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #7289da 0%, #5865f2 100%) !important;
-    box-shadow: 0 0 10px rgba(88, 101, 242, 0.6) !important;
-}
-
-/* 70. Jump to Present Floating Button Pulse */
-@keyframes ddt-jump-pulse {
-    0%, 100% { box-shadow: 0 4px 16px rgba(88, 101, 242, 0.4); }
-    50% { box-shadow: 0 4px 24px rgba(88, 101, 242, 0.7), 0 0 40px rgba(88, 101, 242, 0.2); }
-}
-
-[class*="jumpToPresentBar_"] {
-    animation: ddt-jump-pulse 2.5s infinite ease-in-out !important;
-    border-radius: 24px !important;
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-[class*="jumpToPresentBar_"]:hover {
-    transform: translateY(-2px) scale(1.02) !important;
-}
-
-/* 71. Loading Skeleton Shimmer Wave */
-@keyframes ddt-skeleton-shimmer {
-    0% { background-position: -468px 0; }
-    100% { background-position: 468px 0; }
-}
-
-[class*="loading_"],
-[class*="skeleton_"] {
-    background: linear-gradient(90deg, rgba(30, 31, 34, 0.6) 0%, rgba(88, 101, 242, 0.08) 40%, rgba(30, 31, 34, 0.6) 80%) !important;
-    background-size: 800px 100% !important;
-    animation: ddt-skeleton-shimmer 1.8s infinite linear !important;
-}
-
-/* 72. Scroll-to-Top Fab Button Breathing Glow */
-@keyframes ddt-fab-breathe {
-    0%, 100% { box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3); transform: scale(1); }
-    50% { box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5); transform: scale(1.03); }
-}
-
-[class*="barButtonBase_"] {
-    animation: ddt-fab-breathe 3s infinite ease-in-out !important;
-    transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-[class*="barButtonBase_"]:hover {
-    transform: scale(1.08) !important;
-}
-
-/* ==========================================================================
-   GROUP 15: NOTIFICATIONS, INBOX & STAGE (ANIMATIONS 73 - 78)
-   ========================================================================== */
-
-/* 73. Inbox/Notification Panel Slide-Down Entry */
-@keyframes ddt-inbox-slide {
-    0% { opacity: 0; transform: translateY(-15px) scale(0.97); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-[class*="recentMentionsPopout_"],
-[class*="messagesPopoutWrap_"] {
-    animation: ddt-inbox-slide 220ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(88, 101, 242, 0.2) !important;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 20px rgba(88, 101, 242, 0.15) !important;
-}
-
-/* 74. Notification Item Hover Accent */
-[class*="messageGroupWrapper_"] {
-    transition: background-color 160ms ease, transform 140ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-[class*="messageGroupWrapper_"]:hover {
-    transform: translateX(3px) !important;
-    box-shadow: inset 3px 0 0 #5865f2 !important;
-}
-
-/* 75. Stage Channel Live Indicator Broadcast Pulse */
-@keyframes ddt-stage-broadcast {
-    0% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.6); }
-    50% { box-shadow: 0 0 0 6px rgba(87, 242, 135, 0), 0 0 18px rgba(87, 242, 135, 0.5); }
-    100% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0); }
-}
-
-[class*="liveSmall_"] {
-    animation: ddt-stage-broadcast 2s infinite ease-out !important;
-    color: #57f287 !important;
-}
-
-/* 76. Stage Speaker Card Hover Elevation */
-[class*="speakingParticipant_"],
-[class*="voiceCallParticipant_"] {
-    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease !important;
-    border-radius: 12px !important;
-}
-
-[class*="speakingParticipant_"]:hover,
-[class*="voiceCallParticipant_"]:hover {
-    transform: translateY(-3px) scale(1.02) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(87, 242, 135, 0.2) !important;
-}
-
-/* 77. Raise Hand Emoji Float Animation */
-@keyframes ddt-raise-hand {
-    0%, 100% { transform: rotate(0deg) translateY(0); }
-    25% { transform: rotate(-10deg) translateY(-3px); }
-    50% { transform: rotate(10deg) translateY(-5px); }
-    75% { transform: rotate(-5deg) translateY(-2px); }
-}
-
-[class*="raiseHand_"],
-[class*="handRaised_"] {
-    animation: ddt-raise-hand 1.5s infinite ease-in-out !important;
-}
-
-/* 78. Event/Scheduled Event Card Glassmorphic Hover */
-[class*="eventCard_"],
-[class*="guildEventItem_"] {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, backdrop-filter 200ms ease !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-}
-
-[class*="eventCard_"]:hover,
-[class*="guildEventItem_"]:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(88, 101, 242, 0.2) !important;
-    backdrop-filter: blur(12px) !important;
-}
-
-/* ==========================================================================
-   GROUP 16: AUTOCOMPLETE, SLASH COMMANDS & UPLOAD (ANIMATIONS 79 - 84)
-   ========================================================================== */
-
-/* 79. Autocomplete Dropdown Spring Pop Entry */
-@keyframes ddt-autocomplete-pop {
-    0% { opacity: 0; transform: translateY(8px) scale(0.96); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-[class*="autocomplete_"] {
-    animation: ddt-autocomplete-pop 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(88, 101, 242, 0.2) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 16px rgba(88, 101, 242, 0.15) !important;
-}
-
-/* 80. Slash Command Item Hover Glow Bar */
-[class*="autocomplete_"] [class*="option_"],
-[class*="autocomplete_"] [class*="autocompleteRow_"] {
-    transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 120ms ease !important;
-}
-
-[class*="autocomplete_"] [class*="option_"]:hover,
-[class*="autocomplete_"] [class*="autocompleteRow_"]:hover,
-[class*="autocomplete_"] [class*="option_"][class*="selected_"],
-[class*="autocomplete_"] [class*="autocompleteRow_"][class*="selected_"] {
-    transform: translateX(3px) !important;
-    box-shadow: inset 3px 0 0 #5865f2 !important;
-}
-
-/* 81. File Upload Progress Bar Neon Gradient Sweep */
-@keyframes ddt-upload-sweep {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-}
-
-[class*="progressBar_"] {
-    background: linear-gradient(90deg, #5865f2, #57f287, #5865f2) !important;
-    background-size: 200% 100% !important;
-    animation: ddt-upload-sweep 1.5s linear infinite !important;
-    border-radius: 4px !important;
-    box-shadow: 0 0 8px rgba(88, 101, 242, 0.5) !important;
-}
-
-/* 82. File Attachment Card Hover Float */
-[class*="attachment_"],
-[class*="embedWrapper_"] {
-    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease !important;
+/* 47. File Attachment Card: lift */
+[class*="attachment_"] {
+    transition: transform 320ms var(--ddt-snap), box-shadow 280ms var(--ddt-fluid) !important;
 }
 
 [class*="attachment_"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(88, 101, 242, 0.15) !important;
+    transform: translate3d(0, -2px, 0) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(var(--ddt-accent), 0.18) !important;
 }
 
-/* 83. Drag-and-Drop Overlay Pulse Zone */
-@keyframes ddt-drop-pulse {
-    0%, 100% { border-color: rgba(88, 101, 242, 0.4); box-shadow: inset 0 0 40px rgba(88, 101, 242, 0.05); }
-    50% { border-color: rgba(88, 101, 242, 0.8); box-shadow: inset 0 0 60px rgba(88, 101, 242, 0.12); }
+/* 48. Reply Bar: rise-in above the input */
+[class*="replyBar_"] {
+    animation: ddt-rise 260ms var(--ddt-pop) backwards;
 }
 
-[class*="uploadArea_"] {
-    animation: ddt-drop-pulse 1.5s infinite ease-in-out !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+/* 49. Notification Badge: pop-in */
+@keyframes ddt-badge-pop {
+    0%   { transform: scale(0); }
+    60%  { transform: scale(1.3); }
+    100% { transform: scale(1); }
 }
 
-/* 84. Upload Thumbnail Preview Zoom Hover */
-[class*="uploadedFilePreview_"],
-[class*="spoilerContainer_"] [class*="imageContainer_"] {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), filter 200ms ease !important;
-    overflow: hidden !important;
-    border-radius: 8px !important;
+[class*="numberBadge_"] {
+    animation: ddt-badge-pop 380ms var(--ddt-pop) backwards;
 }
 
-[class*="uploadedFilePreview_"]:hover {
-    transform: scale(1.03) !important;
-    filter: brightness(1.05) !important;
+/* 50. Unread Divider: slow breathing (opacity only) */
+[class*="divider_"][class*="isUnread_"] {
+    animation: ddt-breathe 2.6s infinite var(--ddt-fluid);
 }
 
 /* ==========================================================================
-   GROUP 17: USER SETTINGS & PANELS (ANIMATIONS 85 - 89)
+   GROUP 10: HEADER, SEARCH, TABS & BANNERS (ANIMATIONS 51 - 55)
    ========================================================================== */
 
-/* 85. User Panel Bottom Bar Glass Elevation */
-[class*="panels_"] {
-    background: rgba(14, 16, 24, 0.85) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-    transition: background-color 200ms ease !important;
+/* 51. Toolbar Icons: jump */
+[class*="toolbar_"] [class*="iconWrapper_"] {
+    transition: transform 320ms var(--ddt-squish), color 200ms var(--ddt-fluid), filter 260ms var(--ddt-fluid) !important;
 }
 
-/* 86. User Panel Avatar Hover Glow Ring */
+[class*="toolbar_"] [class*="iconWrapper_"]:hover {
+    transform: scale(1.2) translate3d(0, -2px, 0) !important;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+[class*="toolbar_"] [class*="iconWrapper_"]:active {
+    transform: scale(0.92) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 52. Search Bar: focus bloom */
+[class*="search_"] {
+    transition: box-shadow 300ms var(--ddt-fluid) !important;
+}
+
+[class*="search_"]:focus-within {
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.6), 0 0 20px rgba(var(--ddt-accent), 0.25) !important;
+}
+
+/* 53. Tab Bar Items: lift */
+[class*="tabBar_"] [class*="item_"] {
+    transition: transform 280ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid) !important;
+}
+
+[class*="tabBar_"] [class*="item_"]:hover {
+    transform: translate3d(0, -1px, 0) scale(1.04) !important;
+}
+
+[class*="tabBar_"] [class*="item_"]:active {
+    transform: scale(0.95) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 54. Notice Banner: drop-in */
+[class*="notice_"] {
+    animation: ddt-drop-in 420ms var(--ddt-pop) backwards;
+}
+
+/* 55. Selected DM: accent rail + wash (matches animation 10) */
+[class*="privateChannels_"] [class*="selected_"] {
+    box-shadow: inset 3px 0 0 #5865f2, inset 48px 0 48px -48px rgba(var(--ddt-accent), 0.35) !important;
+    transition: background-color 220ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+}
+
+/* ==========================================================================
+   GROUP 11: MENUS, MODALS, TOOLTIPS & POPOUTS (ANIMATIONS 56 - 62)
+   ========================================================================== */
+
+/* 56. Tooltip: pop-in */
+[class*="tooltip_"] {
+    animation: ddt-pop-in 180ms var(--ddt-pop) backwards;
+}
+
+/* 57. Context Menu: pop-in from the cursor corner */
+[role="menu"] {
+    animation: ddt-pop-in 200ms var(--ddt-pop) backwards;
+    transform-origin: top left;
+}
+
+/* 58. Menu Item: label glide (background stays put) */
+[role="menuitem"] > [class*="label_"] {
+    transition: transform 240ms var(--ddt-snap) !important;
+}
+
+[role="menuitem"]:hover > [class*="label_"] {
+    transform: translate3d(4px, 0, 0) !important;
+}
+
+[role="menuitem"]:active > [class*="label_"] {
+    transform: translate3d(4px, 0, 0) scale(0.97) !important;
+    transition: transform 70ms var(--ddt-squish) !important;
+}
+
+/* 59. Menu Items: staggered cascade */
+[role="menu"] [role="menuitem"] {
+    animation: ddt-item-in 240ms var(--ddt-snap) backwards;
+}
+[role="menu"] [role="menuitem"]:nth-child(2) { animation-delay: 25ms; }
+[role="menu"] [role="menuitem"]:nth-child(3) { animation-delay: 50ms; }
+[role="menu"] [role="menuitem"]:nth-child(4) { animation-delay: 75ms; }
+[role="menu"] [role="menuitem"]:nth-child(5) { animation-delay: 100ms; }
+[role="menu"] [role="menuitem"]:nth-child(6) { animation-delay: 125ms; }
+[role="menu"] [role="menuitem"]:nth-child(7) { animation-delay: 150ms; }
+[role="menu"] [role="menuitem"]:nth-child(n+8) { animation-delay: 175ms; }
+
+/* 60. Modal: rise + overshoot pop */
+@keyframes ddt-modal-pop {
+    0%   { opacity: 0; transform: scale(0.92) translate3d(0, 14px, 0); }
+    100% { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
+}
+
+[class*="root_"][role="dialog"] {
+    animation: ddt-modal-pop 320ms var(--ddt-pop) backwards;
+}
+
+/* 61. User Popout / Profile Card: pop-in */
+[class*="userPopoutOuter_"],
+[class*="userProfileOuter_"],
+[class*="popout_"] {
+    animation: ddt-pop-in 240ms var(--ddt-pop) backwards;
+    transform-origin: top left;
+}
+
+/* 62. Emoji Picker Item: elastic zoom */
+[class*="emojiItem_"] {
+    transition: transform 260ms var(--ddt-squish) !important;
+}
+
+[class*="emojiItem_"]:hover {
+    transform: scale(1.28) !important;
+}
+
+[class*="emojiItem_"]:active {
+    transform: scale(0.92) !important;
+    transition: transform 70ms var(--ddt-squish) !important;
+}
+
+/* ==========================================================================
+   GROUP 12: SETTINGS, BUTTONS & FORM CONTROLS (ANIMATIONS 63 - 72)
+   ========================================================================== */
+
+/* 63. Settings Sidebar Tabs: glide */
+[class*="sidebar_"] [role="tab"] {
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid) !important;
+}
+
+[class*="sidebar_"] [role="tab"]:hover {
+    transform: translate3d(5px, 0, 0) !important;
+}
+
+[class*="sidebar_"] [role="tab"]:active {
+    transform: translate3d(5px, 0, 0) scale(0.97) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 64. Settings Page: rise-in on open */
+[class*="contentColumn_"] {
+    animation: ddt-rise 320ms var(--ddt-snap) backwards;
+}
+
+/* 65. Filled Buttons: lift + glow, hard press */
+[class*="lookFilled_"]:not([class*="disabled"]) {
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+}
+
+[class*="lookFilled_"]:not([class*="disabled"]):hover {
+    transform: translate3d(0, -1px, 0) scale(1.04) !important;
+    box-shadow: 0 8px 20px rgba(var(--ddt-accent), 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+[class*="lookFilled_"]:not([class*="disabled"]):active {
+    transform: scale(0.95) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 66. Outlined / Inverted Buttons: swell */
+[class*="lookOutlined_"],
+[class*="lookInverted_"] {
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), color 200ms var(--ddt-fluid) !important;
+}
+
+[class*="lookOutlined_"]:hover,
+[class*="lookInverted_"]:hover {
+    transform: scale(1.04) !important;
+}
+
+[class*="lookOutlined_"]:active,
+[class*="lookInverted_"]:active {
+    transform: scale(0.95) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 67. Switch: tactile squish */
+[role="switch"] {
+    transition: transform 300ms var(--ddt-squish), filter 240ms var(--ddt-fluid) !important;
+}
+
+[role="switch"]:hover {
+    transform: scale(1.08) !important;
+    filter: drop-shadow(0 0 8px rgba(var(--ddt-accent), 0.45));
+}
+
+[role="switch"]:active {
+    transform: scale(0.92) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
+}
+
+/* 68. Checkbox / Radio: bounce */
+[role="checkbox"],
+[role="radio"] {
+    transition: transform 280ms var(--ddt-squish) !important;
+}
+
+[role="checkbox"]:hover,
+[role="radio"]:hover {
+    transform: scale(1.12) !important;
+}
+
+[role="checkbox"]:active,
+[role="radio"]:active {
+    transform: scale(0.88) !important;
+    transition: transform 70ms var(--ddt-squish) !important;
+}
+
+/* 69. Text Input: focus bloom */
+[class*="inputDefault_"] {
+    transition: box-shadow 280ms var(--ddt-fluid), border-color 200ms var(--ddt-fluid) !important;
+}
+
+[class*="inputDefault_"]:focus {
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.65), 0 0 18px rgba(var(--ddt-accent), 0.25) !important;
+}
+
+/* 70. Slider Knob: swell */
+[class*="grabber_"] {
+    transition: transform 280ms var(--ddt-squish), box-shadow 240ms var(--ddt-fluid) !important;
+}
+
+[class*="grabber_"]:hover {
+    transform: scale(1.2) !important;
+    box-shadow: 0 0 14px rgba(var(--ddt-accent), 0.6) !important;
+}
+
+[class*="grabber_"]:active {
+    transform: scale(0.95) !important;
+}
+
+/* 71. Dropdown / Select: hover glow */
+[role="combobox"] {
+    transition: box-shadow 260ms var(--ddt-fluid), border-color 200ms var(--ddt-fluid) !important;
+}
+
+[role="combobox"]:hover {
+    box-shadow: 0 0 0 1px rgba(var(--ddt-accent), 0.45), 0 0 14px rgba(var(--ddt-accent), 0.18) !important;
+}
+
+/* 72. Scrollbar Thumb: accent on hover */
+[class*="scroller_"]::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--ddt-accent), 0.75) !important;
+}
+
+/* ==========================================================================
+   GROUP 13: USER PANEL & VOICE EXTRAS (ANIMATIONS 73 - 76)
+   ========================================================================== */
+
+/* 73. User Panel: avatar block nudge */
 [class*="panels_"] [class*="avatarWrapper_"] {
-    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 180ms ease !important;
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid) !important;
 }
 
 [class*="panels_"] [class*="avatarWrapper_"]:hover {
-    transform: scale(1.1) !important;
-    filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.6)) !important;
+    transform: translate3d(3px, 0, 0) !important;
 }
 
-/* 87. Settings Page Content Fade-In Entry */
-@keyframes ddt-settings-fadein {
-    0% { opacity: 0; transform: translateY(8px); }
-    100% { opacity: 1; transform: translateY(0); }
+[class*="panels_"] [class*="avatarWrapper_"]:active {
+    transform: scale(0.96) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
-[class*="contentColumn_"] {
-    animation: ddt-settings-fadein 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+/* 74. Voice User Row: glide */
+[class*="voiceUser_"] {
+    transition: transform 300ms var(--ddt-snap), background-color 200ms var(--ddt-fluid) !important;
 }
 
-/* 88. Settings Card/Section Hover Glass Depth */
-[class*="cardPrimary_"],
-[class*="cardPrimaryEditable_"],
-[class*="customColorPicker_"] {
-    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease, border-color 180ms ease !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    border-radius: 12px !important;
+[class*="voiceUser_"]:hover {
+    transform: translate3d(4px, 0, 0) !important;
 }
 
-[class*="cardPrimary_"]:hover,
-[class*="cardPrimaryEditable_"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(88, 101, 242, 0.12) !important;
-    border-color: rgba(88, 101, 242, 0.3) !important;
+/* 75. Call Tile: lift */
+[class*="callContainer_"] [class*="tile_"] {
+    transition: transform 360ms var(--ddt-snap), box-shadow 300ms var(--ddt-fluid) !important;
 }
 
-/* 89. Keybind Recording Pulse Border */
-@keyframes ddt-keybind-record {
-    0%, 100% { border-color: rgba(237, 66, 69, 0.4); box-shadow: 0 0 8px rgba(237, 66, 69, 0.2); }
-    50% { border-color: rgba(237, 66, 69, 0.8); box-shadow: 0 0 16px rgba(237, 66, 69, 0.4); }
+[class*="callContainer_"] [class*="tile_"]:hover {
+    transform: translate3d(0, -3px, 0) scale(1.01) !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(var(--ddt-accent), 0.2) !important;
 }
 
-[class*="recording_"] {
-    animation: ddt-keybind-record 1.2s infinite ease-in-out !important;
+/* 76. Call Control Buttons: swell + press */
+[class*="controlButton_"] {
+    transition: transform 300ms var(--ddt-squish), background-color 200ms var(--ddt-fluid), box-shadow 260ms var(--ddt-fluid) !important;
+}
+
+[class*="controlButton_"]:hover {
+    transform: scale(1.14) translate3d(0, -2px, 0) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+[class*="controlButton_"]:active {
+    transform: scale(0.94) !important;
+    transition: transform 80ms var(--ddt-squish) !important;
 }
 
 /* ==========================================================================
-   GROUP 18: BANNERS, BOOST & NITRO EFFECTS (ANIMATIONS 90 - 92)
+   GROUP 14: AMBIENT / GLOBAL (ANIMATIONS 77 - 79)
    ========================================================================== */
 
-/* 90. Server Boost Progress Bar Rainbow Gradient */
-@keyframes ddt-boost-rainbow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* 77. App Boot: one-shot fade-in (backwards fill, so no permanent layer is kept) */
+@keyframes ddt-boot {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
 }
 
-[class*="tierHeaderProgress_"],
-[class*="progressBar_"][class*="tier_"] {
-    background: linear-gradient(90deg, #f47fff, #5865f2, #57f287, #fee75c, #f47fff) !important;
-    background-size: 300% 100% !important;
-    animation: ddt-boost-rainbow 4s linear infinite !important;
-    border-radius: 6px !important;
-    box-shadow: 0 0 12px rgba(244, 127, 255, 0.4) !important;
+#app-mount {
+    animation: ddt-boot 500ms var(--ddt-fluid) backwards;
 }
 
-/* 91. Nitro Badge Prismatic Shimmer */
-@keyframes ddt-nitro-prismatic {
-    0% { filter: hue-rotate(0deg) drop-shadow(0 0 4px rgba(244, 127, 255, 0.5)); }
-    50% { filter: hue-rotate(60deg) drop-shadow(0 0 8px rgba(88, 101, 242, 0.6)); }
-    100% { filter: hue-rotate(0deg) drop-shadow(0 0 4px rgba(244, 127, 255, 0.5)); }
+/* 78. Text Selection: accent tint */
+::selection {
+    background: rgba(var(--ddt-accent), 0.45);
+    color: #ffffff;
 }
 
-[class*="premiumIconWrapper_"],
-[class*="premiumBadge_"],
-[class*="nitroWheel_"] {
-    animation: ddt-nitro-prismatic 4s infinite ease-in-out !important;
+/* 79. Caret: accent colour */
+input,
+textarea,
+[contenteditable="true"] {
+    caret-color: #5865f2;
 }
 
-/* 92. Server Banner Parallax Hover & Gradient Veil */
-[class*="animatedContainer_"][class*="bannerImage_"],
-[class*="banner_"][class*="bannerImg_"] {
-    transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1), filter 400ms ease !important;
+/* ==========================================================================
+   [LOW-END PERFORMANCE PASS]: keep this block LAST.
+   Later @keyframes with the same name win, so these replace the original
+   infinite animations that animated `filter` (re-rasterised every frame) with
+   transform / opacity versions that run on the GPU compositor. Same look,
+   far cheaper on integrated graphics.
+   ========================================================================== */
+
+/* Unread pill: transform + opacity only (glow is already static box-shadow) */
+@keyframes ddt-unread-pulse {
+    0%, 100% { transform: scale(0.9);  opacity: 0.85; }
+    50%      { transform: scale(1.15); opacity: 1; }
 }
 
-[class*="animatedContainer_"][class*="bannerImage_"]:hover,
-[class*="banner_"][class*="bannerImg_"]:hover {
-    transform: scale(1.04) !important;
-    filter: brightness(1.1) saturate(1.15) !important;
+/* Live badge: transform only (glow is already static box-shadow) */
+@keyframes ddt-live-float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50%      { transform: translate3d(0, -4px, 0); }
+}
+
+/* Speaking ring: the expanding ripple (::after) carries the motion, so the
+   per-frame filter halo is replaced by a static glow */
+[class*="speaking_"],
+[class*="border_"][class*="speaking_"] {
+    animation: none !important;
+    filter: drop-shadow(0 0 8px rgba(var(--ddt-green), 0.85));
+}
+
+/* Skip the expensive legibility text pass on every element */
+* {
+    text-rendering: auto;
 }

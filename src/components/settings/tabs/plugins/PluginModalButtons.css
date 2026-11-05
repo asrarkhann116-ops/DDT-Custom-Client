@@ -35,3 +35,70 @@
     gap: 0.2em;
     margin-left: auto;
 }
+
+/* ==========================================================================
+   DDT REMASTERED: PLUGIN MODAL BUTTONS (bouncy, low-end friendly)
+   Original rules above are untouched; everything below is additive and uses
+   transform / opacity only. Tokens match the main DDT CSS.
+   ========================================================================== */
+:root {
+    --ddt-snap:   cubic-bezier(0.16, 1, 0.3, 1);
+    --ddt-pop:    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ddt-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-fluid:  cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ddt-gold:   250, 166, 26;
+}
+
+@keyframes ddt-pmb-star-pop {
+    0%   { transform: scale(1) rotate(0deg); }
+    40%  { transform: scale(1.5) rotate(-18deg); }
+    70%  { transform: scale(0.9) rotate(8deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes ddt-pmb-pop {
+    0%   { opacity: 0; transform: scale(0.5) rotate(-14deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* 1. Favorite star: bouncy hover and press */
+.vc-settings-modal-favorite-button {
+    transition: color 200ms var(--ddt-fluid), transform 320ms var(--ddt-squish), filter 260ms var(--ddt-fluid);
+}
+
+.vc-settings-modal-favorite-button:hover {
+    transform: scale(1.25) rotate(12deg);
+}
+
+.vc-settings-modal-favorite-button:active {
+    transform: scale(0.9);
+    transition: transform 70ms var(--ddt-squish);
+}
+
+/* 2. Favorited: one-shot pop and a static gold glow (no per-frame filter animation) */
+.vc-settings-modal-favorite-button-active {
+    animation: ddt-pmb-star-pop 520ms var(--ddt-pop);
+    filter: drop-shadow(0 0 6px rgba(var(--ddt-gold), 0.55));
+}
+
+/* 3. Link icons: staggered pop-in, then tilt-swell */
+.vc-settings-modal-links > * {
+    animation: ddt-pmb-pop 380ms var(--ddt-pop) backwards;
+}
+.vc-settings-modal-links > :nth-child(2) { animation-delay: 50ms; }
+.vc-settings-modal-links > :nth-child(3) { animation-delay: 100ms; }
+.vc-settings-modal-links > :nth-child(n+4) { animation-delay: 150ms; }
+
+.vc-settings-modal-link-icon {
+    transition: transform 320ms var(--ddt-squish), filter 260ms var(--ddt-fluid);
+}
+
+.vc-settings-modal-link-icon:hover {
+    transform: scale(1.18) rotate(-8deg);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.vc-settings-modal-link-icon:active {
+    transform: scale(0.92);
+    transition: transform 70ms var(--ddt-squish);
+}

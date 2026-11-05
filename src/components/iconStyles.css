@@ -1,3 +1,50 @@
+/* ============================================================
+   DDT · iconStyles.css
+   Owner crown: static gold glow, opacity-only breathing (hover keeps
+   control of `transform`, since a running animation would override it),
+   Squish tilt-pop on hover and a hard press.
+   ============================================================ */
+
+:where(.vc-owner-crown-icon) {
+    --vc-squish: var(--ddt-squish, cubic-bezier(0.34, 1.56, 0.64, 1));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-gold: var(--ddt-gold, 250, 166, 26);
+}
+
+@keyframes vc-crown-breathe {
+    0%, 100% { opacity: 0.78; }
+    50%      { opacity: 1; }
+}
+
 .vc-owner-crown-icon {
     color: var(--status-warning);
+    filter: drop-shadow(0 0 4px rgba(var(--vc-gold), 0.55));
+
+    transform-origin: 50% 80%;
+    transition:
+        transform 300ms var(--vc-squish),
+        filter 240ms var(--vc-fluid);
+    animation: vc-crown-breathe 4.5s var(--vc-fluid) infinite;
+}
+
+.vc-owner-crown-icon:hover {
+    transform: translate3d(0, -1px, 0) rotate(-10deg) scale(1.18);
+    filter: drop-shadow(0 0 10px rgba(var(--vc-gold), 0.9));
+}
+
+.vc-owner-crown-icon:active {
+    transform: translate3d(0, 0, 0) rotate(-4deg) scale(0.94);
+    transition-duration: 80ms, 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-owner-crown-icon {
+        animation: none;
+        transition-duration: 0.01ms;
+    }
+
+    .vc-owner-crown-icon:hover,
+    .vc-owner-crown-icon:active {
+        transform: none;
+    }
 }

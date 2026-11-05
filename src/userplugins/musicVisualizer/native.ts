@@ -48,6 +48,7 @@ function resolveServerPath(): string | null {
         join(__dirname, "..", "music-relay-server", "server.js"),     // one level up
         join(process.cwd(), "src", "userplugins", "musicVisualizer", "music-relay-server", "server.js"), // dev
         join(__dirname, "..", "src", "userplugins", "musicVisualizer", "music-relay-server", "server.js"),
+        "E:\\asrar\\projects\\DDT_Production_Vencord_Like_Client\\Vencord-main\\Vencord-main\\src\\userplugins\\musicVisualizer\\music-relay-server\\server.js",
     ];
     console.log("[MusicViz] Resolving server.js | __dirname:", __dirname);
     for (const p of candidates) {
@@ -66,10 +67,10 @@ function doSpawn(scriptPath: string): void {
 
     serverProcess = spawn(NODE_BIN, [scriptPath], {
         cwd,
-        // "inherit" stdout/stderr → logs flow to Electron main console, no buffer deadlock
-        stdio: ["ignore", "inherit", "inherit"],
+        stdio: "ignore",
         env: { ...process.env, MUSIC_PORT: "3124" },
         detached: false,
+        windowsHide: true,
     });
 
     // 'close' fires AFTER stdio streams close — safer than 'exit' for restart timing

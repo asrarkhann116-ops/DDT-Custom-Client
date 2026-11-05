@@ -1,3 +1,42 @@
+/* ============================================================
+   DDT · ExpandableCard.css
+   Header gets the engine's luminance wash + accent rail, a Squish
+   press, and an elastic chevron. Content reveals with a clip-path
+   and a 25ms stagger (same cascade as the context menu).
+   No layout properties are animated, so nothing jitters on mount.
+   ============================================================ */
+
+:where(.vc-expandable-card, .vc-expandable-card-header, .vc-expandable-card-icon, .vc-expandable-card-content) {
+    --vc-snap: var(--ddt-snap, cubic-bezier(0.16, 1, 0.3, 1));
+    --vc-squish: var(--ddt-squish, cubic-bezier(0.34, 1.56, 0.64, 1));
+    --vc-fluid: var(--ddt-fluid, cubic-bezier(0.2, 0.8, 0.2, 1));
+    --vc-accent: var(--ddt-accent, 88, 101, 242);
+}
+
+@keyframes vc-accordion-reveal {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -8px, 0);
+        clip-path: inset(0 0 100% 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes vc-accordion-child {
+    0%   { opacity: 0; transform: translate3d(-8px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes vc-expandable-icon-flick {
+    0%   { transform: translate3d(0, -3px, 0) scale(0.8); }
+    55%  { transform: translate3d(0, 1px, 0) scale(1.18); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
 .vc-expandable-card {
     color: var(--text-default);
 }
@@ -9,15 +48,73 @@
     margin: 4px;
     border-radius: var(--radius-xs);
 
-    .vc-expandable-card[data-expanded="true"] & {
-        background: var(--card-secondary-bg);
-    }
+    transition:
+        background-color 200ms var(--vc-fluid),
+        box-shadow 260ms var(--vc-fluid),
+        transform 300ms var(--vc-squish);
+}
+
+.vc-expandable-card[data-expanded="true"] .vc-expandable-card-header {
+    background: var(--card-secondary-bg);
+    box-shadow: inset 3px 0 0 rgb(var(--vc-accent));
+}
+
+.vc-expandable-card-header:hover,
+.vc-expandable-card[data-expanded="true"] .vc-expandable-card-header:hover {
+    background-color: var(--card-secondary-bg);
+    box-shadow:
+        inset 3px 0 0 rgb(var(--vc-accent)),
+        inset 48px 0 48px -48px rgba(var(--vc-accent), 0.35);
+}
+
+.vc-expandable-card-header:active {
+    transform: translate3d(0, 0, 0) scale(0.97);
+    transition-duration: 200ms, 260ms, 80ms;
 }
 
 .vc-expandable-card-icon {
     margin-left: auto;
+    transform-origin: 50% 50%;
+    transition: transform 360ms var(--vc-squish);
+    animation: vc-expandable-icon-flick 360ms var(--vc-squish) backwards;
+}
+
+.vc-expandable-card-header:hover .vc-expandable-card-icon {
+    transform: translate3d(0, 1px, 0);
 }
 
 .vc-expandable-card-content {
     padding: 0.5em 1em;
+
+    transform-origin: 50% 0;
+    animation: vc-accordion-reveal 320ms var(--vc-snap) backwards;
+}
+
+.vc-expandable-card-content > * {
+    animation: vc-accordion-child 240ms var(--vc-snap) backwards;
+}
+
+.vc-expandable-card-content > :nth-child(2) { animation-delay: 25ms; }
+.vc-expandable-card-content > :nth-child(3) { animation-delay: 50ms; }
+.vc-expandable-card-content > :nth-child(4) { animation-delay: 75ms; }
+.vc-expandable-card-content > :nth-child(5) { animation-delay: 100ms; }
+.vc-expandable-card-content > :nth-child(6) { animation-delay: 125ms; }
+.vc-expandable-card-content > :nth-child(7) { animation-delay: 150ms; }
+.vc-expandable-card-content > :nth-child(n+8) { animation-delay: 175ms; }
+
+@media (prefers-reduced-motion: reduce) {
+    .vc-expandable-card-header,
+    .vc-expandable-card-icon {
+        transition-duration: 0.01ms;
+    }
+
+    .vc-expandable-card-header:active {
+        transform: none;
+    }
+
+    .vc-expandable-card-icon,
+    .vc-expandable-card-content,
+    .vc-expandable-card-content > * {
+        animation: none;
+    }
 }

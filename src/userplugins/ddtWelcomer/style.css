@@ -1,0 +1,614 @@
+/* ============================================================
+   DDT · ddtWelcomer / style.css
+   Frutiger-Aero glass HUD. Everything is scoped to .ddt-wc and
+   animates transform / opacity only (the JS spring loop drives the
+   rest through inline styles and custom properties).
+   ============================================================ */
+
+.ddt-wc,
+.ddt-wc * {
+    box-sizing: border-box;
+}
+
+.ddt-wc {
+    --ddt-glow: 88, 101, 242;
+    --ddt-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ddt-spring-ms: 700ms;
+    --ddt-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, Menlo, monospace;
+
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    contain: layout paint style;
+    color: #eaf4ff;
+    font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    background: radial-gradient(120% 90% at 50% 45%, rgba(18, 26, 64, 0.96) 0%, rgba(6, 9, 24, 0.985) 55%, #02030a 100%);
+}
+
+.ddt-wc > * {
+    pointer-events: none;
+}
+
+/* ---------- Ambient layers ---------- */
+.ddt-wc-fx {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ddt-wc-aurora {
+    position: absolute;
+    inset: 0;
+}
+
+.ddt-wc-aurora i {
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 50%;
+    will-change: transform;
+}
+
+.ddt-wc-aurora i:nth-child(1) {
+    left: -18vmax;
+    top: -28vmax;
+    background: radial-gradient(circle, rgba(88, 101, 242, 0.55), transparent 62%);
+    animation: ddt-wc-drift-a 9s ease-in-out infinite alternate;
+}
+
+.ddt-wc-aurora i:nth-child(2) {
+    right: -22vmax;
+    bottom: -32vmax;
+    background: radial-gradient(circle, rgba(94, 231, 255, 0.32), transparent 62%);
+    animation: ddt-wc-drift-b 11s ease-in-out infinite alternate;
+}
+
+.ddt-wc-aurora i:nth-child(3) {
+    left: 28vw;
+    top: 18vh;
+    width: 46vmax;
+    height: 46vmax;
+    background: radial-gradient(circle, rgba(var(--ddt-glow), 0.3), transparent 64%);
+    animation: ddt-wc-drift-c 7s ease-in-out infinite alternate;
+}
+
+@keyframes ddt-wc-drift-a { to { transform: translate3d(9vmax, 7vmax, 0) scale(1.12); } }
+@keyframes ddt-wc-drift-b { to { transform: translate3d(-8vmax, -6vmax, 0) scale(1.16); } }
+@keyframes ddt-wc-drift-c { to { transform: translate3d(-6vmax, 5vmax, 0) scale(0.9); } }
+
+/* Perspective floor: the inner grid slides one cell per loop (compositor-only) */
+.ddt-wc-floor {
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    bottom: -6%;
+    height: 58%;
+    overflow: hidden;
+    opacity: 0.75;
+    transform: perspective(520px) rotateX(64deg);
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 92%);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 92%);
+}
+
+.ddt-wc-grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -64px;
+    bottom: 0;
+    background-image:
+        linear-gradient(rgba(130, 190, 255, 0.35) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(130, 190, 255, 0.35) 1.5px, transparent 1.5px);
+    background-size: 64px 64px;
+    animation: ddt-wc-grid 1.4s linear infinite;
+}
+
+@keyframes ddt-wc-grid { to { transform: translate3d(0, 64px, 0); } }
+
+.ddt-wc-flash {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    mix-blend-mode: screen;
+    background: radial-gradient(circle at 50% 50%, rgba(190, 230, 255, 0.55), rgba(var(--ddt-glow), 0.25) 30%, transparent 62%);
+}
+
+.ddt-wc-scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 160px;
+    background: linear-gradient(to bottom, transparent, rgba(140, 210, 255, 0.1) 70%, rgba(190, 235, 255, 0.42) 99%, transparent 100%);
+    transform: translate3d(0, -160px, 0);
+    animation: ddt-wc-scan 1.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.15s both;
+}
+
+@keyframes ddt-wc-scan {
+    0%   { transform: translate3d(0, -160px, 0); opacity: 1; }
+    85%  { opacity: 1; }
+    100% { transform: translate3d(0, 105vh, 0); opacity: 0; }
+}
+
+/* ---------- Corner HUD ---------- */
+.ddt-wc-corner {
+    position: absolute;
+    width: 220px;
+    color: rgba(190, 225, 255, 0.82);
+    font: 600 11px/1.5 var(--ddt-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: ddt-wc-fade 0.6s ease 0.5s forwards;
+}
+
+.ddt-wc-corner::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 0 solid rgba(120, 200, 255, 0.85);
+    filter: drop-shadow(0 0 6px rgba(94, 231, 255, 0.7));
+}
+
+.ddt-wc-corner b { color: #fff; font-weight: 700; }
+
+.ddt-wc-tl { top: 26px; left: 28px; padding: 6px 0 0 42px; }
+.ddt-wc-tr { top: 26px; right: 28px; padding: 6px 42px 0 0; text-align: right; }
+.ddt-wc-bl { bottom: 26px; left: 28px; padding: 0 0 6px 42px; }
+.ddt-wc-br { bottom: 26px; right: 28px; padding: 0 42px 6px 0; text-align: right; }
+
+.ddt-wc-tl::before { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.ddt-wc-tr::before { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+.ddt-wc-bl::before { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+.ddt-wc-br::before { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* ---------- Stage + glass panel ---------- */
+.ddt-wc-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 4vh 4vw;
+}
+
+.ddt-wc-panel {
+    position: relative;
+    z-index: 2;
+    width: min(880px, 92vw);
+    overflow: hidden;
+    pointer-events: auto;
+    transform-origin: 50% 50%;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background:
+        linear-gradient(160deg, rgba(160, 200, 255, 0.2), rgba(20, 28, 60, 0.38) 50%, rgba(120, 160, 255, 0.14));
+    -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.1);
+    backdrop-filter: blur(22px) saturate(1.6) brightness(1.1);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.55),
+        0 36px 90px -12px rgba(0, 0, 0, 0.75),
+        0 0 70px rgba(var(--ddt-glow), 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -50px 70px -40px rgba(120, 200, 255, 0.25);
+}
+
+/* Aero's diagonal window reflections */
+.ddt-wc-gloss {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0.2) 0 26%,
+        transparent 26.2% 52%,
+        rgba(255, 255, 255, 0.09) 52.2% 68%,
+        transparent 68.2%
+    );
+}
+
+.ddt-wc-titlebar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 36px;
+    padding: 0 0 0 12px;
+    background: linear-gradient(
+        rgba(255, 255, 255, 0.38),
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(120, 170, 255, 0.14) 51%,
+        rgba(255, 255, 255, 0.2)
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.ddt-wc-tico {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #5ee7ff, #5865f2 60%, #57f287);
+    box-shadow: 0 0 10px rgba(94, 231, 255, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ddt-wc-ttext {
+    flex: 1;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(120, 210, 255, 0.95), 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+.ddt-wc-wbtns {
+    display: flex;
+    align-self: flex-start;
+    gap: 1px;
+    margin-right: 8px;
+}
+
+.ddt-wc-wbtns b {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: 400;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-top: 0;
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1) 50%, rgba(80, 120, 200, 0.35) 51%, rgba(160, 200, 255, 0.35));
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.ddt-wc-wbtns b:first-child { border-bottom-left-radius: 5px; }
+
+.ddt-wc-wbtns .ddt-wc-close {
+    width: 46px;
+    cursor: pointer;
+    pointer-events: auto;
+    border-bottom-right-radius: 5px;
+    background: linear-gradient(#f4b8b0, #de6a5c 50%, #c0392b 51%, #e8806f);
+    transition: filter 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ddt-wc-wbtns .ddt-wc-close:hover { filter: brightness(1.2) saturate(1.15); }
+
+/* ---------- Body ---------- */
+.ddt-wc-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 28px 36px 6px;
+}
+
+/* Orb: avatar, glow, HUD rings */
+.ddt-wc-orb {
+    position: relative;
+    width: 210px;
+    height: 210px;
+    will-change: transform;
+}
+
+.ddt-wc-glow {
+    position: absolute;
+    inset: -38%;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+    background: radial-gradient(circle, rgba(var(--ddt-glow), 0.85) 0%, rgba(var(--ddt-glow), 0.35) 32%, transparent 66%);
+}
+
+.ddt-wc-rings {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: ddt-wc-rings-in var(--ddt-spring-ms) var(--ddt-spring) 0.05s both;
+}
+
+.ddt-wc-rings circle { fill: none; }
+
+.ddt-wc-rings g {
+    transform-box: view-box;
+    transform-origin: 100px 100px;
+}
+
+.ddt-wc-r1 { animation: ddt-wc-spin 22s linear infinite; }
+.ddt-wc-r2 { animation: ddt-wc-spin 6s linear infinite; }
+.ddt-wc-r3 { animation: ddt-wc-spin 9s linear infinite reverse; }
+
+.ddt-wc-r1 circle { stroke: rgba(160, 200, 255, 0.55); stroke-width: 4; stroke-dasharray: 1 11.1; }
+.ddt-wc-r2 circle {
+    stroke: #5ee7ff;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-dasharray: 150 404;
+    filter: drop-shadow(0 0 5px rgba(94, 231, 255, 0.9));
+}
+.ddt-wc-r3 circle { stroke: rgba(255, 255, 255, 0.7); stroke-width: 1.2; stroke-linecap: round; stroke-dasharray: 60 437; }
+
+.ddt-wc-arc-bg { stroke: rgba(255, 255, 255, 0.12); stroke-width: 3; }
+.ddt-wc-arc {
+    stroke: #57f287;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 590.6;
+    stroke-dashoffset: 590.6;
+    filter: drop-shadow(0 0 6px rgba(87, 242, 135, 0.9));
+}
+
+@keyframes ddt-wc-spin { to { transform: rotate(360deg); } }
+@keyframes ddt-wc-rings-in {
+    from { opacity: 0; transform: scale(1.5) rotate(-40deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+.ddt-wc-avatar {
+    position: absolute;
+    inset: 28px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.88);
+    background: #0b1022;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(var(--ddt-glow), 0.9),
+        inset 0 0 22px rgba(0, 0, 0, 0.45);
+    animation: ddt-wc-pop var(--ddt-spring-ms) var(--ddt-spring) 0.12s both;
+}
+
+.ddt-wc-avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes ddt-wc-pop {
+    from { opacity: 0; transform: scale(0.35) rotate(-14deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* Start-orb style gloss on top of the avatar */
+.ddt-wc-orbgloss {
+    position: absolute;
+    inset: 28px;
+    border-radius: 50%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 72% 44% at 50% 16%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 72%),
+        radial-gradient(ellipse 80% 40% at 50% 104%, rgba(120, 220, 255, 0.4), transparent 70%);
+    animation: ddt-wc-fade 0.5s ease 0.45s both;
+}
+
+/* ---------- Copy ---------- */
+.ddt-wc-copy { min-width: 0; }
+
+.ddt-wc-greet {
+    font-size: 17px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: rgba(225, 240, 255, 0.92);
+    text-shadow: 0 0 12px rgba(120, 200, 255, 0.5);
+    opacity: 0;
+    animation: ddt-wc-fade 0.6s ease 0.25s forwards;
+}
+
+.ddt-wc-greet strong { font-weight: 600; color: #fff; }
+
+.ddt-wc-word {
+    position: relative;
+    margin-top: 8px;
+    font-size: clamp(20px, 3.5vw, 40px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: 0.2em;
+    white-space: nowrap;
+    color: #fff;
+    text-shadow:
+        0 0 14px rgba(var(--ddt-glow), 0.95),
+        0 0 36px rgba(88, 101, 242, 0.65),
+        0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.ddt-wc-l {
+    display: inline-block;
+    white-space: pre;
+    animation: ddt-wc-letter var(--ddt-spring-ms) var(--ddt-spring) calc(0.38s + var(--i) * 42ms) both;
+}
+
+@keyframes ddt-wc-letter {
+    from { opacity: 0; transform: translate3d(0, 26px, 0) scale(0.85); filter: blur(10px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* A copy of the wordmark whose only visible part is a sweeping highlight */
+.ddt-wc-shine {
+    position: absolute;
+    inset: 0;
+    white-space: pre;
+    color: transparent;
+    text-shadow: none;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.95) 50%, transparent 62%) 160% 0 / 250% 100% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: ddt-wc-shine 2.6s ease-in-out 1.75s infinite;
+}
+
+@keyframes ddt-wc-shine {
+    0%   { background-position: 160% 0; }
+    70%, 100% { background-position: -60% 0; }
+}
+
+.ddt-wc-sub {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    opacity: 0;
+    animation: ddt-wc-fade 0.6s ease 1.1s forwards;
+}
+
+.ddt-wc-ver {
+    padding: 5px 11px;
+    font: 700 12px/1 var(--ddt-mono);
+    color: #fff;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.08) 50%, rgba(94, 231, 255, 0.2) 51%, rgba(255, 255, 255, 0.14));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 16px rgba(var(--ddt-glow), 0.55);
+    text-shadow: 0 0 8px rgba(120, 210, 255, 0.9);
+}
+
+.ddt-wc-by {
+    font-size: 11.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(200, 225, 255, 0.75);
+}
+
+.ddt-wc-log {
+    margin-top: 16px;
+    font: 500 11.5px/1.75 var(--ddt-mono);
+    color: rgba(170, 255, 205, 0.88);
+}
+
+.ddt-wc-log > div {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    max-width: 330px;
+    animation: ddt-wc-type 0.5s steps(18, end) var(--d) both;
+}
+
+.ddt-wc-log em { font-style: normal; color: rgba(190, 225, 255, 0.8); }
+.ddt-wc-log u { flex: 1; text-decoration: none; border-bottom: 1px dotted rgba(150, 200, 255, 0.35); transform: translateY(-3px); }
+.ddt-wc-log b { font-weight: 700; color: #7dffa9; text-shadow: 0 0 8px rgba(87, 242, 135, 0.7); }
+
+@keyframes ddt-wc-type {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+}
+
+/* ---------- Waveform + progress ---------- */
+.ddt-wc-wave {
+    display: block;
+    width: calc(100% - 72px);
+    height: 112px;
+    margin: 6px 36px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.ddt-wc-progress {
+    position: relative;
+    height: 16px;
+    margin: 6px 36px 22px;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: linear-gradient(#0a1020, #1c2740);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 20px rgba(var(--ddt-glow), 0.3);
+}
+
+.ddt-wc-progress i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    overflow: hidden;
+    background: linear-gradient(#b4fbc9 0%, #57f287 48%, #1fc45a 50%, #52e6a0 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45), 0 0 14px rgba(87, 242, 135, 0.8);
+}
+
+.ddt-wc-progress i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 90px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    transform: translate3d(-100%, 0, 0);
+    animation: ddt-wc-pulse 1.1s ease-in-out infinite;
+}
+
+.ddt-wc-progress::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 50% 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+}
+
+@keyframes ddt-wc-pulse { to { transform: translate3d(900px, 0, 0); } }
+
+.ddt-wc-hint {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgba(200, 225, 255, 0.45);
+    opacity: 0;
+    animation: ddt-wc-fade 0.8s ease 1.4s forwards;
+}
+
+@keyframes ddt-wc-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Quality / accessibility variants ---------- */
+.ddt-wc--lite .ddt-wc-panel {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: linear-gradient(160deg, rgba(40, 60, 120, 0.82), rgba(14, 20, 48, 0.9));
+}
+
+.ddt-wc--balanced .ddt-wc-panel {
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+}
+
+.ddt-wc--reduced .ddt-wc-fx,
+.ddt-wc--reduced .ddt-wc-wave,
+.ddt-wc--reduced .ddt-wc-scan,
+.ddt-wc--reduced .ddt-wc-floor,
+.ddt-wc--reduced .ddt-wc-flash {
+    display: none;
+}
+
+.ddt-wc--reduced *,
+.ddt-wc--reduced *::before,
+.ddt-wc--reduced *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+}
+
+@media (max-width: 720px) {
+    .ddt-wc-body { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 22px 20px 4px; gap: 18px; }
+    .ddt-wc-orb { width: 168px; height: 168px; }
+    .ddt-wc-avatar, .ddt-wc-orbgloss { inset: 22px; }
+    .ddt-wc-sub { justify-content: center; }
+    .ddt-wc-log { display: none; }
+    .ddt-wc-corner { display: none; }
+    .ddt-wc-wave { width: calc(100% - 40px); margin: 6px 20px 0; height: 84px; }
+    .ddt-wc-progress { margin: 6px 20px 18px; }
+}

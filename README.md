@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://discord.gg/AVFfV8fXAN"><img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Server"></a>
   <a href="https://github.com/asrarkhann116-ops/DDT-Custom-Client"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repo"></a>
-  <img src="https://img.shields.io/badge/Version-2.0.0-5865F2?style=for-the-badge" alt="Version 2.0.0">
+  <img src="https://img.shields.io/badge/Version-2.0.0-5865F2?style=for-the-badge" alt="Version3.0.0">
   <img src="https://img.shields.io/badge/Plugins-290+-3DDBB8?style=for-the-badge&labelColor=181717" alt="290+ Plugins">
   <img src="https://img.shields.io/badge/Node.js-22+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 22+">
   <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge" alt="GPL-3.0 License">

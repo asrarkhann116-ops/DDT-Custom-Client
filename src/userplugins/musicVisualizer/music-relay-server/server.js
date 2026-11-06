@@ -56,7 +56,7 @@ function getYouTubeAudio(videoId) {
             '--no-warnings',
             '--quiet',
             `https://www.youtube.com/watch?v=${videoId}`
-        ], { timeout: 30000 }, (err, stdout, stderr) => {
+        ], { timeout: 30000, windowsHide: true }, (err, stdout, stderr) => {
             if (err) {
                 console.error('[Music] yt-dlp extraction failed:', stderr?.trim() || err.message);
                 reject(new Error(`yt-dlp failed: ${stderr?.trim() || err.message}`));
@@ -232,6 +232,36 @@ app.get('/', (req, res) => {
     res.json({ status: 'online', service: 'DDT Local Music Relay Server', port: PORT });
 });
 
-app.listen(PORT, '127.0.0.1', () => {
-    console.log(`🎵 DDT Music Relay Server running at http://127.0.0.1:${PORT}`);
-});
+let serverInstance = null;
+
+function startServer(port = PORT) {
+    if (serverInstance) return serverInstance;
+    try {
+        serverInstance = app.listen(port, '127.0.0.1', () => {
+            console.log(`🎵 DDT Music Relay Server running at http://127.0.0.1:${port}`);
+        });
+        serverInstance.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                console.log(`[Music Local Server] Port ${port} already bound — adopting running instance`);
+            } else {
+                console.error('[Music Local Server] Server error:', err);
+            }
+        });
+    } catch (e) {
+        console.warn('[Music Local Server] Listen failed:', e);
+    }
+    return serverInstance;
+}
+
+function stopServer() {
+    if (serverInstance) {
+        try { serverInstance.close(); } catch {}
+        serverInstance = null;
+    }
+}
+
+if (require.main === module) {
+    startServer();
+}
+
+module.exports = { app, startServer, stopServer, getLyrics, getYouTubeAudio };

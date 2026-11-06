@@ -1,1294 +1,1717 @@
 /*
- * DDT Custom Client - Music Visualizer & Ambient Studio (v3.0 Remastered)
- * Features:
- *  - 40% Opacity Cinematic Discord Background Ambient Engine (Lyrics + EDM Aurora)
- *  - Aero Glass / Windows 7 Cyber HUD with Specular Glare & Glossy Jewel Buttons
- *  - Hybrid 120 FPS Spring-Physics Soundwave Engine (Never freezes, even on CORS/silence)
- *  - Zero-Leak Lifecycle & Instant Audio Cutoff on Stop/Exit
- *  - Floating Draggable Mini-Pill with Live Dancing Waveform
- * Copyright (c) 2026 DDT Team
+ * DDT Music Studio v4 LITE — built for low-end PCs
+ *
+ * Same look as the full edition (beat-synced EDM overlay + kinetic lyrics + pro HUD) but engineered to be cheap:
+ *  - No mix-blend-mode, no backdrop-filter, no blur filters, no per-frame CSS-variable writes, no grain
+ *  - FX canvas renders at a tiny internal resolution (192–384 px wide) and is upscaled by the compositor
+ *  - Hard FPS cap + AUTO governor that measures real frame times and steps down quality tiers by itself
+ *  - Lyric/title animations use transform + opacity only (no layout, no repaint)
+ *  - Beat pulse / shake use the Web Animations API (compositor), never per-frame JS styling
+ *  - Zero allocations in the hot loop (typed-array particles, no gradients per particle)
  */
 
 import "./style.css";
 
-import ErrorBoundary from "@components/ErrorBoundary";
+import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 import { definePluginSettings } from "@api/Settings";
-import { Devs } from "@utils/constants";
+import ErrorBoundary from "@components/ErrorBoundary";
 import definePlugin, { OptionType, PluginNative } from "@utils/types";
 import { React } from "@webpack/common";
-import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
 
-const Native = (VencordNative?.pluginHelpers?.MusicVisualizer || {}) as PluginNative<typeof import("./native")>;
+const Native = (VencordNative?.pluginHelpers?.MusicVisualizer ?? {}) as PluginNative<typeof import("./native")>;
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 const settings = definePluginSettings({
-    enabled: {
+    overlayEnabled: {
         type: OptionType.BOOLEAN,
-        description: "Enable Music Visualizer & Studio Player",
-        default: true
+        description: "Cinematic overlay (EDM FX + kinetic lyrics) on top of Discord",
+        default: true,
+        onChange: () => refreshOverlay()
     },
-    showAmbientBackground: {
+    performance: {
+        type: OptionType.SELECT,
+        description: "Performance mode",
+        options: [
+            { label: "Auto (measures your PC and lowers quality if needed)", value: "auto", default: true },
+            { label: "Balanced (full lite FX, fixed)", value: "balanced" },
+            { label: "Minimal (bars + ring only, 15 FPS)", value: "minimal" },
+            { label: "Text only (lyrics + title card, no canvas)", value: "textonly" },
+        ],
+        onChange: () => { tier = 0; resetGovernor(); refreshOverlay(); }
+    },
+    fpsCap: {
+        type: OptionType.SELECT,
+        description: "FPS cap for all visuals (lower = lighter)",
+        options: [
+            { label: "10 FPS", value: 10 },
+            { label: "15 FPS", value: 15 },
+            { label: "24 FPS", value: 24 },
+            { label: "30 FPS", value: 30, default: true },
+        ]
+    },
+    overlayOpacity: {
+        type: OptionType.SLIDER,
+        description: "EDM FX opacity",
+        markers: [0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1],
+        default: 0.55,
+        stickToMarkers: false
+    },
+    edmIntensity: {
+        type: OptionType.SLIDER,
+        description: "EDM intensity (particles, shockwaves, lasers)",
+        markers: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5],
+        default: 1,
+        stickToMarkers: false
+    },
+    lyricStyle: {
+        type: OptionType.SELECT,
+        description: "Lyric animation style",
+        options: [
+            { label: "Auto (changes per line)", value: "auto", default: true },
+            { label: "Pop", value: "pop" },
+            { label: "Mask reveal", value: "mask" },
+            { label: "Slam", value: "slam" },
+            { label: "Glitch", value: "glitch" },
+            { label: "Cinematic", value: "cinematic" },
+        ]
+    },
+    lyricPosition: {
+        type: OptionType.SELECT,
+        description: "Lyric position",
+        options: [
+            { label: "Center", value: "center", default: true },
+            { label: "Lower third", value: "lower" },
+            { label: "Upper", value: "upper" },
+        ]
+    },
+    lyricScale: {
+        type: OptionType.SLIDER,
+        description: "Lyric size",
+        markers: [0.6, 0.8, 1, 1.2, 1.4, 1.6],
+        default: 1,
+        stickToMarkers: false
+    },
+    screenShake: {
         type: OptionType.BOOLEAN,
-        description: "Show 40% Opacity Cinematic Discord Background Layer (EDM Waves + Drift Lyrics)",
-        default: true
+        description: "Camera shake on heavy kicks (overlay only)",
+        default: false
+    },
+    letterbox: {
+        type: OptionType.BOOLEAN,
+        description: "Cinema letterbox bars",
+        default: false
     },
     visualizerMode: {
         type: OptionType.SELECT,
-        description: "Visualizer Spectrum Aesthetic",
+        description: "HUD visualizer style",
         options: [
-            { label: "Spotify Soundwave (Mirrored)", value: "spotify", default: true },
-            { label: "EDM Neon Spectrum (Stage)", value: "edm" },
-            { label: "Aurora Ribbon (Fluid Sine)", value: "aurora" },
-        ],
-        default: "spotify"
+            { label: "Mirrored pills", value: "spotify", default: true },
+            { label: "Stage bars", value: "edm" },
+            { label: "Aurora line", value: "aurora" },
+        ]
+    },
+    youtubeApiKey: {
+        type: OptionType.STRING,
+        description: "YouTube Data API key (used for search). Restrict/rotate this key — it was hardcoded before.",
+        default: "AIzaSyB_Tw5LU_twNFDYqN9F5yjQAAxEBt5Q4Sk"
     },
     autoStartRelay: {
         type: OptionType.BOOLEAN,
-        description: "Auto-launch Music Relay Server on Discord startup",
+        description: "Start the music relay server when Discord starts (otherwise it starts on first play)",
         default: false
     }
 });
 
-// ─── Constants & Endpoints ───────────────────────────────────────────────────
-const YT_KEY = "AIzaSyB_Tw5LU_twNFDYqN9F5yjQAAxEBt5Q4Sk";
-const MUSIC_SERVER_URL = "http://localhost:3124";
-const STREAM_BASE = `${MUSIC_SERVER_URL}/stream`;
-const LYRICS_PROXY = `${MUSIC_SERVER_URL}/lyrics`;
+// ─── Constants ───────────────────────────────────────────────────────────────
+const RELAY = "http://localhost:3124";
+const STREAM = `${RELAY}/stream`;
+const LYRICS_URL = `${RELAY}/lyrics`;
+const LS_KEY = "ddt-mv-state-v4"; // shared with the full edition so your queue carries over
+const BANDS = 32;
+const LYRIC_LEAD = 0.12;
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
-const Icons = {
-    play: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
-    pause: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`,
-    stop: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>`,
-    prev: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>`,
-    next: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>`,
-    music: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>`,
-    search: `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
-    volume: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`,
-    mute: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`,
-    expand: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3l2.3 2.3-3.89 3.89 1.41 1.41L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 3.89 3.89 1.41-1.41L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 3.89-3.89-1.41-1.41L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-3.89-3.89-1.41 1.41 3.89 3.89L15 21h6v-6z"/></svg>`,
+// Quality tiers. AUTO starts at 0 and only ever steps down.
+interface Tier { fps: number; w: number; ring: number; lasers: number; maxP: number; leaks: boolean; canvas: boolean; }
+const TIERS: Tier[] = [
+    { fps: 30, w: 384, ring: 48, lasers: 4, maxP: 90, leaks: true, canvas: true },
+    { fps: 24, w: 288, ring: 32, lasers: 0, maxP: 36, leaks: false, canvas: true },
+    { fps: 15, w: 192, ring: 24, lasers: 0, maxP: 0, leaks: false, canvas: true },
+    { fps: 10, w: 0, ring: 0, lasers: 0, maxP: 0, leaks: false, canvas: false },
+];
+let tier = 0;
+function activeTier(): number {
+    const p = settings.store.performance;
+    return p === "balanced" ? 0 : p === "minimal" ? 2 : p === "textonly" ? 3 : tier;
+}
+const effFps = () => Math.min(settings.store.fpsCap || 30, TIERS[activeTier()].fps);
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface SongItem { title: string; artist: string; videoId: string; thumb: string; }
+interface LyricLine { time: number; text: string; }
+type Repeat = "off" | "all" | "one";
+type TabId = "search" | "lyrics" | "queue" | "fx";
+type LyricsState = "idle" | "loading" | "synced" | "plain" | "none";
+
+interface Persist {
+    vol: number; muted: boolean;
+    hud: { x: number; y: number }; mini: { x: number; y: number };
+    repeat: Repeat; shuffle: boolean; tab: TabId;
+    queue: SongItem[]; queueIdx: number;
+}
+const P: Persist = {
+    vol: 0.8, muted: false,
+    hud: { x: 120, y: 80 }, mini: { x: Math.max(16, window.innerWidth - 340), y: Math.max(16, window.innerHeight - 84) },
+    repeat: "all", shuffle: false, tab: "search", queue: [], queueIdx: 0
 };
 
-// ─── Interfaces ──────────────────────────────────────────────────────────────
-interface SongItem {
-    title: string;
-    videoId: string;
-    thumb: string;
-    artist?: string;
+function loadPersist() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+        if (raw && typeof raw === "object") {
+            if (typeof raw.vol === "number") P.vol = clamp(raw.vol, 0, 1);
+            if (typeof raw.muted === "boolean") P.muted = raw.muted;
+            if (raw.hud && isFinite(raw.hud.x) && isFinite(raw.hud.y)) P.hud = raw.hud;
+            if (raw.mini && isFinite(raw.mini.x) && isFinite(raw.mini.y)) P.mini = raw.mini;
+            if (["off", "all", "one"].includes(raw.repeat)) P.repeat = raw.repeat;
+            if (typeof raw.shuffle === "boolean") P.shuffle = raw.shuffle;
+            if (["search", "lyrics", "queue", "fx"].includes(raw.tab)) P.tab = raw.tab;
+            if (Array.isArray(raw.queue)) P.queue = raw.queue.filter((s: any) => s && typeof s.videoId === "string").slice(0, 200);
+            if (typeof raw.queueIdx === "number") P.queueIdx = clamp(raw.queueIdx | 0, 0, Math.max(0, P.queue.length - 1));
+        }
+    } catch { /* corrupted state — ignore */ }
+}
+function savePersist() { try { localStorage.setItem(LS_KEY, JSON.stringify(P)); } catch { /* ignore */ } }
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function clamp(v: number, a: number, b: number) { return v < a ? a : v > b ? b : v; }
+const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+const byId = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+const HTML_ESC: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" };
+const esc = (s: string) => String(s ?? "").replace(/[&<>"']/g, c => HTML_ESC[c]);
+function decodeEntities(s: string) { const t = document.createElement("textarea"); t.innerHTML = s; return t.value; }
+function fmt(sec: number) {
+    if (!isFinite(sec) || sec < 0) return "0:00";
+    return `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+}
+const hsla = (h: number, s: number, l: number, a = 1) =>
+    `hsla(${(((h % 360) + 360) % 360) | 0},${s}%,${l}%,${clamp(a, 0, 1).toFixed(2)})`;
+const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+function rrect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+    const rr = Math.min(r, w / 2, h / 2);
+    if ((ctx as any).roundRect) { (ctx as any).roundRect(x, y, w, h, rr); return; }
+    ctx.rect(x, y, w, h);
 }
 
-interface LyricLine {
-    time: number;
-    text: string;
-}
+const ic = (size: number, d: string) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
+const Icons = {
+    play: ic(18, "M8 5v14l11-7z"),
+    pause: ic(18, "M6 19h4V5H6v14zm8-14v14h4V5h-4z"),
+    stop: ic(14, "M6 6h12v12H6z"),
+    prev: ic(18, "M6 6h2v12H6zm3.5 6l8.5 6V6z"),
+    next: ic(18, "M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"),
+    music: ic(18, "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"),
+    search: ic(16, "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"),
+    volume: ic(18, "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"),
+    mute: ic(18, "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"),
+    expand: ic(14, "M15 3l2.3 2.3-3.89 3.89 1.41 1.41L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 3.89 3.89 1.41-1.41L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 3.89-3.89-1.41-1.41L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-3.89-3.89-1.41 1.41 3.89 3.89L15 21h6v-6z"),
+    shuffle: ic(16, "M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"),
+    repeat: ic(16, "M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"),
+    repeatOne: ic(16, "M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"),
+    close: ic(14, "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"),
+    minimize: ic(14, "M6 19h12v2H6z"),
+    add: ic(15, "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"),
+    trash: ic(15, "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"),
+    sparkle: ic(15, "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"),
+};
 
-// ─── Global State ─────────────────────────────────────────────────────────────
-let overlayEl: HTMLDivElement | null = null;
-let ambientEl: HTMLDivElement | null = null;
-let miniPillEl: HTMLDivElement | null = null;
+// ─── Runtime state ───────────────────────────────────────────────────────────
+let hudEl: HTMLDivElement | null = null;
+let miniEl: HTMLDivElement | null = null;
+let ovEl: HTMLDivElement | null = null;
+let fxCanvas: HTMLCanvasElement | null = null;
+let fxCtx: CanvasRenderingContext2D | null = null;
+let hudCanvas: HTMLCanvasElement | null = null;
+let miniCanvas: HTMLCanvasElement | null = null;
+let resizeObs: ResizeObserver | null = null;
+
 let audioEl: HTMLAudioElement | null = null;
 let audioCtx: AudioContext | null = null;
-let gainNode: GainNode | null = null;
+let srcNode: MediaElementAudioSourceNode | null = null;
 let analyser: AnalyserNode | null = null;
-let audioSourceNode: MediaElementAudioSourceNode | null = null;
+let gainNode: GainNode | null = null;
+let freqBuf: Uint8Array | null = null;
 
-let isPlaying = false;
-let isMuted = false;
-let vol = 0.8;
 let currentSong: SongItem | null = null;
-let queue: SongItem[] = [];
-let queueIdx = 0;
-let searchResults: SongItem[] = [];
-let activeTab: "search" | "lyrics" | "queue" = "search";
-let lyrics: LyricLine[] = [];
-let currentLyricIdx = -1;
+let isPlaying = false;
+let stopped = true;
+let playToken = 0;
+let retryCount = 0;
+let pauseTimer: ReturnType<typeof setTimeout> | null = null;
 
-let hudAnimFrameId: number | null = null;
-let ambientAnimFrameId: number | null = null;
-let miniAnimFrameId: number | null = null;
+let searchResults: SongItem[] = [];
+let lyrics: LyricLine[] = [];
+let plainLyrics = "";
+let lyricsState: LyricsState = "idle";
+let lyricIdx = -1;
 
 let serverReady = false;
-let serverPollTimer: ReturnType<typeof setInterval> | null = null;
+let relayPromise: Promise<boolean> | null = null;
+let pollTimer: ReturnType<typeof setInterval> | null = null;
+let started = false;
 
-// Spring physics state for 42 visualizer bars
-const BAR_COUNT = 42;
-const barHeights = new Float32Array(BAR_COUNT);
-const barTargets = new Float32Array(BAR_COUNT);
-const barPeaks = new Float32Array(BAR_COUNT);
+let scrubbing = false;
+let scrubPreview = 0;
 
-// Window drag state
-let hudPos = { x: 120, y: 90 };
-let hudDrag = { active: false, ox: 0, oy: 0 };
-let miniPos = { x: window.innerWidth - 320, y: window.innerHeight - 80 };
-let miniDrag = { active: false, ox: 0, oy: 0 };
-
-// ─── Helper Functions ─────────────────────────────────────────────────────────
-function formatTime(sec: number): string {
-    if (isNaN(sec) || sec < 0) return "0:00";
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-// ─── Server Relay Management ──────────────────────────────────────────────────
+// ─── Relay management ────────────────────────────────────────────────────────
 async function checkServer(): Promise<boolean> {
     try {
-        const r = await fetch(`${MUSIC_SERVER_URL}/health`, { signal: AbortSignal.timeout(1200) });
+        const r = await fetch(`${RELAY}/health`, { signal: AbortSignal.timeout(1200) });
         return r.ok;
-    } catch {
-        return false;
-    }
+    } catch { return false; }
 }
 
-function updateServerBadge(ready: boolean) {
-    serverReady = ready;
-    const dot = document.getElementById("ddt-srv-dot");
-    const label = document.getElementById("ddt-srv-label");
-    if (dot) {
-        dot.style.background = ready ? "#23a559" : "#da373c";
-        dot.style.color = ready ? "#23a559" : "#da373c";
-    }
-    if (label) {
-        label.textContent = ready ? "Relay Online" : "Relay Offline";
-        label.style.color = ready ? "#23a559" : "#da373c";
-    }
+function setRelayBadge(ok: boolean) {
+    serverReady = ok;
+    byId("ddt-relay")?.classList.toggle("online", ok);
+    const l = byId("ddt-relay-label");
+    if (l) l.textContent = ok ? "Relay online" : "Relay offline";
 }
 
-function startServerPoll() {
-    if (serverPollTimer) return;
-    serverPollTimer = setInterval(async () => {
-        const ok = await checkServer();
-        if (ok !== serverReady) updateServerBadge(ok);
-    }, 3500);
-}
-
-function stopServerPoll() {
-    if (serverPollTimer) {
-        clearInterval(serverPollTimer);
-        serverPollTimer = null;
-    }
-}
-
-async function handleStartRelay(): Promise<boolean> {
-    try {
-        await Native?.startServer?.();
-        for (let tries = 0; tries < 15; tries++) {
-            await new Promise(r => setTimeout(r, 600));
-            const ok = await checkServer();
-            if (ok) {
-                updateServerBadge(true);
-                return true;
+function ensureRelay(): Promise<boolean> {
+    if (relayPromise) return relayPromise;
+    relayPromise = (async () => {
+        try {
+            if (await checkServer()) { setRelayBadge(true); return true; }
+            setStatus("Starting relay…", true);
+            await Native?.startServer?.();
+            for (let i = 0; i < 20; i++) {
+                if (await checkServer()) { setRelayBadge(true); return true; }
+                await sleep(400);
             }
-        }
-    } catch (e) {
-        console.error("[DDT Music] Start server failed:", e);
-    }
-    return false;
+        } catch (e) { console.error("[DDT Music] relay start failed:", e); }
+        setRelayBadge(false);
+        return false;
+    })().finally(() => { relayPromise = null; });
+    return relayPromise;
 }
 
-// ─── Audio Engine & Gain Ramp ─────────────────────────────────────────────────
-function setupAudioGraph() {
+function startPoll() {
+    if (pollTimer) return;
+    // Slow poll — only needed so the badge flips when the relay dies; skipped entirely while the HUD is closed.
+    pollTimer = setInterval(async () => {
+        if (!hudEl || hudEl.classList.contains("hidden")) return;
+        const ok = await checkServer();
+        if (ok !== serverReady) setRelayBadge(ok);
+    }, 6000);
+}
+function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+// ─── Audio graph (source → analyser → gain → out) ────────────────────────────
+const bands = new Float32Array(BANDS);
+const peaks = new Float32Array(BANDS);
+const tmpTargets = new Float32Array(BANDS);
+let bandRanges: Array<[number, number]> = [];
+let bassR: [number, number] = [1, 4], midR: [number, number] = [4, 40], highR: [number, number] = [40, 200];
+
+function buildBands() {
+    if (!audioCtx || !analyser) return;
+    const binHz = audioCtx.sampleRate / analyser.fftSize;
+    const fmin = 50, fmax = Math.min(14000, audioCtx.sampleRate / 2 - 100);
+    const edge = (i: number) => fmin * Math.pow(fmax / fmin, i / BANDS);
+    bandRanges = [];
+    for (let i = 0; i < BANDS; i++) {
+        const b0 = Math.max(1, Math.floor(edge(i) / binHz));
+        const b1 = Math.max(b0 + 1, Math.ceil(edge(i + 1) / binHz));
+        bandRanges.push([b0, b1]);
+    }
+    const r = (f0: number, f1: number): [number, number] => [Math.max(1, Math.floor(f0 / binHz)), Math.max(2, Math.ceil(f1 / binHz))];
+    bassR = r(40, 160); midR = r(160, 2000); highR = r(2000, 12000);
+}
+
+function ensureAudio() {
     if (!audioEl) {
-        audioEl = new Audio();
-        audioEl.crossOrigin = "anonymous";
-        audioEl.volume = vol;
-        wireAudioEvents();
+        const a = new Audio();
+        a.crossOrigin = "anonymous";
+        a.preload = "auto";
+        audioEl = a;
+
+        a.addEventListener("play", () => { isPlaying = true; onPlayState(); });
+        a.addEventListener("playing", () => { retryCount = 0; setStatus("", false); isPlaying = true; onPlayState(); });
+        a.addEventListener("pause", () => { isPlaying = false; onPlayState(); });
+        a.addEventListener("waiting", () => setStatus("Buffering…", true));
+        a.addEventListener("ended", onEnded);
+        a.addEventListener("error", () => {
+            if (!a.getAttribute("src") || !currentSong) return;
+            if (retryCount < 1) {
+                retryCount++;
+                const resumeAt = a.currentTime;
+                const song = currentSong;
+                setStatus("Reconnecting…", true);
+                ensureRelay().then(ok => {
+                    if (!ok || !audioEl || currentSong !== song) { setStatus("Stream error — relay unreachable", false); return; }
+                    audioEl.src = `${STREAM}/${encodeURIComponent(song.videoId)}`;
+                    audioEl.addEventListener("loadedmetadata", () => { if (audioEl && resumeAt > 1) audioEl.currentTime = resumeAt; }, { once: true });
+                    audioEl.play().catch(() => { });
+                });
+            } else {
+                isPlaying = false; onPlayState();
+                setStatus("Stream error — try another track", false);
+            }
+        });
     }
 
-    try {
-        if (!audioCtx) {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-            audioCtx = new AudioContextClass();
-        }
+    if (!audioCtx) {
+        try {
+            const AC = window.AudioContext || (window as any).webkitAudioContext;
+            audioCtx = new AC({ latencyHint: "playback" }); // larger buffers = fewer glitches on slow CPUs
+        } catch (e) { console.warn("[DDT Music] AudioContext unavailable:", e); }
+    }
 
-        if (audioCtx.state === "suspended") {
-            audioCtx.resume().catch(() => {});
-        }
-
-        if (!audioSourceNode && audioCtx && audioEl) {
-            audioSourceNode = audioCtx.createMediaElementSource(audioEl);
-            gainNode = audioCtx.createGain();
+    if (audioCtx && audioEl && !srcNode) {
+        try {
+            srcNode = audioCtx.createMediaElementSource(audioEl);
             analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 128;
-            analyser.smoothingTimeConstant = 0.8;
-
-            audioSourceNode.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            gainNode.gain.setValueAtTime(isMuted ? 0 : vol, audioCtx.currentTime);
+            analyser.fftSize = 1024;
+            analyser.smoothingTimeConstant = 0.4;
+            analyser.minDecibels = -85;
+            analyser.maxDecibels = -20;
+            gainNode = audioCtx.createGain();
+            srcNode.connect(analyser);
+            analyser.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            freqBuf = new Uint8Array(analyser.frequencyBinCount);
+            buildBands();
+            applyVolume(true);
+        } catch (e) {
+            console.warn("[DDT Music] audio graph failed — plain playback:", e);
+            srcNode = null; analyser = null; gainNode = null;
         }
-    } catch (e) {
-        console.warn("[DDT Music] AudioGraph init warning:", e);
     }
 }
 
-function rampGain(targetVal: number, durationSec = 0.15) {
-    if (!gainNode || !audioCtx) return;
-    try {
+const gainFor = () => (P.muted ? 0 : P.vol * P.vol);
+
+function applyVolume(instant = false, dur = 0.08) {
+    if (gainNode && audioCtx) {
         const now = audioCtx.currentTime;
-        gainNode.gain.cancelScheduledValues(now);
-        gainNode.gain.setValueAtTime(gainNode.gain.value, now);
-        gainNode.gain.linearRampToValueAtTime(targetVal, now + durationSec);
-    } catch {}
+        const g = gainNode.gain;
+        g.cancelScheduledValues(now);
+        g.setValueAtTime(g.value, now);
+        if (instant) g.setValueAtTime(gainFor(), now);
+        else g.linearRampToValueAtTime(gainFor(), now + dur);
+        if (audioEl) audioEl.volume = 1;
+    } else if (audioEl) audioEl.volume = gainFor();
 }
 
-function wireAudioEvents() {
-    if (!audioEl) return;
-
-    audioEl.ontimeupdate = () => {
-        if (!audioEl) return;
-        const cur = audioEl.currentTime;
-        const dur = audioEl.duration || 0;
-        const pct = dur > 0 ? (cur / dur) * 100 : 0;
-
-        const curLabel = document.getElementById("ddt-time-current");
-        const totalLabel = document.getElementById("ddt-time-duration");
-        const fill = document.getElementById("ddt-progress-fill") as HTMLElement | null;
-
-        if (curLabel) curLabel.textContent = formatTime(cur);
-        if (totalLabel) totalLabel.textContent = formatTime(dur);
-        if (fill) fill.style.width = `${pct}%`;
-
-        syncLyrics(cur);
-    };
-
-    audioEl.onended = () => {
-        playNext();
-    };
-
-    audioEl.onpause = () => {
-        isPlaying = false;
-        updatePlayStateUI();
-    };
-
-    audioEl.onplay = () => {
-        isPlaying = true;
-        updatePlayStateUI();
-        startVisualizerLoops();
-    };
-
-    audioEl.onerror = () => {
-        console.warn("[DDT Music] Audio stream error — attempting retry");
-        updateStatusMessage("Playback error — stream disconnected", true);
-        isPlaying = false;
-        updatePlayStateUI();
-    };
+function fadeOut(dur = 0.08) {
+    if (!gainNode || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.linearRampToValueAtTime(0, now + dur);
 }
 
-// ─── Playback Controls ───────────────────────────────────────────────────────
+// ─── Playback ────────────────────────────────────────────────────────────────
+const streamUrl = (s: SongItem) => `${STREAM}/${encodeURIComponent(s.videoId)}`;
+
 async function playSong(song: SongItem) {
-    currentSong = song;
-    setupAudioGraph();
-
+    const token = ++playToken;
+    ensureAudio();
     if (!audioEl) return;
+    if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
 
-    // Smooth fade out old track
-    rampGain(0, 0.1);
+    if (isPlaying) { fadeOut(0.06); await sleep(70); if (token !== playToken) return; }
 
-    updateHeroUI(song);
-    updateStatusMessage("Buffering high-fidelity stream...", true);
+    currentSong = song;
+    stopped = false;
+    retryCount = 0;
+    lyrics = []; plainLyrics = ""; lyricsState = "loading"; lyricIdx = -1;
+    syncNowPlayingUI();
+    renderLyricsTab();
+    showOverlayLine(-1);
+    refreshOverlay();
+    triggerLowerThird();
+    updateMediaSession();
+    setStatus("Connecting…", true);
 
     if (!serverReady) {
-        updateStatusMessage("Starting audio relay server...", true);
-        const ok = await handleStartRelay();
-        if (!ok) {
-            updateStatusMessage("Audio relay failed to start — check console", false);
-            return;
-        }
+        const ok = await ensureRelay();
+        if (token !== playToken) return;
+        if (!ok) { setStatus("Relay offline — click the relay badge to retry", false); return; }
     }
 
-    const streamUrl = `${STREAM_BASE}/${song.videoId}`;
-    audioEl.src = streamUrl;
+    audioEl.src = streamUrl(song);
     audioEl.load();
-
-    // Fetch synced lyrics in parallel
-    fetchLyrics(song.title, song.artist);
+    void fetchLyrics(song, token);
 
     try {
-        if (audioCtx && audioCtx.state === "suspended") {
-            await audioCtx.resume();
-        }
+        await audioCtx?.resume();
+        applyVolume(true);
         await audioEl.play();
-        isPlaying = true;
-        rampGain(isMuted ? 0 : vol, 0.2);
-        updateStatusMessage("", false);
-        updatePlayStateUI();
-        startVisualizerLoops();
-    } catch (err) {
-        console.error("[DDT Music] Audio play error:", err);
-        updateStatusMessage("Click Play to start stream", false);
+    } catch (e: any) {
+        if (token !== playToken || e?.name === "AbortError") return;
+        console.warn("[DDT Music] play() rejected:", e);
+        setStatus("Press play to start", false);
+    }
+}
+
+function togglePlay() {
+    if (!audioEl || !audioEl.getAttribute("src")) {
+        const s = currentSong ?? P.queue[P.queueIdx] ?? P.queue[0];
+        if (s) void playSong(s);
+        return;
+    }
+    if (audioEl.paused) {
+        if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+        void audioCtx?.resume();
+        audioEl.play().catch(() => { });
+        applyVolume(false, 0.12);
+    } else {
+        fadeOut(0.08);
+        pauseTimer = setTimeout(() => { pauseTimer = null; audioEl?.pause(); }, 90);
     }
 }
 
 function stopPlayback() {
-    rampGain(0, 0.1);
+    const tok = ++playToken;
+    if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+    fadeOut(0.06);
+    const a = audioEl;
     setTimeout(() => {
-        if (audioEl) {
-            audioEl.pause();
-            audioEl.currentTime = 0;
-            audioEl.src = "";
-        }
-        isPlaying = false;
-        updatePlayStateUI();
-        resetBarHeights();
-    }, 120);
+        if (!a || tok !== playToken) return;
+        a.pause();
+        a.removeAttribute("src");
+        a.load();
+    }, 70);
+    isPlaying = false;
+    stopped = true;
+    lyricIdx = -1;
+    showOverlayLine(-1);
+    onPlayState();
+    refreshOverlay();
+    setStatus("", false);
+    kick();
 }
 
-function togglePlay() {
-    if (!audioEl || !audioEl.src) {
-        if (queue.length > 0) playSong(queue[0]);
-        return;
-    }
-    if (isPlaying) {
-        rampGain(0, 0.15);
-        setTimeout(() => audioEl?.pause(), 140);
-    } else {
-        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-        audioEl.play().then(() => {
-            rampGain(isMuted ? 0 : vol, 0.15);
-        }).catch(() => {});
-    }
+function onEnded() {
+    if (P.repeat === "one" && currentSong) { void playSong(currentSong); return; }
+    const last = P.queueIdx >= P.queue.length - 1;
+    if (P.repeat === "off" && last && !P.shuffle) { stopPlayback(); return; }
+    playNext();
+}
+
+function playAt(i: number) {
+    if (!P.queue.length) return;
+    P.queueIdx = ((i % P.queue.length) + P.queue.length) % P.queue.length;
+    savePersist();
+    void playSong(P.queue[P.queueIdx]);
+    renderQueueTab();
 }
 
 function playNext() {
-    if (queue.length === 0) return;
-    queueIdx = (queueIdx + 1) % queue.length;
-    playSong(queue[queueIdx]);
+    if (!P.queue.length) return;
+    if (P.shuffle && P.queue.length > 1) {
+        let n = P.queueIdx;
+        while (n === P.queueIdx) n = Math.floor(Math.random() * P.queue.length);
+        playAt(n);
+    } else playAt(P.queueIdx + 1);
 }
 
 function playPrev() {
-    if (queue.length === 0) return;
-    queueIdx = (queueIdx - 1 + queue.length) % queue.length;
-    playSong(queue[queueIdx]);
+    if (audioEl && audioEl.currentTime > 4) { seek(0); return; }
+    if (P.queue.length) playAt(P.queueIdx - 1);
 }
 
 function seek(sec: number) {
-    if (!audioEl || !audioEl.duration) return;
-    audioEl.currentTime = Math.max(0, Math.min(sec, audioEl.duration));
+    if (!audioEl || !isFinite(audioEl.duration) || audioEl.duration <= 0) return;
+    audioEl.currentTime = clamp(sec, 0, audioEl.duration);
+    syncLyrics(true);
+    updateTimeUI(true);
 }
 
-function setVolume(val: number) {
-    vol = Math.max(0, Math.min(1, val));
-    isMuted = false;
-    if (audioEl) audioEl.volume = vol;
-    rampGain(vol, 0.05);
+function setVolume(v: number) {
+    P.vol = clamp(v, 0, 1);
+    if (P.vol > 0) P.muted = false;
+    applyVolume();
+    refreshVolumeUI();
+    savePersist();
+}
+function toggleMute() { P.muted = !P.muted; applyVolume(); refreshVolumeUI(); savePersist(); }
 
-    const slider = document.getElementById("ddt-volume-slider") as HTMLInputElement | null;
-    if (slider) slider.value = String(Math.round(vol * 100));
+function addToQueue(song: SongItem, play = false) {
+    let i = P.queue.findIndex(s => s.videoId === song.videoId);
+    if (i < 0) { P.queue.push(song); i = P.queue.length - 1; }
+    savePersist();
+    if (play) playAt(i); else renderQueueTab();
+    updateQueueBadge();
 }
 
-function toggleMute() {
-    isMuted = !isMuted;
-    if (audioEl) audioEl.muted = isMuted;
-    rampGain(isMuted ? 0 : vol, 0.05);
-    const muteBtn = document.getElementById("ddt-mute-btn");
-    if (muteBtn) muteBtn.innerHTML = isMuted ? Icons.mute : Icons.volume;
+function onPlayState() {
+    const html = isPlaying ? Icons.pause : Icons.play;
+    const p = byId("ddt-play"); if (p) p.innerHTML = html;
+    const m = byId("ddt-mini-play"); if (m) m.innerHTML = html;
+    byId("ddt-music-launcher-btn")?.classList.toggle("playing", isPlaying);
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = isPlaying ? "playing" : (stopped ? "none" : "paused");
+    kick();
 }
 
-// ─── YouTube Search & Lyrics Fetch ───────────────────────────────────────────
-async function doSearch(query: string) {
-    if (!query.trim()) return;
-    updateStatusMessage("Searching YouTube Music...", true);
+// ─── Media session ───────────────────────────────────────────────────────────
+function bindMediaSession() {
+    if (!("mediaSession" in navigator)) return;
+    const ms = navigator.mediaSession;
+    const set = (a: MediaSessionAction, fn: MediaSessionActionHandler | null) => { try { ms.setActionHandler(a, fn); } catch { /* unsupported */ } };
+    set("play", () => { if (!isPlaying) togglePlay(); });
+    set("pause", () => { if (isPlaying) togglePlay(); });
+    set("previoustrack", playPrev);
+    set("nexttrack", playNext);
+    set("stop", stopPlayback);
+}
+function unbindMediaSession() {
+    if (!("mediaSession" in navigator)) return;
+    for (const a of ["play", "pause", "previoustrack", "nexttrack", "stop"] as MediaSessionAction[]) {
+        try { navigator.mediaSession.setActionHandler(a, null); } catch { /* ignore */ }
+    }
+    navigator.mediaSession.metadata = null;
+}
+function updateMediaSession() {
+    if (!("mediaSession" in navigator) || !currentSong) return;
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query + " official audio")}&type=video&videoCategoryId=10&maxResults=12&key=${YT_KEY}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentSong.title, artist: currentSong.artist,
+            artwork: currentSong.thumb ? [{ src: currentSong.thumb }] : []
+        });
+    } catch { /* ignore */ }
+}
+
+// ─── Search & lyrics ─────────────────────────────────────────────────────────
+function parseSong(item: any): SongItem | null {
+    const id = item?.id?.videoId;
+    if (!id) return null;
+    const sn = item.snippet ?? {};
+    const rawTitle = decodeEntities(String(sn.title ?? ""));
+    const channel = decodeEntities(String(sn.channelTitle ?? "")).replace(/\s*-\s*Topic$/i, "").replace(/VEVO$/i, "").trim();
+    let title = rawTitle
+        .replace(/\s*[(\[][^)\]]*(official|lyric|audio|video|visuali[sz]er|hd|4k|remaster)[^)\]]*[)\]]/gi, "")
+        .trim();
+    let artist = channel;
+    const parts = title.split(/\s[-–—]\s/);
+    if (parts.length >= 2) { artist = parts[0].trim(); title = parts.slice(1).join(" - ").trim(); }
+    return {
+        title: title || rawTitle, artist, videoId: id,
+        // smallest thumbnail = least decode + memory on weak PCs
+        thumb: sn.thumbnails?.default?.url || sn.thumbnails?.medium?.url || ""
+    };
+}
+
+async function doSearch(query: string) {
+    const q = query.trim();
+    if (!q) return;
+    const key = (settings.store.youtubeApiKey || "").trim();
+    if (!key) { setStatus("Add a YouTube API key in plugin settings", false); return; }
+    setStatus("Searching…", true);
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=12&q=${encodeURIComponent(q)}&key=${encodeURIComponent(key)}`;
+        const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) {
+            setStatus(res.status === 403 ? "YouTube quota exceeded or key restricted" : `Search failed (${res.status})`, false);
+            return;
+        }
         const data = await res.json();
-        searchResults = (data.items || []).map((item: any) => ({
-            title: item.snippet.title.replace(/\(Official.*?\)/gi, "").replace(/\[.*?\]/g, "").trim(),
-            videoId: item.id.videoId,
-            thumb: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || "",
-            artist: item.snippet.channelTitle || ""
-        }));
+        searchResults = (data.items ?? []).map(parseSong).filter(Boolean) as SongItem[];
         renderSearchTab();
-        updateStatusMessage("", false);
+        setStatus(searchResults.length ? "" : "No results", false);
     } catch (e) {
-        console.error("[DDT Music] Search failed:", e);
-        updateStatusMessage("Search failed — check connection", false);
+        console.error("[DDT Music] search failed:", e);
+        setStatus("Search failed — check connection", false);
     }
 }
 
-async function fetchLyrics(rawTitle: string, artist = "") {
-    lyrics = [];
-    currentLyricIdx = -1;
-    renderLyricsTab();
-    updateAmbientLyrics();
+function parseLrc(text: string): LyricLine[] {
+    const out: LyricLine[] = [];
+    for (const raw of text.split(/\r?\n/)) {
+        const stamps = [...raw.matchAll(/\[(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?\]/g)];
+        if (!stamps.length) continue;
+        const line = raw.replace(/\[[^\]]*\]/g, "").replace(/<\d{1,3}:\d{2}(?:\.\d+)?>/g, "").trim();
+        if (!line) continue;
+        for (const m of stamps) {
+            const frac = m[3] ? parseInt(m[3], 10) / Math.pow(10, m[3].length) : 0;
+            out.push({ time: parseInt(m[1], 10) * 60 + parseInt(m[2], 10) + frac, text: line });
+        }
+    }
+    return out.sort((a, b) => a.time - b.time);
+}
 
+async function fetchLyrics(song: SongItem, token: number) {
     try {
-        const cleanTitle = rawTitle.replace(/\(.*?\)/g, "").replace(/\[.*?\]/g, "").trim();
-        const res = await fetch(LYRICS_PROXY, {
+        const res = await fetch(LYRICS_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ track: cleanTitle, artist })
+            body: JSON.stringify({ track: song.title, artist: song.artist }),
+            signal: AbortSignal.timeout(9000)
         });
-        if (!res.ok) return;
-        const data = await res.json();
-
-        if (data?.syncedLyrics) {
-            parseLrc(data.syncedLyrics);
-        } else if (data?.plainLyrics) {
-            lyrics = data.plainLyrics.split("\n").filter(Boolean).map((t: string, i: number) => ({ time: i * 4, text: t.trim() }));
-        }
-        renderLyricsTab();
-        updateAmbientLyrics();
-    } catch (e) {
-        console.warn("[DDT Music] Lyrics fetch note:", e);
+        if (token !== playToken) return;
+        if (res.ok) {
+            const data = await res.json();
+            if (token !== playToken) return;
+            if (data?.syncedLyrics) {
+                lyrics = parseLrc(String(data.syncedLyrics));
+                lyricsState = lyrics.length ? "synced" : "none";
+            } else if (data?.plainLyrics) {
+                plainLyrics = String(data.plainLyrics);
+                lyricsState = "plain";
+            } else lyricsState = "none";
+        } else lyricsState = "none";
+    } catch {
+        if (token !== playToken) return;
+        lyricsState = "none";
     }
+    renderLyricsTab();
+    syncLyrics(true);
 }
 
-function parseLrc(lrcText: string) {
-    const lines = lrcText.split("\n");
-    const parsed: LyricLine[] = [];
-    const reg = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-
-    for (const line of lines) {
-        const m = reg.exec(line);
-        if (m) {
-            const min = parseInt(m[1], 10);
-            const sec = parseInt(m[2], 10);
-            const ms = parseFloat("0." + m[3]);
-            const time = min * 60 + sec + ms;
-            const text = m[4].trim();
-            if (text) parsed.push({ time, text });
-        }
-    }
-    lyrics = parsed.sort((a, b) => a.time - b.time);
-}
-
-function syncLyrics(currTime: number) {
-    if (lyrics.length === 0) return;
-    let idx = -1;
-    for (let i = 0; i < lyrics.length; i++) {
-        if (currTime >= lyrics[i].time) idx = i;
-        else break;
-    }
-
-    if (idx !== currentLyricIdx) {
-        currentLyricIdx = idx;
-        updateActiveLyricUI();
-        updateAmbientLyrics();
-    }
-}
-
-// ─── Hybrid Visualizer & Spring Physics Engine ────────────────────────────────
-function resetBarHeights() {
-    barHeights.fill(0);
-    barTargets.fill(0);
-    barPeaks.fill(0);
-}
-
-function startVisualizerLoops() {
-    if (!hudAnimFrameId) hudAnimFrameId = requestAnimationFrame(renderHUDVisualizer);
-    if (!ambientAnimFrameId) ambientAnimFrameId = requestAnimationFrame(renderAmbientVisualizer);
-    if (!miniAnimFrameId) miniAnimFrameId = requestAnimationFrame(renderMiniVisualizer);
-}
-
-function computeFrequencyTargets() {
-    let hasRealData = false;
-    const freqData = new Uint8Array(analyser ? analyser.frequencyBinCount : 64);
-
-    if (analyser && isPlaying) {
-        analyser.getByteFrequencyData(freqData);
-        for (let i = 0; i < freqData.length; i++) {
-            if (freqData[i] > 0) {
-                hasRealData = true;
-                break;
-            }
-        }
-    }
-
-    const t = audioEl?.currentTime || (Date.now() * 0.003);
-
-    for (let i = 0; i < BAR_COUNT; i++) {
-        let val = 0;
-        if (hasRealData && analyser) {
-            const binIdx = Math.floor((i / BAR_COUNT) * (freqData.length * 0.7));
-            val = freqData[binIdx] / 255;
-        } else if (isPlaying) {
-            // Procedural Beat Synthesizer (120 FPS Fluid Fallback)
-            const bass = Math.sin(t * 8.5) > 0.3 ? 0.75 : 0.2;
-            const waveA = Math.sin(t * 3.2 + i * 0.28) * 0.3;
-            const waveB = Math.cos(t * 5.1 - i * 0.42) * 0.25;
-            val = Math.max(0.08, Math.min(0.95, (i < 8 ? bass * 0.8 : 0.3) + waveA + waveB + 0.3));
-        } else {
-            val = 0;
-        }
-
-        barTargets[i] = val;
-
-        // Damped spring physics LERP
-        barHeights[i] += (barTargets[i] - barHeights[i]) * 0.22;
-
-        // Peak hold gravity fall
-        if (barHeights[i] > barPeaks[i]) {
-            barPeaks[i] = barHeights[i];
-        } else {
-            barPeaks[i] = Math.max(0, barPeaks[i] - 0.008);
-        }
-    }
-}
-
-function renderHUDVisualizer() {
-    if (!overlayEl || overlayEl.style.display === "none") {
-        hudAnimFrameId = null;
+function syncLyrics(force = false) {
+    if (lyricsState !== "synced" || !audioEl || !lyrics.length) {
+        if (lyricIdx !== -1 && lyricsState !== "synced") { lyricIdx = -1; showOverlayLine(-1); }
         return;
     }
+    const t = audioEl.currentTime + LYRIC_LEAD;
+    let lo = 0, hi = lyrics.length - 1, idx = -1;
+    while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (lyrics[mid].time <= t) { idx = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    if (idx !== lyricIdx || force) {
+        lyricIdx = idx;
+        showOverlayLine(idx);
+        markActiveLyric();
+    }
+}
 
-    computeFrequencyTargets();
+// ─── Analysis ────────────────────────────────────────────────────────────────
+const fx = {
+    bass: 0, mid: 0, high: 0, energy: 0,
+    beat: 0, big: 0, maxBand: 0,
+    bassAvg: 0, lastBass: 0, lastBeat: 0,
+    hue: 260, mode: "idle" as "idle" | "live" | "sim",
+    everLive: false, silentFrames: 0
+};
 
-    const canvas = document.getElementById("ddt-main-canvas") as HTMLCanvasElement | null;
-    if (canvas) {
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
+function avgRange(buf: Uint8Array, r: [number, number]) {
+    let s = 0; const e = Math.min(r[1], buf.length);
+    for (let i = r[0]; i < e; i++) s += buf[i];
+    return e > r[0] ? s / ((e - r[0]) * 255) : 0;
+}
 
-            const mode = settings.store.visualizerMode || "spotify";
+function updateAnalysis(dt: number, now: number) {
+    const targets = tmpTargets;
+    let bass = 0, mid = 0, high = 0;
+    let live = false;
 
-            if (mode === "spotify") {
-                // Mirrored rounded pill bars with Spotify White/Green glow
-                const barW = Math.floor(w / BAR_COUNT) - 2;
-                for (let i = 0; i < BAR_COUNT; i++) {
-                    const bh = barHeights[i] * (h * 0.75);
-                    const x = i * (barW + 2) + 2;
-                    const y = (h - bh) / 2;
+    if (analyser && freqBuf && isPlaying) {
+        analyser.getByteFrequencyData(freqBuf as any);
+        let sum = 0; for (let i = 1; i < 48; i++) sum += freqBuf[i];
+        live = sum > 0;
+    }
 
-                    const grad = ctx.createLinearGradient(0, y, 0, y + bh);
-                    grad.addColorStop(0, "#ffffff");
-                    grad.addColorStop(0.5, "#80eec0");
-                    grad.addColorStop(1, "#1db954");
-
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.roundRect(x, y, barW, Math.max(3, bh), [4, 4, 4, 4]);
-                    ctx.fill();
-                }
-            } else if (mode === "edm") {
-                // Stage EDM bars with peak dots & bottom glow
-                const barW = Math.floor(w / BAR_COUNT) - 1;
-                for (let i = 0; i < BAR_COUNT; i++) {
-                    const bh = barHeights[i] * (h * 0.85);
-                    const x = i * (barW + 1);
-                    const y = h - bh;
-
-                    const grad = ctx.createLinearGradient(0, y, 0, h);
-                    grad.addColorStop(0, "#ffffff");
-                    grad.addColorStop(0.4, "#1db954");
-                    grad.addColorStop(1, "rgba(29, 185, 84, 0.15)");
-
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(x, y, barW, bh);
-
-                    // Peak dot
-                    const py = h - (barPeaks[i] * (h * 0.85)) - 3;
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(x, Math.max(0, py), barW, 2);
-                }
-            } else {
-                // Aurora Sine Wave Ribbon
-                ctx.beginPath();
-                ctx.moveTo(0, h / 2);
-                for (let i = 0; i < BAR_COUNT; i++) {
-                    const x = (i / (BAR_COUNT - 1)) * w;
-                    const y = (h / 2) + Math.sin(i * 0.4 + (Date.now() * 0.004)) * (barHeights[i] * (h * 0.45));
-                    ctx.lineTo(x, y);
-                }
-                ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 3;
-                ctx.shadowColor = "#1db954";
-                ctx.shadowBlur = 14;
-                ctx.stroke();
-                ctx.shadowBlur = 0;
+    if (live && freqBuf) {
+        fx.everLive = true; fx.silentFrames = 0; fx.mode = "live";
+        for (let i = 0; i < BANDS; i++) {
+            const [b0, b1] = bandRanges[i] ?? [1, 2];
+            let s = 0; for (let k = b0; k < b1 && k < freqBuf.length; k++) s += freqBuf[k];
+            const v = s / (Math.max(1, b1 - b0) * 255);
+            targets[i] = Math.pow(clamp(v * (0.8 + 0.55 * (i / BANDS)), 0, 1), 1.35);
+        }
+        bass = Math.pow(avgRange(freqBuf, bassR), 1.2);
+        mid = Math.pow(avgRange(freqBuf, midR), 1.3);
+        high = Math.pow(avgRange(freqBuf, highR), 1.4) * 1.4;
+    } else if (isPlaying) {
+        fx.silentFrames++;
+        // Analyser never produced data (relay without CORS headers) → clearly synthetic fallback at 124 BPM
+        if (!fx.everLive && fx.silentFrames > 45) {
+            fx.mode = "sim";
+            const t = (audioEl?.currentTime ?? now / 1000);
+            const kickEnv = Math.exp(-((t * 124 / 60) % 1) * 6);
+            for (let i = 0; i < BANDS; i++) {
+                const w = 0.28 + 0.22 * Math.sin(t * 2.7 + i * 0.5) + 0.14 * Math.cos(t * 4.3 - i * 0.8);
+                targets[i] = clamp(w + (i < 7 ? kickEnv * 0.55 : kickEnv * 0.08), 0, 1);
             }
+            bass = kickEnv * 0.85; mid = 0.35 + 0.15 * Math.sin(t * 3); high = 0.25 + 0.12 * Math.sin(t * 5.1);
+        } else targets.fill(0);
+    } else {
+        fx.mode = "idle";
+        targets.fill(0);
+    }
+
+    // Frame-rate independent smoothing (dt is large at low FPS)
+    const up = 1 - Math.exp(-dt * 38), down = 1 - Math.exp(-dt * 9);
+    let mx = 0;
+    for (let i = 0; i < BANDS; i++) {
+        bands[i] += (targets[i] - bands[i]) * (targets[i] > bands[i] ? up : down);
+        if (bands[i] > peaks[i]) peaks[i] = bands[i]; else peaks[i] = Math.max(0, peaks[i] - dt * 0.45);
+        if (bands[i] > mx) mx = bands[i];
+    }
+    fx.maxBand = mx;
+
+    const sm = (cur: number, tgt: number) => cur + (tgt - cur) * (tgt > cur ? up : down);
+    fx.bass = sm(fx.bass, bass); fx.mid = sm(fx.mid, mid); fx.high = sm(fx.high, high);
+    fx.energy += (fx.bass * 0.5 + fx.mid * 0.35 + fx.high * 0.15 - fx.energy) * (1 - Math.exp(-dt * 0.7));
+
+    fx.bassAvg += (bass - fx.bassAvg) * (1 - Math.exp(-dt * 1.6));
+    const thr = fx.bassAvg * 1.22 + 0.06;
+    if (isPlaying && fx.mode !== "idle" && bass > thr && bass - fx.lastBass > 0.012 && now - fx.lastBeat > 190) {
+        fx.lastBeat = now;
+        const strength = clamp((bass - thr) / 0.25 + 0.5, 0.4, 1.4);
+        fx.beat = Math.max(fx.beat, Math.min(1, strength));
+        if (strength > 0.95) fx.big = 1;
+        onBeat(strength);
+    }
+    fx.lastBass = bass;
+    fx.beat *= Math.exp(-dt * 6.5);
+    fx.big *= Math.exp(-dt * 4);
+
+    fx.hue = 255 + 75 * Math.sin(now * 0.00018) + fx.high * 25;
+}
+
+// ─── FX engine (tiny canvas, no gradients per particle, no blend modes) ──────
+const MAXP = 90;
+const pX = new Float32Array(MAXP), pY = new Float32Array(MAXP), pVX = new Float32Array(MAXP), pVY = new Float32Array(MAXP);
+const pLife = new Float32Array(MAXP), pMax = new Float32Array(MAXP), pSize = new Float32Array(MAXP), pHue = new Float32Array(MAXP);
+let pCount = 0;
+const rings: Array<{ r: number; a: number; v: number }> = [];
+const pal: string[] = ["", "", "", "", ""]; // precomputed particle colours (no string building per particle)
+let palHueKey = -999;
+
+function refreshPalette(hue: number) {
+    const key = Math.round(hue / 6);
+    if (key === palHueKey) return;
+    palHueKey = key;
+    for (let i = 0; i < pal.length; i++) pal[i] = hsla(hue + i * 22 - 20, 100, 72, 1);
+}
+
+function spawnP(x: number, y: number, vx: number, vy: number, life: number, size: number, hue: number) {
+    if (pCount >= Math.min(MAXP, TIERS[activeTier()].maxP)) return;
+    const i = pCount++;
+    pX[i] = x; pY[i] = y; pVX[i] = vx; pVY[i] = vy; pLife[i] = life; pMax[i] = life; pSize[i] = size; pHue[i] = hue;
+}
+
+function onBeat(strength: number) {
+    if (!ovEl?.classList.contains("on")) return;
+    const I = settings.store.edmIntensity;
+    const T = TIERS[activeTier()];
+
+    // Compositor-driven pulse on the lyric block (no per-frame JS styling)
+    if (ovLyrics && I > 0.01 && !reducedMotion()) {
+        try { ovLyrics.animate([{ transform: `scale(${1 + 0.045 * Math.min(1.2, strength)})` }, { transform: "scale(1)" }], { duration: 170, easing: "ease-out" }); } catch { /* ignore */ }
+    }
+    if (strength > 0.95 && settings.store.screenShake && ovStage && !reducedMotion()) {
+        const m = 6 * Math.min(1.2, I || 0.5);
+        try {
+            ovStage.animate([
+                { transform: `translate3d(${m}px,${-m * 0.6}px,0)` },
+                { transform: `translate3d(${-m * 0.7}px,${m * 0.5}px,0)`, offset: 0.3 },
+                { transform: `translate3d(${m * 0.4}px,0,0)`, offset: 0.6 },
+                { transform: "translate3d(0,0,0)" }
+            ], { duration: 200, easing: "ease-out" });
+        } catch { /* ignore */ }
+    }
+
+    if (!T.canvas || !fxCanvas || I <= 0.01) return;
+    const W = fxCanvas.width, H = fxCanvas.height, m = Math.min(W, H), u = m / 420;
+    if (rings.length < 3) rings.push({ r: m * 0.17, a: (0.5 + 0.3 * strength) * Math.min(1, I), v: m * (0.9 + 0.5 * strength) });
+    const n = Math.floor((5 + 12 * strength) * I);
+    for (let k = 0; k < n; k++) {
+        const ang = Math.random() * Math.PI * 2;
+        const sp = (120 + Math.random() * 360) * u * (0.7 + strength * 0.6);
+        spawnP(W / 2 + Math.cos(ang) * m * 0.17, H / 2 + Math.sin(ang) * m * 0.17, Math.cos(ang) * sp, Math.sin(ang) * sp,
+            0.6 + Math.random() * 0.7, 1 + Math.random() * 1.6, fx.hue + Math.random() * 90 - 20);
+    }
+}
+
+function drawFx(dt: number, now: number) {
+    const T = TIERS[activeTier()];
+    const c = fxCanvas, ctx = fxCtx;
+    if (!c || !ctx || !T.canvas) return;
+    const W = c.width, H = c.height, m = Math.min(W, H), u = m / 420;
+    ctx.clearRect(0, 0, W, H);
+
+    const I = settings.store.edmIntensity;
+    const active = fx.mode !== "idle";
+    if (I <= 0.01 || (!active && pCount === 0 && rings.length === 0 && fx.energy < 0.004)) return;
+
+    const hue = fx.hue;
+    const iA = Math.min(1, I);
+
+    if (T.leaks && active) {
+        let g = ctx.createRadialGradient(W * 0.12, H * 0.08, 0, W * 0.12, H * 0.08, W * 0.6);
+        g.addColorStop(0, hsla(hue, 100, 60, 0.06 + fx.bass * 0.3));
+        g.addColorStop(1, hsla(hue, 100, 60, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        g = ctx.createRadialGradient(W * 0.92, H * 0.96, 0, W * 0.92, H * 0.96, W * 0.55);
+        g.addColorStop(0, hsla(hue + 70, 100, 60, 0.05 + fx.mid * 0.28));
+        g.addColorStop(1, hsla(hue + 70, 100, 60, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+
+    if (fx.big > 0.03) {
+        ctx.fillStyle = `rgba(255,255,255,${(fx.big * 0.1 * iA).toFixed(3)})`;
+        ctx.fillRect(0, 0, W, H);
+    }
+
+    // Lasers: solid-colour strokes
+    if (active && T.lasers > 0) {
+        const len = Math.hypot(W, H);
+        ctx.lineWidth = Math.max(1, (1 + fx.high * 2 + fx.beat * 2) * u * 2);
+        for (let k = 0; k < T.lasers; k++) {
+            const ox = W * (k + 0.5) / T.lasers;
+            const ang = Math.PI / 2 + Math.sin(now * 0.0006 * (1 + k * 0.13) + k * 1.7) * 0.55;
+            ctx.strokeStyle = hsla(hue + k * 18, 100, 68, (0.05 + fx.mid * 0.18 + fx.beat * 0.2) * I);
+            ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox + Math.cos(ang) * len, Math.sin(ang) * len); ctx.stroke();
         }
     }
 
-    hudAnimFrameId = requestAnimationFrame(renderHUDVisualizer);
-}
-
-function renderAmbientVisualizer() {
-    if (!ambientEl || ambientEl.classList.contains("ddt-ambient-hidden")) {
-        ambientAnimFrameId = null;
-        return;
+    // Stage bars (solid fill, no per-bar gradient)
+    {
+        const area = H * 0.34, bw = W / BANDS, gap = Math.max(1, bw * 0.22);
+        ctx.fillStyle = hsla(hue + 20, 90, 62, 0.75 * iA);
+        for (let i = 0; i < BANDS; i++) {
+            const h = bands[i] * area;
+            if (h > 0.5) ctx.fillRect(i * bw, H - h, bw - gap, h);
+        }
+        ctx.fillStyle = hsla(hue + 40, 100, 88, 0.85 * iA);
+        for (let i = 0; i < BANDS; i++) {
+            if (peaks[i] > 0.03) ctx.fillRect(i * bw, H - peaks[i] * area - 2, bw - gap, 1.5);
+        }
     }
 
-    const canvas = document.getElementById("ddt-ambient-canvas") as HTMLCanvasElement | null;
-    if (canvas) {
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
+    // Radial spectrum (one path, two strokes)
+    if (T.ring > 0) {
+        const cx = W / 2, cy = H / 2, segs = T.ring;
+        const R0 = m * 0.17 * (1 + fx.beat * 0.12 + fx.bass * 0.05);
+        const rot = now * 0.00006, maxLen = m * 0.16;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        for (let i = 0; i < segs; i++) {
+            const t = i / segs;
+            const bi = Math.min(BANDS - 1, Math.floor((t < 0.5 ? t * 2 : (1 - t) * 2) * (BANDS - 1)));
+            const ang = t * Math.PI * 2 + rot - Math.PI / 2;
+            const l = 1.5 + bands[bi] * maxLen * Math.min(1.4, I);
+            ctx.moveTo(cx + Math.cos(ang) * R0, cy + Math.sin(ang) * R0);
+            ctx.lineTo(cx + Math.cos(ang) * (R0 + l), cy + Math.sin(ang) * (R0 + l));
+        }
+        ctx.strokeStyle = hsla(hue, 100, 60, 0.28 * iA); ctx.lineWidth = Math.max(3, 7 * u * 2); ctx.stroke();
+        ctx.strokeStyle = hsla(hue + 30, 100, 82, 0.9 * iA); ctx.lineWidth = Math.max(1.2, 2.2 * u * 2); ctx.stroke();
+    }
 
-            if (isPlaying) {
-                // Draw majestic full-screen flowing aurora curves behind lyrics
-                const t = Date.now() * 0.0015;
-                for (let layer = 0; layer < 3; layer++) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, h * 0.65);
+    // Shockwaves
+    for (let i = rings.length - 1; i >= 0; i--) {
+        const r = rings[i];
+        r.r += r.v * dt; r.a -= dt * 1.2;
+        if (r.a <= 0) { rings.splice(i, 1); continue; }
+        ctx.beginPath(); ctx.arc(W / 2, H / 2, r.r, 0, 6.2832);
+        ctx.strokeStyle = hsla(hue + 20, 100, 74, r.a);
+        ctx.lineWidth = Math.max(1, (1.5 + r.a * 6) * u * 2);
+        ctx.stroke();
+    }
 
-                    for (let x = 0; x <= w; x += 30) {
-                        const prog = x / w;
-                        const barIdx = Math.floor(prog * (BAR_COUNT - 1));
-                        const amp = barHeights[barIdx] * 120 * (layer === 0 ? 1 : 0.65);
-                        const y = (h * 0.65) + Math.sin(t * (1.2 + layer * 0.4) + prog * 5 + layer) * (amp + 30);
-                        ctx.lineTo(x, y);
-                    }
-
-                    ctx.lineTo(w, h);
-                    ctx.lineTo(0, h);
-                    ctx.closePath();
-
-                    const grad = ctx.createLinearGradient(0, h * 0.5, 0, h);
-                    if (layer === 0) {
-                        grad.addColorStop(0, "rgba(255, 255, 255, 0.22)");
-                        grad.addColorStop(1, "rgba(29, 185, 84, 0.04)");
-                    } else if (layer === 1) {
-                        grad.addColorStop(0, "rgba(29, 185, 84, 0.18)");
-                        grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-                    } else {
-                        grad.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-                        grad.addColorStop(1, "rgba(0, 0, 0, 0.05)");
-                    }
-
-                    ctx.fillStyle = grad;
-                    ctx.fill();
+    // Particles (fillRect from a 5-colour palette)
+    if (T.maxP > 0) {
+        refreshPalette(hue);
+        if (active && Math.random() < fx.high * 0.5 * Math.min(1.2, I)) {
+            spawnP(Math.random() * W, H, (Math.random() - 0.5) * 30 * u, -(50 + Math.random() * 140) * u, 0.9 + Math.random() * 0.9, 1 + Math.random() * 1.4, hue + Math.random() * 80);
+        }
+        const drag = Math.exp(-dt * 0.9);
+        for (let i = 0; i < pCount;) {
+            pLife[i] -= dt;
+            if (pLife[i] <= 0) {
+                const l = --pCount;
+                if (i !== l) {
+                    pX[i] = pX[l]; pY[i] = pY[l]; pVX[i] = pVX[l]; pVY[i] = pVY[l];
+                    pLife[i] = pLife[l]; pMax[i] = pMax[l]; pSize[i] = pSize[l]; pHue[i] = pHue[l];
                 }
+                continue;
             }
+            pVX[i] *= drag; pVY[i] *= drag;
+            pX[i] += pVX[i] * dt; pY[i] += pVY[i] * dt;
+            ctx.globalAlpha = (pLife[i] / pMax[i]) * 0.95 * iA;
+            ctx.fillStyle = pal[i % pal.length];
+            const s = pSize[i];
+            ctx.fillRect(pX[i], pY[i], s, s);
+            i++;
         }
-    }
-
-    ambientAnimFrameId = requestAnimationFrame(renderAmbientVisualizer);
+        ctx.globalAlpha = 1;
+    } else pCount = 0;
 }
 
-function renderMiniVisualizer() {
-    if (!miniPillEl || miniPillEl.style.display === "none") {
-        miniAnimFrameId = null;
-        return;
-    }
-
-    const canvas = document.getElementById("ddt-mini-canvas") as HTMLCanvasElement | null;
-    if (canvas) {
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-
-            const count = 12;
-            const barW = Math.floor(w / count) - 1;
-            for (let i = 0; i < count; i++) {
-                const bh = Math.max(2, barHeights[i * 2] * h);
-                const x = i * (barW + 1);
-                const y = (h - bh) / 2;
-
-                ctx.fillStyle = isPlaying ? "#00f2fe" : "rgba(255, 255, 255, 0.4)";
-                ctx.beginPath();
-                ctx.roundRect(x, y, barW, bh, [2, 2, 2, 2]);
-                ctx.fill();
-            }
-        }
-    }
-
-    miniAnimFrameId = requestAnimationFrame(renderMiniVisualizer);
+function resizeFx() {
+    if (!fxCanvas) return;
+    const T = TIERS[activeTier()];
+    if (!T.canvas) { fxCanvas.style.display = "none"; pCount = 0; rings.length = 0; return; }
+    fxCanvas.style.display = "block";
+    const w = T.w, h = Math.max(2, Math.round(w * window.innerHeight / Math.max(1, window.innerWidth)));
+    if (fxCanvas.width !== w || fxCanvas.height !== h) { fxCanvas.width = w; fxCanvas.height = h; }
 }
 
-// ─── UI Creation & Management ────────────────────────────────────────────────
-function createAmbientLayer() {
-    if (document.getElementById("ddt-music-ambient-layer")) return;
+// ─── Overlay (kinetic type, transform/opacity only) ──────────────────────────
+let ovStage: HTMLElement | null = null;
+let ovLyrics: HTMLElement | null = null;
+let ovLineBox: HTMLElement | null = null;
+let ovNext: HTMLElement | null = null;
+let ovCur: HTMLElement | null = null;
+let ovLower: HTMLElement | null = null;
+let ovProg: HTMLElement | null = null;
+let ovClassKey = "";
+let lastHueSet = -9999;
+let lastProgSet = 0;
 
-    ambientEl = document.createElement("div");
-    ambientEl.id = "ddt-music-ambient-layer";
-    if (!settings.store.showAmbientBackground) ambientEl.classList.add("ddt-ambient-hidden");
-
-    ambientEl.innerHTML = `
-        <canvas id="ddt-ambient-canvas" class="ddt-ambient-canvas" width="${window.innerWidth}" height="${window.innerHeight}"></canvas>
-        <div class="ddt-ambient-vignette"></div>
-        <div class="ddt-ambient-header">
-            <div id="ddt-ambient-title" class="ddt-ambient-title">DDT Studio Player</div>
-            <div id="ddt-ambient-artist" class="ddt-ambient-artist">Ready to Stream</div>
+function buildOverlay() {
+    if (ovEl) return;
+    ovEl = document.createElement("div");
+    ovEl.id = "ddt-ov";
+    ovEl.className = "ddt-ov";
+    ovEl.innerHTML = `
+        <canvas class="ddt-ov-fx"></canvas>
+        <div class="ddt-ov-stage">
+            <div class="ddt-ov-lyrics">
+                <div class="ddt-ov-linebox"></div>
+                <div class="ddt-ov-next"></div>
+            </div>
         </div>
-        <div class="ddt-ambient-lyrics-box">
-            <div id="ddt-amb-lyric-prev" class="ddt-ambient-lyric-prev"></div>
-            <div id="ddt-amb-lyric-active" class="ddt-ambient-lyric-active">Enjoy High-Fidelity Sound</div>
-            <div id="ddt-amb-lyric-next" class="ddt-ambient-lyric-next"></div>
+        <div class="ddt-ov-lower">
+            <div class="lt-bar"></div>
+            <div class="lt-text"><div class="lt-title"></div><div class="lt-artist"></div></div>
         </div>
-    `;
+        <div class="ddt-ov-bars top"></div>
+        <div class="ddt-ov-bars bottom"></div>
+        <div class="ddt-ov-prog"><i></i></div>`;
+    document.body.appendChild(ovEl);
 
-    document.body.appendChild(ambientEl);
+    fxCanvas = ovEl.querySelector(".ddt-ov-fx");
+    fxCtx = fxCanvas?.getContext("2d") ?? null;
+    ovStage = ovEl.querySelector(".ddt-ov-stage");
+    ovLyrics = ovEl.querySelector(".ddt-ov-lyrics");
+    ovLineBox = ovEl.querySelector(".ddt-ov-linebox");
+    ovNext = ovEl.querySelector(".ddt-ov-next");
+    ovLower = ovEl.querySelector(".ddt-ov-lower");
+    ovProg = ovEl.querySelector(".ddt-ov-prog i");
+    resizeFx();
+}
 
-    window.addEventListener("resize", () => {
-        const c = document.getElementById("ddt-ambient-canvas") as HTMLCanvasElement | null;
-        if (c) {
-            c.width = window.innerWidth;
-            c.height = window.innerHeight;
-        }
+function destroyOverlay() {
+    ovEl?.remove();
+    ovEl = fxCanvas = ovStage = ovLyrics = ovLineBox = ovNext = ovCur = ovLower = ovProg = null;
+    fxCtx = null; ovClassKey = ""; pCount = 0; rings.length = 0;
+}
+
+const overlayShouldShow = () => settings.store.overlayEnabled && !!currentSong && !stopped;
+
+function refreshOverlay() {
+    if (!started) return;
+    if (overlayShouldShow()) buildOverlay();
+    if (ovEl) { ovEl.classList.toggle("on", overlayShouldShow()); resizeFx(); ovClassKey = ""; }
+    byId("ddt-win-fx")?.classList.toggle("off", !settings.store.overlayEnabled);
+    kick();
+}
+
+function syncOverlayClasses() {
+    if (!ovEl) return;
+    const s = settings.store;
+    const key = `${s.lyricPosition}|${s.letterbox}|${s.overlayOpacity}`;
+    if (key === ovClassKey) return;
+    ovClassKey = key;
+    ovEl.classList.remove("pos-center", "pos-lower", "pos-upper");
+    ovEl.classList.add(`pos-${s.lyricPosition}`);
+    ovEl.classList.toggle("lb", !!s.letterbox);
+    if (fxCanvas) fxCanvas.style.opacity = String(s.overlayOpacity);
+}
+
+function pickStyle(idx: number, text: string): string {
+    const mode = settings.store.lyricStyle;
+    if (mode !== "auto") return mode;
+    const words = text.trim().split(/\s+/).length;
+    if (words <= 2) return "slam";
+    const hot = fx.energy > 0.45;
+    const pool = hot ? ["pop", "slam", "glitch", "mask"] : ["cinematic", "mask", "pop"];
+    let pick = words > 9 && !hot ? "cinematic" : pool[idx % pool.length];
+    if (pick === "slam" && words > 5) pick = "pop";
+    return pick;
+}
+
+function showOverlayLine(idx: number) {
+    if (!ovLineBox || !ovNext) return;
+    if (ovCur) {
+        const old = ovCur;
+        old.classList.add("out");
+        setTimeout(() => old.remove(), 380);
+        ovCur = null;
+    }
+    const text = idx >= 0 ? lyrics[idx]?.text ?? "" : "";
+    ovNext.textContent = idx >= 0 ? lyrics[idx + 1]?.text ?? "" : "";
+    if (!text) return;
+
+    const style = pickStyle(idx, text);
+    const words = text.split(/\s+/).filter(Boolean);
+    const el = document.createElement("div");
+    el.className = `ddt-ov-line st-${style}`;
+    const len = text.length;
+    const base = len <= 18 ? 1 : len <= 36 ? 0.82 : len <= 60 ? 0.66 : 0.54;
+    el.style.setProperty("--fs", String(base * settings.store.lyricScale));
+
+    const lineDur = ((lyrics[idx + 1]?.time ?? lyrics[idx].time + 4) - lyrics[idx].time);
+    const stagger = clamp((lineDur * 0.35 * 1000) / words.length, 22, 85);
+    let keyIdx = -1;
+    if (words.length >= 3) { let best = 0; words.forEach((w, i) => { if (w.length > best) { best = w.length; keyIdx = i; } }); }
+
+    words.forEach((w, i) => {
+        const outer = document.createElement("span");
+        outer.className = "w" + (i === keyIdx ? " key" : "");
+        const inner = document.createElement("span");
+        inner.className = "wi";
+        inner.textContent = w;
+        inner.style.setProperty("--d", `${Math.round(i * stagger)}ms`);
+        outer.appendChild(inner);
+        el.appendChild(outer);
     });
-
-    if (isPlaying) startVisualizerLoops();
+    ovLineBox.appendChild(el);
+    ovCur = el;
 }
 
-function updateAmbientLyrics() {
-    if (!ambientEl) return;
-    const titleEl = document.getElementById("ddt-ambient-title");
-    const artistEl = document.getElementById("ddt-ambient-artist");
-    const prevEl = document.getElementById("ddt-amb-lyric-prev");
-    const actEl = document.getElementById("ddt-amb-lyric-active");
-    const nextEl = document.getElementById("ddt-amb-lyric-next");
+function triggerLowerThird() {
+    if (!ovLower || !currentSong) return;
+    (ovLower.querySelector(".lt-title") as HTMLElement).textContent = currentSong.title;
+    (ovLower.querySelector(".lt-artist") as HTMLElement).textContent = currentSong.artist || "";
+    ovLower.classList.remove("show");
+    void ovLower.offsetWidth;
+    ovLower.classList.add("show");
+}
 
-    if (currentSong) {
-        if (titleEl) titleEl.textContent = currentSong.title;
-        if (artistEl) artistEl.textContent = currentSong.artist || "Official Track";
+function renderOverlay(dt: number, now: number) {
+    if (!ovEl || !ovEl.classList.contains("on")) return;
+    syncOverlayClasses();
+
+    // The ONLY style writes outside canvas: hue once per second, progress hairline 4×/s
+    if (now - lastHueSet > 1000) { lastHueSet = now; ovEl.style.setProperty("--ddt-hue", String(Math.round(fx.hue))); }
+    if (ovProg && now - lastProgSet > 250 && audioEl && isFinite(audioEl.duration) && audioEl.duration > 0) {
+        lastProgSet = now;
+        ovProg.style.transform = `scaleX(${(audioEl.currentTime / audioEl.duration).toFixed(4)})`;
     }
-
-    if (lyrics.length > 0 && currentLyricIdx >= 0) {
-        if (prevEl) prevEl.textContent = lyrics[currentLyricIdx - 1]?.text || "";
-        if (actEl) actEl.textContent = lyrics[currentLyricIdx]?.text || "";
-        if (nextEl) nextEl.textContent = lyrics[currentLyricIdx + 1]?.text || "";
-    } else if (currentSong) {
-        if (prevEl) prevEl.textContent = "";
-        if (actEl) actEl.textContent = "";
-        if (nextEl) nextEl.textContent = "";
-    }
+    drawFx(dt, now);
 }
 
-function toggleAmbientBackground() {
-    if (!ambientEl) createAmbientLayer();
-    if (!ambientEl) return;
-    const isHidden = ambientEl.classList.toggle("ddt-ambient-hidden");
-    settings.store.showAmbientBackground = !isHidden;
-    if (!isHidden) startVisualizerLoops();
+// ─── HUD / mini visualizers ──────────────────────────────────────────────────
+let vizColor = "", vizColor2 = "", vizHueKey = -999;
+function refreshVizColors() {
+    const key = Math.round(fx.hue / 5);
+    if (key === vizHueKey) return;
+    vizHueKey = key;
+    vizColor = hsla(fx.hue + 30, 100, 68, 1);
+    vizColor2 = hsla(fx.hue + 70, 100, 85, 1);
 }
 
-function createMiniPill() {
-    if (document.getElementById("ddt-music-mini-pill")) return;
+function renderHudViz() {
+    const c = hudCanvas;
+    if (!c || !c.width || !c.height || !hudEl || hudEl.classList.contains("hidden")) return;
+    const ctx = c.getContext("2d"); if (!ctx) return;
+    const dpr = c.width / Math.max(1, c.clientWidth);
+    const w = c.clientWidth, h = c.clientHeight;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    refreshVizColors();
+    const mode = settings.store.visualizerMode;
 
-    miniPillEl = document.createElement("div");
-    miniPillEl.id = "ddt-music-mini-pill";
-    miniPillEl.style.left = `${miniPos.x}px`;
-    miniPillEl.style.top = `${miniPos.y}px`;
-    miniPillEl.style.display = "none";
-
-    miniPillEl.innerHTML = `
-        <canvas id="ddt-mini-canvas" class="ddt-mini-canvas" width="48" height="24"></canvas>
-        <span id="ddt-mini-title" class="ddt-mini-title">${currentSong ? currentSong.title : "No Track"}</span>
-        <button id="ddt-mini-play" class="ddt-action-btn" style="width:30px;height:30px;border-radius:8px;">${isPlaying ? Icons.pause : Icons.play}</button>
-        <button id="ddt-mini-expand" class="ddt-action-btn" style="width:30px;height:30px;border-radius:8px;">${Icons.expand}</button>
-    `;
-
-    document.body.appendChild(miniPillEl);
-
-    // Mini pill drag
-    miniPillEl.onmousedown = (e) => {
-        if ((e.target as HTMLElement).tagName === "BUTTON") return;
-        miniDrag.active = true;
-        miniDrag.ox = e.clientX - miniPos.x;
-        miniDrag.oy = e.clientY - miniPos.y;
-    };
-
-    const playBtn = document.getElementById("ddt-mini-play");
-    if (playBtn) playBtn.onclick = togglePlay;
-
-    const expBtn = document.getElementById("ddt-mini-expand");
-    if (expBtn) expBtn.onclick = () => {
-        if (miniPillEl) miniPillEl.style.display = "none";
-        if (overlayEl) overlayEl.style.display = "flex";
-        startVisualizerLoops();
-    };
-}
-
-function createOverlay() {
-    if (overlayEl) {
-        overlayEl.style.display = "flex";
-        if (miniPillEl) miniPillEl.style.display = "none";
-        startVisualizerLoops();
-        return;
-    }
-
-    createAmbientLayer();
-    createMiniPill();
-
-    overlayEl = document.createElement("div");
-    overlayEl.id = "ddt-music-overlay";
-    overlayEl.style.left = `${hudPos.x}px`;
-    overlayEl.style.top = `${hudPos.y}px`;
-
-    overlayEl.innerHTML = `
-        <!-- Aero Specular Titlebar -->
-        <div class="ddt-hud-titlebar" id="ddt-hud-dragbar">
-            <div class="ddt-hud-title-wrap">
-                <span class="ddt-hud-logo-icon">${Icons.music}</span>
-                <span class="ddt-hud-title">DDT Studio Visualizer</span>
-                <div class="ddt-server-badge">
-                    <span id="ddt-srv-dot" class="ddt-server-dot"></span>
-                    <span id="ddt-srv-label">Relay</span>
-                </div>
-            </div>
-            <!-- Windows 7 Style Glossy Jewel Action Buttons -->
-            <div class="ddt-jewel-group">
-                <button id="ddt-btn-ambient-toggle" class="ddt-jewel-btn btn-ambient" title="Toggle 40% Discord Ambient Background Layer"></button>
-                <button id="ddt-btn-minimize" class="ddt-jewel-btn btn-minimize" title="Minimize to Floating Mini-Pill"></button>
-                <button id="ddt-btn-stop-exit" class="ddt-jewel-btn btn-stop" title="Stop Playback & Close"></button>
-            </div>
-        </div>
-
-        <!-- HUD Body Content -->
-        <div class="ddt-hud-body">
-            <!-- Track Info Card -->
-            <div class="ddt-hero-card">
-                <img id="ddt-hero-thumb" class="ddt-hero-thumb" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120" alt="Album Art" />
-                <div class="ddt-hero-info">
-                    <div id="ddt-hero-title" class="ddt-hero-title">Select or Search a Song</div>
-                    <div id="ddt-hero-status" class="ddt-hero-status">
-                        <span id="ddt-status-text">Ready to stream</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kinetic Soundwave Canvas -->
-            <div class="ddt-visualizer-container">
-                <canvas id="ddt-main-canvas" class="ddt-visualizer-canvas" width="600" height="74"></canvas>
-            </div>
-
-            <!-- Timeline Scrub Bar -->
-            <div class="ddt-timeline-wrap">
-                <div id="ddt-progress-bar" class="ddt-progress-bar">
-                    <div id="ddt-progress-fill" class="ddt-progress-fill"></div>
-                </div>
-                <div class="ddt-time-labels">
-                    <span id="ddt-time-current">0:00</span>
-                    <span id="ddt-time-duration">0:00</span>
-                </div>
-            </div>
-
-            <!-- Transport & Volume Controls -->
-            <div class="ddt-transport-row">
-                <div class="ddt-controls-center">
-                    <button id="ddt-prev-btn" class="ddt-action-btn" title="Previous Track">${Icons.prev}</button>
-                    <button id="ddt-play-btn" class="ddt-action-btn btn-play-pause" title="Play/Pause">${Icons.play}</button>
-                    <button id="ddt-next-btn" class="ddt-action-btn" title="Next Track">${Icons.next}</button>
-                    <button id="ddt-stop-btn" class="ddt-action-btn" title="Stop Audio">${Icons.stop}</button>
-                </div>
-
-                <div class="ddt-volume-box">
-                    <button id="ddt-mute-btn" class="ddt-action-btn" style="width:32px;height:32px;border:none;" title="Mute/Unmute">${Icons.volume}</button>
-                    <input type="range" id="ddt-volume-slider" class="ddt-volume-slider" min="0" max="100" value="80" />
-                </div>
-            </div>
-
-            <!-- Tab Navigation -->
-            <div class="ddt-tab-row">
-                <button id="ddt-tab-search-btn" class="ddt-tab-btn active">Search</button>
-                <button id="ddt-tab-lyrics-btn" class="ddt-tab-btn">Synced Lyrics</button>
-                <button id="ddt-tab-queue-btn" class="ddt-tab-btn">Queue (<span id="ddt-q-count">0</span>)</button>
-            </div>
-
-            <!-- Tab Views -->
-            <div id="ddt-tab-content" class="ddt-tab-content">
-                <!-- Search Tab View -->
-                <div id="ddt-view-search">
-                    <div class="ddt-search-wrap">
-                        <input type="text" id="ddt-search-input" class="ddt-search-input" placeholder="Search track, artist, EDM remix..." />
-                        <button id="ddt-search-go" class="ddt-action-btn" style="width:36px;height:36px;">${Icons.search}</button>
-                    </div>
-                    <div id="ddt-search-results"></div>
-                </div>
-
-                <!-- Synced Lyrics Tab View -->
-                <div id="ddt-view-lyrics" style="display:none;">
-                    <div id="ddt-lyrics-container" class="ddt-lyrics-container">
-                        <span style="color:rgba(255,255,255,0.4);">No lyrics synced. Play a track to load.</span>
-                    </div>
-                </div>
-
-                <!-- Queue Tab View -->
-                <div id="ddt-view-queue" style="display:none;">
-                    <div id="ddt-queue-list"></div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlayEl);
-    wireOverlayEvents();
-    startServerPoll();
-    checkServer().then(ok => updateServerBadge(ok));
-    startVisualizerLoops();
-}
-
-function wireOverlayEvents() {
-    // Window dragging
-    const dragBar = document.getElementById("ddt-hud-dragbar");
-    if (dragBar) {
-        dragBar.onmousedown = (e) => {
-            if ((e.target as HTMLElement).tagName === "BUTTON") return;
-            hudDrag.active = true;
-            hudDrag.ox = e.clientX - hudPos.x;
-            hudDrag.oy = e.clientY - hudPos.y;
-        };
-    }
-
-    document.addEventListener("mousemove", (e) => {
-        if (hudDrag.active && overlayEl) {
-            hudPos.x = Math.max(10, Math.min(window.innerWidth - 650, e.clientX - hudDrag.ox));
-            hudPos.y = Math.max(10, Math.min(window.innerHeight - 620, e.clientY - hudDrag.oy));
-            overlayEl.style.left = `${hudPos.x}px`;
-            overlayEl.style.top = `${hudPos.y}px`;
+    if (mode === "edm") {
+        const bw = w / BANDS;
+        ctx.fillStyle = vizColor;
+        for (let i = 0; i < BANDS; i++) { const bh = bands[i] * h * 0.92; ctx.fillRect(i * bw + 0.5, h - bh, bw - 1, bh); }
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        for (let i = 0; i < BANDS; i++) ctx.fillRect(i * bw + 0.5, h - peaks[i] * h * 0.92 - 3, bw - 1, 2);
+    } else if (mode === "aurora") {
+        ctx.beginPath();
+        for (let i = 0; i < BANDS; i++) {
+            const x = (i / (BANDS - 1)) * w;
+            const y = h / 2 + Math.sin(i * 0.7 + performance.now() * 0.002) * bands[i] * h * 0.4;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        if (miniDrag.active && miniPillEl) {
-            miniPos.x = Math.max(10, Math.min(window.innerWidth - 280, e.clientX - miniDrag.ox));
-            miniPos.y = Math.max(10, Math.min(window.innerHeight - 60, e.clientY - miniDrag.oy));
-            miniPillEl.style.left = `${miniPos.x}px`;
-            miniPillEl.style.top = `${miniPos.y}px`;
+        ctx.strokeStyle = vizColor2; ctx.lineWidth = 2.5; ctx.lineJoin = "round"; ctx.stroke();
+    } else {
+        const bw = w / BANDS;
+        ctx.fillStyle = vizColor;
+        ctx.beginPath();
+        for (let i = 0; i < BANDS; i++) {
+            const bh = Math.max(3, bands[i] * h * 0.9);
+            rrect(ctx, i * bw + 1, (h - bh) / 2, bw - 2, bh, 3);
         }
-    });
-
-    document.addEventListener("mouseup", () => {
-        hudDrag.active = false;
-        miniDrag.active = false;
-    });
-
-    // Jewel Buttons
-    const stopExitBtn = document.getElementById("ddt-btn-stop-exit");
-    if (stopExitBtn) {
-        stopExitBtn.onclick = () => {
-            stopPlayback();
-            if (overlayEl) overlayEl.style.display = "none";
-            if (miniPillEl) miniPillEl.style.display = "none";
-        };
-    }
-
-    const minBtn = document.getElementById("ddt-btn-minimize");
-    if (minBtn) {
-        minBtn.onclick = () => {
-            if (overlayEl) overlayEl.style.display = "none";
-            if (miniPillEl) miniPillEl.style.display = "flex";
-            startVisualizerLoops();
-        };
-    }
-
-    const ambBtn = document.getElementById("ddt-btn-ambient-toggle");
-    if (ambBtn) ambBtn.onclick = toggleAmbientBackground;
-
-    // Transport buttons
-    const playBtn = document.getElementById("ddt-play-btn");
-    if (playBtn) playBtn.onclick = togglePlay;
-
-    const stopBtn = document.getElementById("ddt-stop-btn");
-    if (stopBtn) stopBtn.onclick = stopPlayback;
-
-    const prevBtn = document.getElementById("ddt-prev-btn");
-    if (prevBtn) prevBtn.onclick = playPrev;
-
-    const nextBtn = document.getElementById("ddt-next-btn");
-    if (nextBtn) nextBtn.onclick = playNext;
-
-    // Volume
-    const volSlider = document.getElementById("ddt-volume-slider") as HTMLInputElement | null;
-    if (volSlider) {
-        volSlider.oninput = () => setVolume(Number(volSlider.value) / 100);
-    }
-
-    const muteBtn = document.getElementById("ddt-mute-btn");
-    if (muteBtn) muteBtn.onclick = toggleMute;
-
-    // Timeline Seek
-    const progBar = document.getElementById("ddt-progress-bar");
-    if (progBar) {
-        progBar.onclick = (e) => {
-            if (!audioEl || !audioEl.duration) return;
-            const rect = progBar.getBoundingClientRect();
-            const ratio = (e.clientX - rect.left) / rect.width;
-            seek(ratio * audioEl.duration);
-        };
-    }
-
-    // Tabs
-    const tSearch = document.getElementById("ddt-tab-search-btn");
-    const tLyrics = document.getElementById("ddt-tab-lyrics-btn");
-    const tQueue = document.getElementById("ddt-tab-queue-btn");
-
-    if (tSearch) tSearch.onclick = () => switchTab("search");
-    if (tLyrics) tLyrics.onclick = () => switchTab("lyrics");
-    if (tQueue) tQueue.onclick = () => switchTab("queue");
-
-    // Search input
-    const searchInput = document.getElementById("ddt-search-input") as HTMLInputElement | null;
-    const searchGo = document.getElementById("ddt-search-go");
-    if (searchInput) {
-        searchInput.onkeydown = (e) => {
-            if (e.key === "Enter") doSearch(searchInput.value);
-        };
-    }
-    if (searchGo && searchInput) {
-        searchGo.onclick = () => doSearch(searchInput.value);
-    }
-
-    // Server badge click to start relay
-    const srvBadge = document.querySelector(".ddt-server-badge");
-    if (srvBadge) {
-        srvBadge.addEventListener("click", () => {
-            if (!serverReady) handleStartRelay();
-        });
+        ctx.fill();
     }
 }
 
-function switchTab(tab: "search" | "lyrics" | "queue") {
-    activeTab = tab;
-    const vSearch = document.getElementById("ddt-view-search");
-    const vLyrics = document.getElementById("ddt-view-lyrics");
-    const vQueue = document.getElementById("ddt-view-queue");
-
-    const tSearch = document.getElementById("ddt-tab-search-btn");
-    const tLyrics = document.getElementById("ddt-tab-lyrics-btn");
-    const tQueue = document.getElementById("ddt-tab-queue-btn");
-
-    if (vSearch) vSearch.style.display = tab === "search" ? "block" : "none";
-    if (vLyrics) vLyrics.style.display = tab === "lyrics" ? "block" : "none";
-    if (vQueue) vQueue.style.display = tab === "queue" ? "block" : "none";
-
-    tSearch?.classList.toggle("active", tab === "search");
-    tLyrics?.classList.toggle("active", tab === "lyrics");
-    tQueue?.classList.toggle("active", tab === "queue");
-
-    if (tab === "lyrics") renderLyricsTab();
-    if (tab === "queue") renderQueueTab();
+function renderMiniViz() {
+    const c = miniCanvas;
+    if (!c || !c.width || !miniEl || miniEl.classList.contains("hidden")) return;
+    const ctx = c.getContext("2d"); if (!ctx) return;
+    const dpr = c.width / Math.max(1, c.clientWidth);
+    const w = c.clientWidth, h = c.clientHeight;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    refreshVizColors();
+    const n = 12, bw = w / n;
+    ctx.fillStyle = isPlaying ? vizColor2 : "rgba(255,255,255,0.35)";
+    for (let i = 0; i < n; i++) {
+        const bh = Math.max(2, bands[Math.floor((i / n) * 20)] * h);
+        ctx.fillRect(i * bw + 0.5, (h - bh) / 2, bw - 1.5, bh);
+    }
 }
 
-function updateHeroUI(song: SongItem) {
-    const title = document.getElementById("ddt-hero-title");
-    const thumb = document.getElementById("ddt-hero-thumb") as HTMLImageElement | null;
-    const miniTitle = document.getElementById("ddt-mini-title");
+// ─── Render loop: setTimeout-paced rAF, FPS cap, adaptive governor ───────────
+let rafId = 0;
+let timerId: ReturnType<typeof setTimeout> | 0 = 0;
+let lastFrame = 0;
+let lastTimeUi = 0;
+let ema = 33;
+let govFrames = 0;
+let perfTextAt = 0;
 
-    if (title) title.textContent = song.title;
-    if (thumb) thumb.src = song.thumb;
-    if (miniTitle) miniTitle.textContent = song.title;
+function resetGovernor() { ema = 1000 / effFps(); govFrames = 0; }
 
-    updateAmbientLyrics();
+const hudVisible = () => !!hudEl && !hudEl.classList.contains("hidden");
+const miniVisible = () => !!miniEl && !miniEl.classList.contains("hidden");
+const overlayVisible = () => !!ovEl && ovEl.classList.contains("on");
+
+function kick() {
+    if (rafId || timerId || !started) return;
+    lastFrame = performance.now() - 1000 / effFps();
+    rafId = requestAnimationFrame(frame);
 }
 
-function updatePlayStateUI() {
-    const playBtn = document.getElementById("ddt-play-btn");
-    const miniPlayBtn = document.getElementById("ddt-mini-play");
-    const icon = isPlaying ? Icons.pause : Icons.play;
-
-    if (playBtn) playBtn.innerHTML = icon;
-    if (miniPlayBtn) miniPlayBtn.innerHTML = icon;
+function governor(elapsed: number) {
+    if (settings.store.performance !== "auto" || !overlayVisible() || !isPlaying) { govFrames = 0; return; }
+    if (elapsed > 250) return; // pause/tab-hidden gap, not a perf signal
+    ema = ema * 0.9 + elapsed * 0.1;
+    if (++govFrames < 45) return;
+    govFrames = 0;
+    // Real interval much longer than we asked for ⇒ the machine can't keep up ⇒ step down
+    if (ema > (1000 / effFps()) * 1.7 && tier < TIERS.length - 1) {
+        tier++;
+        resizeFx();
+        ema = 1000 / effFps();
+        console.log(`[DDT Music Lite] auto-lowered quality to tier ${tier}`);
+    }
 }
 
-function updateStatusMessage(msg: string, isLoading: boolean) {
-    const st = document.getElementById("ddt-status-text");
-    if (!st) return;
-    st.textContent = msg || (isPlaying ? "Streaming High-Res" : "Paused");
-    st.style.color = isLoading ? "var(--ddt-mv-accent-cyan)" : "rgba(255, 255, 255, 0.6)";
+function frame(now: number) {
+    rafId = 0;
+    if (!started) return;
+    const elapsed = now - lastFrame;
+    lastFrame = now;
+    governor(elapsed);
+    const dt = clamp(elapsed / 1000, 0.001, 0.1);
+
+    updateAnalysis(dt, now);
+    syncLyrics();
+    if (overlayVisible()) renderOverlay(dt, now);
+    if (hudVisible()) {
+        renderHudViz();
+        updateTimeUI(false, now);
+        if (P.tab === "fx" && now - perfTextAt > 600) {
+            perfTextAt = now;
+            const el = byId("ddt-perf");
+            if (el) el.textContent = `Tier ${activeTier()} · ~${Math.round(1000 / Math.max(1, ema))} FPS · ${fx.mode === "sim" ? "simulated audio" : "live audio"}`;
+        }
+    }
+    if (miniVisible()) renderMiniViz();
+
+    const settling = fx.beat > 0.004 || fx.energy > 0.004 || fx.maxBand > 0.004 || pCount > 0 || rings.length > 0;
+    const visible = hudVisible() || miniVisible() || overlayVisible();
+    if (visible && (isPlaying || settling)) {
+        const wait = Math.max(0, 1000 / effFps() - (performance.now() - now) - 4);
+        timerId = setTimeout(() => { timerId = 0; if (started) rafId = requestAnimationFrame(frame); }, wait);
+    }
+}
+
+// ─── HUD UI ──────────────────────────────────────────────────────────────────
+function setStatus(msg: string, loading: boolean) {
+    const el = byId("ddt-status");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.toggle("loading", loading);
+    el.classList.toggle("empty", !msg);
+}
+
+function syncNowPlayingUI() {
+    const s = currentSong;
+    const t = byId("ddt-np-title"), a = byId("ddt-np-artist"), mt = byId("ddt-mini-title");
+    const img = byId<HTMLImageElement>("ddt-art-img");
+    if (t) t.textContent = s ? s.title : "Nothing playing";
+    if (a) a.textContent = s ? s.artist : "Search a track to start";
+    if (mt) mt.textContent = s ? `${s.artist ? s.artist + " — " : ""}${s.title}` : "No track";
+    if (img) { if (s?.thumb) { img.src = s.thumb; img.style.display = "block"; } else { img.removeAttribute("src"); img.style.display = "none"; } }
+    updateQueueBadge();
+}
+
+function updateTimeUI(force: boolean, now = performance.now()) {
+    if (!force && now - lastTimeUi < 250) return;
+    lastTimeUi = now;
+    const cur = audioEl?.currentTime ?? 0;
+    const dur = audioEl && isFinite(audioEl.duration) ? audioEl.duration : 0;
+    const shown = scrubbing ? scrubPreview * dur : cur;
+    const pct = dur > 0 ? clamp((scrubbing ? scrubPreview : cur / dur) * 100, 0, 100) : 0;
+    const c = byId("ddt-t-cur"), d = byId("ddt-t-dur"), f = byId("ddt-scrub-fill"), k = byId("ddt-scrub-knob");
+    if (c) c.textContent = fmt(shown);
+    if (d) d.textContent = dur ? fmt(dur) : (isPlaying ? "LIVE" : "0:00");
+    if (f) f.style.width = `${pct}%`;
+    if (k) k.style.left = `${pct}%`;
+}
+
+function refreshVolumeUI() {
+    const b = byId("ddt-mute"); if (b) b.innerHTML = P.muted || P.vol === 0 ? Icons.mute : Icons.volume;
+    const s = byId<HTMLInputElement>("ddt-vol"); if (s) { s.value = String(Math.round(P.vol * 100)); s.style.setProperty("--p", `${P.muted ? 0 : P.vol * 100}%`); }
+}
+function updateQueueBadge() { const q = byId("ddt-q-count"); if (q) q.textContent = String(P.queue.length); }
+
+function refreshTransportUI() {
+    byId("ddt-shuffle")?.classList.toggle("active", P.shuffle);
+    const r = byId("ddt-repeat");
+    if (r) { r.innerHTML = P.repeat === "one" ? Icons.repeatOne : Icons.repeat; r.classList.toggle("active", P.repeat !== "off"); r.title = `Repeat: ${P.repeat}`; }
+}
+
+function songRow(song: SongItem, opts: { idx: number; kind: "search" | "queue"; active?: boolean }) {
+    const art = song.thumb ? `<img class="ddt-row-art" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="${esc(song.thumb)}" alt="">` : `<div class="ddt-row-art noart"></div>`;
+    const actions = opts.kind === "search"
+        ? `<button class="ddt-ib" data-act="addq" data-i="${opts.idx}" title="Add to queue">${Icons.add}</button>`
+        : `<button class="ddt-ib" data-act="qrm" data-i="${opts.idx}" title="Remove">${Icons.trash}</button>`;
+    return `<div class="ddt-row${opts.active ? " active" : ""}" data-act="${opts.kind === "search" ? "pick" : "qplay"}" data-i="${opts.idx}">
+        ${art}
+        <div class="ddt-row-meta"><div class="ddt-row-title">${esc(song.title)}</div><div class="ddt-row-sub">${opts.active ? "Now playing" : esc(song.artist || "YouTube")}</div></div>
+        ${actions}
+    </div>`;
 }
 
 function renderSearchTab() {
-    const container = document.getElementById("ddt-search-results");
-    if (!container) return;
-
-    if (searchResults.length === 0) {
-        container.innerHTML = `<span style="color:rgba(255,255,255,0.4);font-size:12px;">Type above to search songs...</span>`;
-        return;
-    }
-
-    container.innerHTML = searchResults.map((song, i) => `
-        <div class="ddt-search-item" data-idx="${i}">
-            <img class="ddt-search-thumb" src="${song.thumb}" alt="thumb" />
-            <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${song.title}</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.5);">${song.artist || "YouTube Audio"}</div>
-            </div>
-            <button class="ddt-action-btn" style="width:32px;height:32px;" title="Play">${Icons.play}</button>
-        </div>
-    `).join("");
-
-    container.querySelectorAll(".ddt-search-item").forEach(el => {
-        el.addEventListener("click", () => {
-            const idx = Number(el.getAttribute("data-idx"));
-            const song = searchResults[idx];
-            if (song) {
-                queue.push(song);
-                queueIdx = queue.length - 1;
-                updateQueueCount();
-                playSong(song);
-            }
-        });
-    });
-}
-
-function renderLyricsTab() {
-    const container = document.getElementById("ddt-lyrics-container");
-    if (!container) return;
-
-    if (lyrics.length === 0) {
-        container.innerHTML = `<span style="color:rgba(255,255,255,0.4);">No synced lyrics available for this track.</span>`;
-        return;
-    }
-
-    container.innerHTML = lyrics.map((l, i) => `
-        <div id="ddt-lrc-${i}" class="ddt-lyric-line ${i === currentLyricIdx ? 'active' : ''}" data-time="${l.time}">
-            ${l.text}
-        </div>
-    `).join("");
-
-    container.querySelectorAll(".ddt-lyric-line").forEach(el => {
-        el.addEventListener("click", () => {
-            const time = Number(el.getAttribute("data-time"));
-            seek(time);
-        });
-    });
-}
-
-function updateActiveLyricUI() {
-    const container = document.getElementById("ddt-lyrics-container");
-    if (!container) return;
-
-    container.querySelectorAll(".ddt-lyric-line").forEach((el, i) => {
-        el.classList.toggle("active", i === currentLyricIdx);
-    });
-
-    const activeEl = document.getElementById(`ddt-lrc-${currentLyricIdx}`);
-    if (activeEl) {
-        activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    const el = byId("ddt-search-results"); if (!el) return;
+    el.innerHTML = searchResults.length
+        ? searchResults.map((s, i) => songRow(s, { idx: i, kind: "search" })).join("")
+        : `<div class="ddt-empty">Search for a track, artist or remix.</div>`;
 }
 
 function renderQueueTab() {
-    const container = document.getElementById("ddt-queue-list");
-    if (!container) return;
+    const el = byId("ddt-queue-list"); if (!el) return;
+    updateQueueBadge();
+    if (!P.queue.length) { el.innerHTML = `<div class="ddt-empty">Queue is empty. Add tracks from Search.</div>`; return; }
+    el.innerHTML = `<div class="ddt-queue-head"><span>${P.queue.length} track${P.queue.length === 1 ? "" : "s"}</span><button class="ddt-link" data-act="qclear">Clear all</button></div>` +
+        P.queue.map((s, i) => songRow(s, { idx: i, kind: "queue", active: i === P.queueIdx && !!currentSong && currentSong.videoId === s.videoId })).join("");
+}
 
-    if (queue.length === 0) {
-        container.innerHTML = `<span style="color:rgba(255,255,255,0.4);font-size:12px;">Queue is empty. Search tracks to add.</span>`;
+function renderLyricsTab() {
+    const el = byId("ddt-lyrics-list"); if (!el) return;
+    if (lyricsState === "loading") { el.innerHTML = `<div class="ddt-empty">Loading lyrics…</div>`; return; }
+    if (lyricsState === "synced") {
+        el.innerHTML = lyrics.map((l, i) => `<div class="ddt-lyric${i === lyricIdx ? " active" : ""}" id="ddt-lrc-${i}" data-act="lseek" data-t="${l.time}">${esc(l.text)}</div>`).join("");
         return;
     }
+    if (lyricsState === "plain") {
+        el.innerHTML = `<div class="ddt-note">Unsynced lyrics — the overlay needs timestamps, so it stays off for this track.</div><div class="ddt-plain">${esc(plainLyrics)}</div>`;
+        return;
+    }
+    el.innerHTML = `<div class="ddt-empty">${currentSong ? "No lyrics found for this track." : "Play a track to load lyrics."}</div>`;
+}
 
-    container.innerHTML = queue.map((song, i) => `
-        <div class="ddt-search-item ${i === queueIdx ? 'active' : ''}" data-qidx="${i}" style="${i === queueIdx ? 'background:rgba(88,101,242,0.2);border:1px solid rgba(88,101,242,0.4);' : ''}">
-            <img class="ddt-search-thumb" src="${song.thumb}" alt="thumb" />
-            <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${song.title}</div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.5);">${i === queueIdx ? "Now Playing" : (song.artist || "Queued")}</div>
-            </div>
-            <button class="ddt-action-btn" style="width:30px;height:30px;">${Icons.play}</button>
-        </div>
-    `).join("");
+function markActiveLyric() {
+    const box = byId("ddt-lyrics-list"); if (!box) return;
+    box.querySelector(".ddt-lyric.active")?.classList.remove("active");
+    const cur = byId(`ddt-lrc-${lyricIdx}`);
+    if (!cur) return;
+    cur.classList.add("active");
+    if (P.tab === "lyrics" && hudVisible()) {
+        const pane = byId("ddt-pane-lyrics");
+        if (pane) pane.scrollTop = cur.offsetTop - pane.clientHeight / 2 + cur.clientHeight / 2; // instant, no smooth-scroll cost
+    }
+}
 
-    container.querySelectorAll(".ddt-search-item").forEach(el => {
-        el.addEventListener("click", () => {
-            const qIdx = Number(el.getAttribute("data-qidx"));
-            queueIdx = qIdx;
-            playSong(queue[queueIdx]);
-        });
+const FX_CTLS: Array<{ key: string; label: string; kind: "toggle" | "range" | "select"; min?: number; max?: number; step?: number; num?: boolean; opts?: Array<[string, string]> }> = [
+    { key: "overlayEnabled", label: "Cinematic overlay", kind: "toggle" },
+    { key: "performance", label: "Performance mode", kind: "select", opts: [["auto", "Auto"], ["balanced", "Balanced"], ["minimal", "Minimal"], ["textonly", "Text only"]] },
+    { key: "fpsCap", label: "FPS cap", kind: "select", num: true, opts: [["10", "10"], ["15", "15"], ["24", "24"], ["30", "30"]] },
+    { key: "overlayOpacity", label: "FX opacity", kind: "range", min: 0.1, max: 1, step: 0.05 },
+    { key: "edmIntensity", label: "EDM intensity", kind: "range", min: 0, max: 1.5, step: 0.05 },
+    { key: "lyricStyle", label: "Lyric style", kind: "select", opts: [["auto", "Auto"], ["pop", "Pop"], ["mask", "Mask reveal"], ["slam", "Slam"], ["glitch", "Glitch"], ["cinematic", "Cinematic"]] },
+    { key: "lyricPosition", label: "Lyric position", kind: "select", opts: [["center", "Center"], ["lower", "Lower"], ["upper", "Upper"]] },
+    { key: "lyricScale", label: "Lyric size", kind: "range", min: 0.6, max: 1.6, step: 0.05 },
+    { key: "screenShake", label: "Kick shake", kind: "toggle" },
+    { key: "letterbox", label: "Letterbox", kind: "toggle" },
+    { key: "visualizerMode", label: "HUD visualizer", kind: "select", opts: [["spotify", "Pills"], ["edm", "Stage"], ["aurora", "Line"]] },
+];
+
+function renderFxTab() {
+    const el = byId("ddt-fx-list"); if (!el) return;
+    const st = settings.store as any;
+    el.innerHTML = `<div class="ddt-perf mono" id="ddt-perf">—</div>` + FX_CTLS.map(c => {
+        const v = st[c.key];
+        let ctl = "";
+        if (c.kind === "toggle") ctl = `<label class="ddt-sw"><input type="checkbox" data-fx="${c.key}" ${v ? "checked" : ""}><i></i></label>`;
+        else if (c.kind === "range") ctl = `<input class="ddt-range" type="range" data-fx="${c.key}" min="${c.min}" max="${c.max}" step="${c.step}" value="${v}"><b class="mono" data-fxv="${c.key}">${Number(v).toFixed(2)}</b>`;
+        else ctl = `<select class="ddt-select" data-fx="${c.key}">${c.opts!.map(([val, lab]) => `<option value="${val}" ${val === String(v) ? "selected" : ""}>${lab}</option>`).join("")}</select>`;
+        return `<div class="ddt-fx-row"><span>${c.label}</span><div class="ddt-fx-ctl">${ctl}</div></div>`;
+    }).join("");
+}
+
+function switchTab(tab: TabId) {
+    P.tab = tab; savePersist();
+    for (const t of ["search", "lyrics", "queue", "fx"] as TabId[]) {
+        byId(`ddt-pane-${t}`)?.toggleAttribute("hidden", t !== tab);
+        byId(`ddt-tab-${t}`)?.classList.toggle("active", t === tab);
+    }
+    if (tab === "queue") renderQueueTab();
+    if (tab === "fx") renderFxTab();
+    if (tab === "lyrics") { renderLyricsTab(); markActiveLyric(); }
+}
+
+function handleAct(t: HTMLElement, e?: Event) {
+    const i = Number(t.dataset.i);
+    switch (t.dataset.act) {
+        case "play": togglePlay(); break;
+        case "prev": playPrev(); break;
+        case "next": playNext(); break;
+        case "stop": stopPlayback(); break;
+        case "mute": toggleMute(); break;
+        case "shuffle": P.shuffle = !P.shuffle; refreshTransportUI(); savePersist(); break;
+        case "repeat": P.repeat = P.repeat === "all" ? "one" : P.repeat === "one" ? "off" : "all"; refreshTransportUI(); savePersist(); break;
+        case "tab": switchTab(t.dataset.tab as TabId); break;
+        case "search": void doSearch(byId<HTMLInputElement>("ddt-search-input")?.value ?? ""); break;
+        case "pick": { const s = searchResults[i]; if (s) addToQueue(s, true); break; }
+        case "addq": { e?.stopPropagation(); const s = searchResults[i]; if (s) { addToQueue(s); t.classList.add("done"); } break; }
+        case "qplay": playAt(i); break;
+        case "qrm": {
+            e?.stopPropagation();
+            if (i < P.queueIdx) P.queueIdx--;
+            P.queue.splice(i, 1);
+            P.queueIdx = clamp(P.queueIdx, 0, Math.max(0, P.queue.length - 1));
+            savePersist(); renderQueueTab();
+            break;
+        }
+        case "qclear": P.queue = []; P.queueIdx = 0; savePersist(); renderQueueTab(); break;
+        case "lseek": seek(Number(t.dataset.t) - 0.05); break;
+        case "relay": void ensureRelay().then(ok => setStatus(ok ? "" : "Relay failed to start", false)); break;
+        case "fx-toggle": settings.store.overlayEnabled = !settings.store.overlayEnabled; refreshOverlay(); if (P.tab === "fx") renderFxTab(); break;
+        case "minimize": hideHud(); if (currentSong) showMini(); break;
+        case "expand": hideMini(); showHud(); break;
+        case "close": stopPlayback(); hideHud(); hideMini(); break;
+    }
+}
+
+function placeEl(el: HTMLElement, pos: { x: number; y: number }) {
+    const w = el.offsetWidth || 300, h = el.offsetHeight || 60;
+    pos.x = clamp(pos.x, 8, Math.max(8, window.innerWidth - w - 8));
+    pos.y = clamp(pos.y, 8, Math.max(8, window.innerHeight - h - 8));
+    el.style.transform = `translate3d(${Math.round(pos.x)}px,${Math.round(pos.y)}px,0)`;
+}
+
+function makeDraggable(el: HTMLElement, handle: HTMLElement, pos: { x: number; y: number }) {
+    let on = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    handle.addEventListener("pointerdown", e => {
+        if ((e.target as HTMLElement).closest("button,input,select")) return;
+        on = true; sx = e.clientX; sy = e.clientY; ox = pos.x; oy = pos.y;
+        handle.setPointerCapture(e.pointerId);
+        e.preventDefault();
     });
+    handle.addEventListener("pointermove", e => {
+        if (!on) return;
+        pos.x = ox + e.clientX - sx; pos.y = oy + e.clientY - sy;
+        placeEl(el, pos);
+    });
+    const end = (e: PointerEvent) => {
+        if (!on) return;
+        on = false;
+        try { handle.releasePointerCapture(e.pointerId); } catch { /* already released */ }
+        savePersist();
+    };
+    handle.addEventListener("pointerup", end);
+    handle.addEventListener("pointercancel", end);
 }
 
-function updateQueueCount() {
-    const qc = document.getElementById("ddt-q-count");
-    if (qc) qc.textContent = String(queue.length);
+function wireScrub() {
+    const bar = byId("ddt-scrub"), tip = byId("ddt-scrub-tip");
+    if (!bar) return;
+    const ratio = (e: PointerEvent) => { const r = bar.getBoundingClientRect(); return clamp((e.clientX - r.left) / Math.max(1, r.width), 0, 1); };
+    const dur = () => (audioEl && isFinite(audioEl.duration) ? audioEl.duration : 0);
+    bar.addEventListener("pointerdown", e => {
+        if (!dur()) return;
+        scrubbing = true; scrubPreview = ratio(e);
+        bar.setPointerCapture(e.pointerId); updateTimeUI(true);
+    });
+    bar.addEventListener("pointermove", e => {
+        const r = ratio(e);
+        if (tip) { tip.textContent = fmt(r * dur()); tip.style.left = `${r * 100}%`; }
+        if (scrubbing) { scrubPreview = r; updateTimeUI(true); }
+    });
+    const end = (e: PointerEvent) => {
+        if (!scrubbing) return;
+        scrubbing = false;
+        try { bar.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+        seek(scrubPreview * dur());
+    };
+    bar.addEventListener("pointerup", end);
+    bar.addEventListener("pointercancel", () => { scrubbing = false; });
 }
 
-function destroyAllUI() {
-    stopPlayback();
-    stopServerPoll();
-
-    if (hudAnimFrameId) cancelAnimationFrame(hudAnimFrameId);
-    if (ambientAnimFrameId) cancelAnimationFrame(ambientAnimFrameId);
-    if (miniAnimFrameId) cancelAnimationFrame(miniAnimFrameId);
-    hudAnimFrameId = null;
-    ambientAnimFrameId = null;
-    miniAnimFrameId = null;
-
-    if (overlayEl) { overlayEl.remove(); overlayEl = null; }
-    if (ambientEl) { ambientEl.remove(); ambientEl = null; }
-    if (miniPillEl) { miniPillEl.remove(); miniPillEl = null; }
-
-    if (audioEl) {
-        audioEl.pause();
-        audioEl.src = "";
-        audioEl = null;
-    }
-
-    if (audioCtx) {
-        try { audioCtx.close(); } catch {}
-        audioCtx = null;
-    }
-}
-
-// ─── Discord Server List Launcher Button ─────────────────────────────────────
-function MusicServerListButton() {
-    const [hovered, setHovered] = React.useState(false);
-    return (
-        <div
-            id="ddt-music-launcher-btn"
-            onClick={() => {
-                if (!overlayEl || overlayEl.style.display === "none") createOverlay();
-                else overlayEl.style.display = "none";
-            }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            style={{
-                cursor: "pointer",
-                width: "48px",
-                height: "48px",
-                borderRadius: hovered ? "30%" : "50%",
-                background: hovered ? "linear-gradient(135deg, #5865f2, #00f2fe)" : "rgba(18, 20, 26, 0.85)",
-                boxShadow: hovered ? "0 4px 16px rgba(0, 242, 254, 0.5)" : "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                color: hovered ? "#ffffff" : "rgba(255, 255, 255, 0.7)",
-                margin: "0 auto 4px",
-            }}
-            title="DDT Music Studio & Ambient Visualizer"
-        >
-            <span
-                dangerouslySetInnerHTML={{ __html: Icons.music }}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-            />
+function buildHud() {
+    if (hudEl) return;
+    hudEl = document.createElement("div");
+    hudEl.id = "ddt-music-hud";
+    hudEl.className = "ddt-hud hidden";
+    hudEl.tabIndex = -1;
+    hudEl.innerHTML = `
+        <div class="ddt-hud-head" id="ddt-hud-head">
+            <div class="ddt-brand"><span class="ddt-brand-ic">${Icons.music}</span><span class="ddt-brand-t">DDT STUDIO · LITE</span></div>
+            <button class="ddt-relay" id="ddt-relay" data-act="relay" title="Relay status — click to (re)start"><i></i><span id="ddt-relay-label">Relay</span></button>
+            <div class="ddt-win">
+                <button id="ddt-win-fx" data-act="fx-toggle" title="Toggle cinematic overlay">${Icons.sparkle}</button>
+                <button data-act="minimize" title="Minimize to pill">${Icons.minimize}</button>
+                <button data-act="close" class="danger" title="Stop & close">${Icons.close}</button>
+            </div>
         </div>
-    );
+        <div class="ddt-hud-body">
+            <div class="ddt-np">
+                <div class="ddt-art"><img id="ddt-art-img" alt="" decoding="async" style="display:none"></div>
+                <div class="ddt-np-meta">
+                    <div id="ddt-np-title" class="ddt-np-title">Nothing playing</div>
+                    <div id="ddt-np-artist" class="ddt-np-artist">Search a track to start</div>
+                    <div id="ddt-status" class="ddt-status empty"></div>
+                </div>
+            </div>
+            <div class="ddt-viz"><canvas id="ddt-viz"></canvas></div>
+            <div class="ddt-time">
+                <span id="ddt-t-cur" class="mono">0:00</span>
+                <div class="ddt-scrub" id="ddt-scrub">
+                    <div class="ddt-scrub-fill" id="ddt-scrub-fill"></div>
+                    <div class="ddt-scrub-knob" id="ddt-scrub-knob"></div>
+                    <div class="ddt-scrub-tip mono" id="ddt-scrub-tip">0:00</div>
+                </div>
+                <span id="ddt-t-dur" class="mono">0:00</span>
+            </div>
+            <div class="ddt-transport">
+                <div class="ddt-tr-side"><button class="ddt-ib" id="ddt-shuffle" data-act="shuffle" title="Shuffle">${Icons.shuffle}</button></div>
+                <div class="ddt-tr-main">
+                    <button class="ddt-ib" data-act="prev" title="Previous">${Icons.prev}</button>
+                    <button class="ddt-play" id="ddt-play" data-act="play" title="Play / Pause (Space)">${Icons.play}</button>
+                    <button class="ddt-ib" data-act="next" title="Next">${Icons.next}</button>
+                    <button class="ddt-ib" data-act="stop" title="Stop">${Icons.stop}</button>
+                </div>
+                <div class="ddt-tr-side right">
+                    <button class="ddt-ib" id="ddt-repeat" data-act="repeat" title="Repeat">${Icons.repeat}</button>
+                    <button class="ddt-ib" id="ddt-mute" data-act="mute" title="Mute (M)">${Icons.volume}</button>
+                    <input type="range" id="ddt-vol" class="ddt-vol" min="0" max="100" value="80" aria-label="Volume">
+                </div>
+            </div>
+            <div class="ddt-tabs">
+                <button id="ddt-tab-search" class="active" data-act="tab" data-tab="search">Search</button>
+                <button id="ddt-tab-lyrics" data-act="tab" data-tab="lyrics">Lyrics</button>
+                <button id="ddt-tab-queue" data-act="tab" data-tab="queue">Queue <span id="ddt-q-count" class="pill">0</span></button>
+                <button id="ddt-tab-fx" data-act="tab" data-tab="fx">FX</button>
+            </div>
+            <div class="ddt-panes">
+                <div id="ddt-pane-search" class="ddt-pane">
+                    <div class="ddt-searchbar">
+                        <input id="ddt-search-input" class="ddt-input" type="text" placeholder="Search track, artist, remix…" autocomplete="off" spellcheck="false">
+                        <button class="ddt-ib solid" data-act="search" title="Search">${Icons.search}</button>
+                    </div>
+                    <div id="ddt-search-results"></div>
+                </div>
+                <div id="ddt-pane-lyrics" class="ddt-pane" hidden><div id="ddt-lyrics-list"></div></div>
+                <div id="ddt-pane-queue" class="ddt-pane" hidden><div id="ddt-queue-list"></div></div>
+                <div id="ddt-pane-fx" class="ddt-pane" hidden><div id="ddt-fx-list"></div></div>
+            </div>
+        </div>`;
+    document.body.appendChild(hudEl);
+
+    hudCanvas = byId<HTMLCanvasElement>("ddt-viz");
+    if (hudCanvas) resizeObs?.observe(hudCanvas);
+
+    hudEl.addEventListener("click", e => {
+        const t = (e.target as HTMLElement).closest<HTMLElement>("[data-act]");
+        if (t && hudEl!.contains(t)) handleAct(t, e);
+    });
+
+    hudEl.addEventListener("keydown", e => {
+        const tgt = e.target as HTMLElement;
+        if (tgt.id === "ddt-search-input") { if (e.key === "Enter") void doSearch((tgt as HTMLInputElement).value); return; }
+        if (tgt.matches("input[type=text],select")) return;
+        switch (e.key) {
+            case " ": e.preventDefault(); togglePlay(); break;
+            case "ArrowRight": if (audioEl) seek(audioEl.currentTime + 5); break;
+            case "ArrowLeft": if (audioEl) seek(audioEl.currentTime - 5); break;
+            case "ArrowUp": e.preventDefault(); setVolume(P.vol + 0.05); break;
+            case "ArrowDown": e.preventDefault(); setVolume(P.vol - 0.05); break;
+            case "m": case "M": toggleMute(); break;
+        }
+    });
+
+    const onFx = (e: Event) => {
+        const t = e.target as HTMLInputElement | HTMLSelectElement;
+        const key = t.dataset?.fx; if (!key) return;
+        const def = FX_CTLS.find(c => c.key === key); if (!def) return;
+        let val: any;
+        if (def.kind === "toggle") val = (t as HTMLInputElement).checked;
+        else if (def.kind === "range") { val = Number(t.value); const lab = hudEl!.querySelector(`[data-fxv="${key}"]`); if (lab) lab.textContent = val.toFixed(2); }
+        else val = def.num ? Number(t.value) : t.value;
+        (settings.store as any)[key] = val;
+        if (key === "performance") { tier = 0; resetGovernor(); }
+        if (key === "fpsCap") resetGovernor();
+        if (key === "overlayEnabled" || key === "performance") refreshOverlay();
+        if (key === "lyricStyle" || key === "lyricScale") showOverlayLine(lyricIdx);
+        kick();
+    };
+    hudEl.addEventListener("input", e => { if ((e.target as HTMLElement).id === "ddt-vol") setVolume(Number((e.target as HTMLInputElement).value) / 100); else onFx(e); });
+    hudEl.addEventListener("change", onFx);
+
+    makeDraggable(hudEl, byId("ddt-hud-head")!, P.hud);
+    wireScrub();
+    syncNowPlayingUI();
+    refreshVolumeUI();
+    refreshTransportUI();
+    renderSearchTab();
+    renderLyricsTab();
+    renderQueueTab();
+    switchTab(P.tab);
+    setRelayBadge(serverReady);
+    onPlayState();
 }
 
-const SafeMusicButton = ErrorBoundary.wrap(MusicServerListButton, { noop: true });
+function buildMini() {
+    if (miniEl) return;
+    miniEl = document.createElement("div");
+    miniEl.id = "ddt-music-mini";
+    miniEl.className = "ddt-mini hidden";
+    miniEl.innerHTML = `
+        <canvas id="ddt-mini-canvas" class="ddt-mini-canvas"></canvas>
+        <span id="ddt-mini-title" class="ddt-mini-title">No track</span>
+        <button class="ddt-ib" data-act="prev" title="Previous">${Icons.prev}</button>
+        <button class="ddt-ib solid" id="ddt-mini-play" data-act="play" title="Play / Pause">${isPlaying ? Icons.pause : Icons.play}</button>
+        <button class="ddt-ib" data-act="next" title="Next">${Icons.next}</button>
+        <button class="ddt-ib" data-act="expand" title="Open studio">${Icons.expand}</button>
+        <button class="ddt-ib" data-act="close" title="Stop & close">${Icons.close}</button>`;
+    document.body.appendChild(miniEl);
+    miniCanvas = byId<HTMLCanvasElement>("ddt-mini-canvas");
+    if (miniCanvas) resizeObs?.observe(miniCanvas);
+    miniEl.addEventListener("click", e => {
+        const t = (e.target as HTMLElement).closest<HTMLElement>("[data-act]");
+        if (t) handleAct(t, e);
+    });
+    makeDraggable(miniEl, miniEl, P.mini);
+    syncNowPlayingUI();
+}
 
-// ─── Plugin Definition ────────────────────────────────────────────────────────
+function showHud() {
+    buildHud();
+    hudEl!.classList.remove("hidden");
+    placeEl(hudEl!, P.hud);
+    if (!serverReady) void checkServer().then(setRelayBadge);
+    kick();
+}
+function hideHud() { hudEl?.classList.add("hidden"); }
+function showMini() { buildMini(); miniEl!.classList.remove("hidden"); placeEl(miniEl!, P.mini); kick(); }
+function hideMini() { miniEl?.classList.add("hidden"); }
+
+function toggleLauncher() {
+    if (hudVisible()) { hideHud(); if (currentSong && !stopped) showMini(); return; }
+    hideMini(); showHud();
+}
+
+let resizeDebounce: ReturnType<typeof setTimeout> | null = null;
+function onWindowResize() {
+    if (resizeDebounce) clearTimeout(resizeDebounce);
+    resizeDebounce = setTimeout(() => { // debounce: window drag-resizing must not thrash the canvas
+        resizeFx();
+        if (hudEl) placeEl(hudEl, P.hud);
+        if (miniEl) placeEl(miniEl, P.mini);
+    }, 120);
+}
+
+// ─── Server-list launcher ────────────────────────────────────────────────────
+function LauncherButton() {
+    return React.createElement("div", { className: "ddt-launcher-wrap" },
+        React.createElement("div", {
+            id: "ddt-music-launcher-btn",
+            className: "ddt-launcher" + (isPlaying ? " playing" : ""),
+            role: "button",
+            tabIndex: 0,
+            title: "DDT Music Studio (Lite)",
+            onClick: toggleLauncher,
+            onKeyDown: (e: any) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleLauncher(); } },
+            dangerouslySetInnerHTML: { __html: Icons.music }
+        }));
+}
+
+const SafeLauncherButton = ErrorBoundary.wrap(LauncherButton, { noop: true });
+
+// ─── Lifecycle ───────────────────────────────────────────────────────────────
+function teardown() {
+    started = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    if (timerId) { clearTimeout(timerId); timerId = 0; }
+    if (resizeDebounce) { clearTimeout(resizeDebounce); resizeDebounce = null; }
+    stopPoll();
+    window.removeEventListener("resize", onWindowResize);
+    resizeObs?.disconnect(); resizeObs = null;
+    unbindMediaSession();
+
+    playToken++;
+    if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+    if (audioEl) { audioEl.pause(); audioEl.removeAttribute("src"); audioEl.load(); audioEl = null; }
+    if (audioCtx) { try { void audioCtx.close(); } catch { /* ignore */ } }
+    audioCtx = null; srcNode = null; analyser = null; gainNode = null; freqBuf = null;
+
+    hudEl?.remove(); miniEl?.remove(); hudEl = miniEl = null; hudCanvas = miniCanvas = null;
+    destroyOverlay();
+
+    isPlaying = false; stopped = true; currentSong = null;
+    lyrics = []; lyricIdx = -1; lyricsState = "idle"; scrubbing = false;
+    bands.fill(0); peaks.fill(0);
+    fx.beat = fx.big = fx.energy = fx.bass = fx.mid = fx.high = fx.maxBand = 0;
+    fx.everLive = false; fx.silentFrames = 0; fx.mode = "idle";
+    tier = 0; vizHueKey = -999; palHueKey = -999;
+}
+
 export default definePlugin({
     name: "MusicVisualizer",
-    description: "Aero Glass Studio Music Player with 40% Opacity Cinematic Discord Background Lyrics & EDM Waves",
-    authors: [Devs.Ven],
+    description: "Lite edition: cinematic EDM overlay + kinetic lyrics + HUD player, tuned for low-end PCs",
+    authors: [{ name: "DDT Team", id: 0n }],
     tags: ["Media", "Audio", "Visualizer"],
     dependencies: ["ServerListAPI"],
     settings,
 
     start() {
-        addServerListElement(ServerListRenderPosition.Above, SafeMusicButton);
+        loadPersist();
+        started = true;
+        tier = 0;
+        resetGovernor();
 
-        // Auto-ensure relay server is online
-        checkServer().then(async ok => {
-            updateServerBadge(ok);
-            if (!ok) {
-                await handleStartRelay();
+        resizeObs = new ResizeObserver(entries => {
+            for (const en of entries) {
+                const c = en.target as HTMLCanvasElement;
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                const w = Math.max(1, Math.round(en.contentRect.width * dpr)), h = Math.max(1, Math.round(en.contentRect.height * dpr));
+                if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
             }
         });
+        window.addEventListener("resize", onWindowResize);
+        bindMediaSession();
+        addServerListElement(ServerListRenderPosition.Above, SafeLauncherButton);
+        startPoll();
 
-        // Global console shortcut for testing
+        checkServer().then(async ok => {
+            setRelayBadge(ok);
+            if (!ok && settings.store.autoStartRelay) await ensureRelay();
+        });
+
         (window as any).DDTMusic = {
-            open: createOverlay,
-            stop: stopPlayback,
-            play: (song: SongItem) => playSong(song),
-            search: doSearch,
-            toggleAmbient: toggleAmbientBackground
+            open: showHud, stop: stopPlayback, search: doSearch,
+            play: (s: SongItem) => addToQueue(s, true),
         };
-
-        console.log("[DDT Music Studio] Started with 40% Discord Ambient Background & 120 FPS Spring Physics.");
     },
 
     stop() {
-        destroyAllUI();
-        removeServerListElement(ServerListRenderPosition.Above, SafeMusicButton);
+        removeServerListElement(ServerListRenderPosition.Above, SafeLauncherButton);
+        teardown();
         delete (window as any).DDTMusic;
     }
 });
